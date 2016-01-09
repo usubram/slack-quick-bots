@@ -1,0 +1,6 @@
+```
+A little help, try command(s)
+{{#each command}}
+{{../prefix}} {{@key}}{{#if upperLimit}}- limit: {{lowerLimit}} to {{{upperLimit}}} {{/if}}{{#if allowedParam}}- options: {{#each allowedParam}} {{.}}{{#if @last}}{{else}},{{/if}}{{/each}}{{/if}}
+{{/each}}
+```
