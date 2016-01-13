@@ -1,23 +1,34 @@
 # slack-quick-bots
 
-Slack bot
+Slack is awesome!! and this is slack bot solution for enterprise.
+
 ## Why slack-quick-bots
 
-Slack is awesome!! slack-quick-bots is another slack bot module to help create multiple bots with minimal code. Basically, with 'slack-quick-bots' running in a single machine you could run multiple bots all doing different operation or pulling data from different sources. 
+slack-quick-bots is another slack bot module to help create multiple bots with minimal code. Basically, with `slack-quick-bots` running in a single machine you could run multiple bots all doing different operation or pulling data from different sources. 
+
+Some of the salient features
+
+*  Pre-defined bot command behaviors with user preferred command name. Pre-defined command includes data, recursive and recursive task killer command.
+*  Support multiple bot at the same channel.
+*  Auto generated help/error message.
+*  Configurable command param for great control.
+*  exciting features to follow soon.
 
 ## Getting Started
 Install the module with: `npm install slack-quick-bots`
 
 ## Step 1:
 
-Go to: https://my.slack.com/services/new/bot - Create a bot with a cool name!! and don't forgot to 
+Go to https://my.slack.com/services/new/bot - Create a bot with a cool name!! and don't forgot to 
 make a note of the bot token.
 
 ## Step 2:
 
-Do `npm install slack-quick-bots` in your app. Set up the below `config` by defining your bots (You read it right, you can define n number of bot for different purpose with just this 3 steps) , commands and bind the data to your data source as a callback.
+Do `npm install slack-quick-bots` in your app. Set up the below `config` by defining your bots (You read it right, you can define `n` number of bot for different purpose with just this 3 steps) , commands and bind the data to your data source as a callback.
 
 ## Step 3: 
+
+To get started immediately, try [sample.js](https://github.com/usubram/slack-quick-bots/blob/master/sample.js)
 
 ```javascript
 var SlackBot = require('slack-quick-bots');
@@ -29,17 +40,17 @@ mybots.start(); // "awesome"
 
 Ping the bot with your custom command or add the bot to the channel/group to watch the fun.
 
-Pass few information in the `config` and is all you need for the bot. Something like [sample.js]
+Pass few information in the `config` and is all you need for the bot. With the below config are running a bot with command,
 
-With the below config are running a bot with command,
+### DM to bot: 
 
-DM to bot: 
+* `ping 2` bot will respond back `Hello 2` [sample.hbs].
 
-`ping 2` bot will respond back `Hello 2` [sample.hbs].
+* `start 5` bot for every 5mins will respond back with `Hello 5`.
 
-`start 5` bot for every 5mins will respond back with `Hello 5`.
+* `stop start` will kill the recursive alerts.
 
-`stop start` will kill the recursive alerts.
+### Bot in channel/group:
 
 If you add the bot to a channel, message had to appended with the bot name `{botname} ping 2`.
 
@@ -93,7 +104,7 @@ _( More coming soon)_
 `botCommand` - Object to hold all the fancy command that you would like. Object key is command,
 so no spaces, try to keep it short and nice for some to remember.
 
-`commandType` - Currently, only Data, Rescursive, kill commands are supported.
+`commandType` - Currently, only data, recursive, kill commands are supported.
 
   `Data` - Any data, but mind the limit size of the websocket.
 
