@@ -1,4 +1,6 @@
-# slack-quick-bots
+# slack-quick-bots 
+[![npm version][npm-badge]][npm-url]
+[![Build Status][travis-badge]][travis-url]
 
 Slack is awesome!! and this is slack bot solution for enterprise.
 
@@ -33,7 +35,7 @@ To get started immediately, try [sample.js](https://github.com/usubram/slack-qui
 ```javascript
 var SlackBot = require('slack-quick-bots');
 var mybots = new SlackBot(config);
-mybots.start(); // "awesome"
+mybots.start(); // 'awesome'
 ```
 
 ## Finally:
@@ -56,40 +58,40 @@ If you add the bot to a channel, message had to appended with the bot name `{bot
 
 ```javascript
 {
-  "bots": [{
-  "botCommand": {
-    "PING": {
-      "commandType": "DATA",
-      "allowedParam": [],
-      "lowerLimit": 1,
-      "upperLimit": 5,
-      "defaultParamValue": 5,
-      "template": function() {
+  bots: [{
+  botCommand: {
+    'PING': {
+      commandType: 'DATA',
+      allowedParam: [],
+      lowerLimit: 1,
+      upperLimit: 5,
+      defaultParamValue: 5,
+      template: function() {
         return handlebars.compile({sampleTemplate});
       },
-      "data": function(command, param, callback) {
-        callback({data: "data fetched from service"});
+      data: function(command, param, callback) {
+        callback({data: 'data fetched from service'});
       }
     },
-    "START": {
-      "commandType": "RECURSIVE",
-      "lowerLimit": 1,
-      "upperLimit": 5,
-      "timeUnit": "m",
-      "defaultParamValue": 5,
-      "template": function() {
+    'START': {
+      commandType: 'RECURSIVE',
+      lowerLimit: 1,
+      upperLimit: 5,
+      timeUnit: 'm',
+      defaultParamValue: 5,
+      template: function() {
         return handlebars.compile(sampleTemplate);
       },
-      "data": function(command, param, callback) {
-        callback({data: "data fetched from service"});
+      data: function(command, param, callback) {
+        callback({data: 'data fetched from service'});
       }
     },
-    "STOP": {
-      "commandType": "KILL",
-      "parentTask": "START"
+    'STOP': {
+      commandType: 'KILL',
+      parentTask: 'START'
     }
   },
-  "botToken": ""
+  botToken: ''
   }]
 }
 ```
@@ -131,3 +133,8 @@ _(Nothing yet)_
 ## License
 Copyright (c) 2016 Umashankar Subramanian  
 Licensed under the MIT license.
+
+[npm-badge]: https://badge.fury.io/js/slack-quick-bots.svg
+[npm-url]: https://badge.fury.io/js/slack-quick-bots
+[travis-badge]: https://api.travis-ci.org/usubram/slack-quick-bots.svg
+[travis-url]: https://travis-ci.org/usubram/slack-quick-bots
