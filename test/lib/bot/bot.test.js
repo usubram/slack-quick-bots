@@ -64,8 +64,7 @@ describe('Bot', function () {
 
       expect(dispatchMessage).to.not.have.been.calledWith(undefined, 'D0GL06JD7', '', 'typing');
       expect(dispatchMessage).to.not.have.been.calledOnce;
-      expect(respondWithError).to.have.called;
-      expect(respondWithHelp).to.not.have.called;
+      expect(respondWithHelp).to.have.calledOnce;
     });
 
     it('Should call _dispatchMessage with wrong command', function () {
@@ -75,8 +74,7 @@ describe('Bot', function () {
 
       expect(dispatchMessage).to.not.have.been.calledWith(undefined, 'D0GL06JD7', '', 'typing');
       expect(dispatchMessage).to.not.have.been.calledOnce;
-      expect(respondWithError).to.have.called;
-      expect(respondWithHelp).to.not.have.called;
+      expect(respondWithHelp).to.have.calledOnce;
     });
 
   });
@@ -96,7 +94,7 @@ describe('Bot', function () {
 
       slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBot.bots[0]));
 
-      slackBot.bot.botName = 'botname';
+      slackBot.botName = 'botname';
       slackMessage = {
         type: 'message',
         channel: 'C0GL06JD7',
@@ -129,7 +127,7 @@ describe('Bot', function () {
 
     it('Should call _dispatchMessage with botname and command without param', function () {
       expect(slackBot).to.be.ok;
-      slackBot.bot.botName = 'botname';
+      slackBot.botName = 'botname';
       slackMessage.text = 'botname ping';
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
@@ -143,7 +141,7 @@ describe('Bot', function () {
 
     it('Should not call _dispatchMessage', function () {
       expect(slackBot).to.be.ok;
-      slackBot.bot.botName = 'name';
+      slackBot.botName = 'name';
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
       expect(dispatchMessage).to.not.have.been.called;
@@ -154,7 +152,7 @@ describe('Bot', function () {
 
     it('Should not call _dispatchMessage without botname', function () {
       expect(slackBot).to.be.ok;
-      slackBot.bot.botName = 'botname';
+      slackBot.botName = 'botname';
       slackMessage.text = 'ping 1';
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
@@ -166,7 +164,7 @@ describe('Bot', function () {
 
     it('Should show help message for message starting with botname and wrong command', function () {
       expect(slackBot).to.be.ok;
-      slackBot.bot.botName = 'botname';
+      slackBot.botName = 'botname';
       slackMessage.text = 'botname wrong command';
 
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);

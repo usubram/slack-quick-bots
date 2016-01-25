@@ -8,3 +8,4 @@ node_modules
 */._*
 */*/._*
 .settings
+log/.*
