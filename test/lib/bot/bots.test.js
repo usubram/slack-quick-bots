@@ -24,16 +24,16 @@ describe('Bots', function () {
     it('Should contain bot token and command for bots', function () {
       expect(this.slackBots).to.be.ok;
       _.forEach(this.slackBots, function (botInfo) {
-        expect(botInfo.bot.botCommand).to.be.ok;
+        expect(botInfo.command).to.be.ok;
       });
     });
 
     it('Should contain normalized bots', function () {
       expect(this.slackBots).to.be.ok;
       _.forEach(this.slackBots, function (botInfo) {
-        expect(botInfo.bot.botCommand['pingMe']).to.be.ok;
-        expect(botInfo.bot.botCommand['autoData']).to.be.ok;
-        expect(botInfo.bot.botCommand['stop'].parentTask).to.equal('autoData');
+        expect(botInfo.command.commands['pingMe']).to.be.ok;
+        expect(botInfo.command.commands['autoData']).to.be.ok;
+        expect(botInfo.command.commands['stop'].parentTask).to.equal('autoData');
       });
     });
 

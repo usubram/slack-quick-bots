@@ -16,7 +16,6 @@ var config = {
           return handlebars.compile(sampleTemplate);
         },
         'data': function(command, param, callback) {
-          console.log(param);
           callback({
             'param': param
           });
@@ -41,7 +40,7 @@ var config = {
         'parentTask': 'AUTO'
       }
     },
-    'botToken': ''
+    'botToken': 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
   }, {
     'botCommand': {
       'STATUS': {
@@ -77,8 +76,10 @@ var config = {
         'parentTask': 'UPDATE'
       }
     },
-    'botToken': ''
-  }]
+    'botToken': 'xoxb-16680277201-33xVzeZqKopVPx03GQYNeBwT'
+  }],
+  logger: console  // you could pass a winston logger.
 };
+
 var slackBot = new SlackBot(config);
 slackBot.start();

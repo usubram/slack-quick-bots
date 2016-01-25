@@ -1,7 +1,7 @@
 {
   "name": "slack-quick-bots",
   "description": "Slack bot",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "homepage": "https://github.com/usubram/slack-quick-bots",
   "author": {
     "name": "Umashankar Subramanian",
@@ -36,7 +36,6 @@
     "chatbots"
   ],
   "dependencies": {
-    "extendify": "^1.0.0",
     "handlebars": "^4.0.5",
     "lodash": "4.0.0",
     "ws": "^1.0.1"

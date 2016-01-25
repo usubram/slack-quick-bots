@@ -24,7 +24,6 @@ describe('single bot', function () {
         resolve({botInfo: {ws: 'dummy'}});
       });
     });
-    this._startWebsocket = sinon.stub(SlackBot.prototype, '_startWebsocket');
     this.testBots = new SlackBot(config.singleBot);
     this.testBots.start();
   }); 
@@ -32,26 +31,21 @@ describe('single bot', function () {
   afterEach(function () {
     this.slackConnect.restore();
     this.webSocket.restore();
-    this._startWebsocket.restore();
   });
 
   describe('Should instantiate slackbots correctly', function () {
 
     it('Should contain all the basic config', function () {
-      expect(this.testBots.slackBot.slackBotConfig).to.be.ok;
-      expect(this.testBots.slackBot.slackBotConfig.bots).to.be.ok;
-      expect(this.testBots.slackBot.slackBotConfig.bots).to.be.ok;
+      console.log('this.testBots', this.testBots);
+      expect(this.testBots.config.slack).to.be.ok;
+      expect(this.testBots.config.bots).to.be.ok;
     });
 
     it('Should contain bot token and command for bots', function () {
-      _.forEach(this.testBots.slackBot.slackBotConfig.bots, function (bot) {
+      _.forEach(this.testBots.config.bots, function (bot) {
         expect(bot.botToken).to.be.ok;
         expect(bot.botCommand).to.be.ok;
       });
-    });
-
-    it('Should call the _startWebsocket for each bot', function () {
-      expect(this._startWebsocket).to.have.been.calledOnce;
     });
 
   });
@@ -71,7 +65,6 @@ describe('multiple bot', function () {
         resolve({botInfo: {ws: 'dummy'}});
       });
     });
-    this._startWebsocket = sinon.stub(SlackBot.prototype, '_startWebsocket');
     this.testBots = new SlackBot(config.multipleBot);
     this.testBots.start();
   }); 
@@ -79,26 +72,20 @@ describe('multiple bot', function () {
   afterEach(function () {
     this.slackConnect.restore();
     this.webSocket.restore();
-    this._startWebsocket.restore();
   });
 
   describe('Should instantiate slackbots correctly', function () {
 
     it('Should contain all the basic config', function () {
-      expect(this.testBots.slackBot.slackBotConfig).to.be.ok;
-      expect(this.testBots.slackBot.slackBotConfig.bots).to.be.ok;
-      expect(this.testBots.slackBot.slackBotConfig.bots).to.be.ok;
+      expect(this.testBots.config.slack).to.be.ok;
+      expect(this.testBots.config.bots).to.be.ok;
     });
 
     it('Should contain bot token and command for bots', function () {
-      _.forEach(this.testBots.slackBot.slackBotConfig.bots, function (bot) {
+      _.forEach(this.testBots.config.bots, function (bot) {
         expect(bot.botToken).to.be.ok;
         expect(bot.botCommand).to.be.ok;
       });
-    });
-
-    it('Should call the _startWebsocket for each bot', function () {
-      expect(this._startWebsocket).to.have.been.calledTwice;
     });
 
   });

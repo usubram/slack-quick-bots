@@ -11,9 +11,10 @@ slack-quick-bots is another slack bot module to help create multiple bots with m
 Some of the salient features
 
 *  Pre-defined bot command behaviors with user preferred command name. Pre-defined command includes data, recursive and recursive task killer command.
-*  Support multiple bot at the same channel.
-*  Auto generated help/error message.
+*  Seamlessly use multiple bot inside same channel. Just do @botname {command} or {botname}
+*  Auto generated contextual help/error message.
 *  Configurable command param for great control.
+*  Log support. Simple console or winston like, your choice.
 *  exciting features to follow soon.
 
 ## Getting Started
@@ -48,9 +49,9 @@ Pass few information in the `config` and is all you need for the bot. With the b
 
 * `ping 2` bot will respond back `Hello 2` [sample.hbs].
 
-* `start 5` bot for every 5mins will respond back with `Hello 5`.
+* `auto 5` bot for every 5mins will respond back with `Hello 5`.
 
-* `stop start` will kill the recursive alerts.
+* `stop auto` will kill the recursive alerts.
 
 ### Bot in channel/group:
 
@@ -73,7 +74,7 @@ If you add the bot to a channel, message had to appended with the bot name `{bot
         callback({data: 'data fetched from service'});
       }
     },
-    'START': {
+    'AUTO': {
       commandType: 'RECURSIVE',
       lowerLimit: 1,
       upperLimit: 5,
@@ -88,7 +89,7 @@ If you add the bot to a channel, message had to appended with the bot name `{bot
     },
     'STOP': {
       commandType: 'KILL',
-      parentTask: 'START'
+      parentTask: 'AUTO'
     }
   },
   botToken: ''
