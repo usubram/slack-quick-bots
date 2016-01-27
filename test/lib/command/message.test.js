@@ -31,7 +31,7 @@ describe('single bot', function () {
     slackMessage.message = {
       command: 'ping',
       params: [1]
-    }
+    };
     expect(parsedMessage).to.deep.equal(slackMessage);
   });
 
@@ -41,7 +41,7 @@ describe('single bot', function () {
     slackMessage.message = {
       command: 'ping',
       params: [1, 2, 3]
-    }
+    };
     expect(parsedMessage).to.deep.equal(slackMessage);
   });
 
@@ -50,7 +50,7 @@ describe('single bot', function () {
     slackMessage.message = {
       commandPrefix: 'ping',
       command: 1
-    }
+    };
     expect(parsedMessage).to.deep.equal(slackMessage);
   });
 
@@ -61,7 +61,7 @@ describe('single bot', function () {
       commandPrefix: 'botname',
       command: 'command',
       params: [1, 2, 3]
-    }
+    };
     expect(parsedMessage).to.deep.equal(slackMessage);
   });
 
@@ -72,7 +72,47 @@ describe('single bot', function () {
       commandPrefix: 'botname',
       command: 'command',
       params: [1, 2, 3]
-    }
+    };
+    expect(parsedMessage).to.deep.equal(slackMessage);
+  });
+
+  it('Should correctly parse channel message with bot mentions', function () {
+    slackMessage.text = '<@U1212434>: command 1 2 3';
+    var parsedMessage = message.parse(slackMessage, false);
+    slackMessage.message = {
+      commandPrefix: 'U1212434',
+      command: 'command',
+      params: [1, 2, 3]
+    };
+    expect(parsedMessage).to.deep.equal(slackMessage);
+  });
+
+  it('Should correctly parse channel message with bot name with colon', function () {
+    slackMessage.text = 'botname: command 1 2 3';
+    var parsedMessage = message.parse(slackMessage, false);
+    slackMessage.message = {
+      commandPrefix: 'botname',
+      command: 'command',
+      params: [1, 2, 3]
+    };
+    expect(parsedMessage).to.deep.equal(slackMessage);
+  });
+
+  it('Should correctly parse channel message with just numeric', function () {
+    slackMessage.text = '1 2 3';
+    var parsedMessage = message.parse(slackMessage, false);
+    slackMessage.message = {
+      commandPrefix: 1,
+      command: 2,
+      params: [3]
+    };
+    expect(parsedMessage).to.deep.equal(slackMessage);
+  });
+
+  it('Should correctly parse channel message with just spaces', function () {
+    slackMessage.text = '    ';
+    var parsedMessage = message.parse(slackMessage, false);
+    slackMessage.message = {};
     expect(parsedMessage).to.deep.equal(slackMessage);
   });
 });
