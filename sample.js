@@ -8,7 +8,7 @@ const sampleTemplate = fs.readFileSync('./sample.hbs', 'utf8');
 var config = {
   'bots': [{
     'botCommand': {
-      'PING': {
+      'log_error': {
         'commandType': 'DATA',
         'allowedParam': [1, 2],
         'defaultParamValue': 1,
@@ -21,7 +21,7 @@ var config = {
           });
         }
       },
-      'AUTO': {
+      'error_rate': {
         'commandType': 'RECURSIVE',
         'lowerLimit': 0,
         'upperLimit': 100,
@@ -35,15 +35,16 @@ var config = {
           });
         }
       },
-      'STOP': {
+      'stop_error': {
         'commandType': 'KILL',
-        'parentTask': 'AUTO'
+        'parentTask': 'error_rate'
       }
     },
+    'blockDirectMessage': true,
     'botToken': 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
   }, {
     'botCommand': {
-      'STATUS': {
+      'traffic_stats': {
         'commandType': 'DATA',
         'allowedParam': ['what', 'there'],
         'timeUnit': 'm',
@@ -57,7 +58,7 @@ var config = {
           });
         }
       },
-      'UPDATE': {
+      'traffic_peak_stats': {
         'commandType': 'RECURSIVE',
         'lowerLimit': 0,
         'upperLimit': 100,
@@ -71,9 +72,9 @@ var config = {
           });
         }
       },
-      'STOP': {
+      'stop_stats': {
         'commandType': 'KILL',
-        'parentTask': 'UPDATE'
+        'parentTask': 'traffic_peak_stats'
       }
     },
     'botToken': 'xoxb-16680277201-33xVzeZqKopVPx03GQYNeBwT'
