@@ -33,6 +33,8 @@
     "bots",
     "bot",
     "alerts",
+    "job",
+    "automation",
     "chatbots"
   ],
   "dependencies": {
