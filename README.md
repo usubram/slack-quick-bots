@@ -12,8 +12,9 @@ Some of the salient features
 
 *  Pre-defined bot command behaviors with user preferred command name. Pre-defined command includes data, recursive and recursive task killer command.
 *  Seamlessly use multiple bot inside same channel. Just do @botname {command} or {botname}
-*  Auto generated contextual help/error message.
+*  Auto generated contextual help/error messages, so just setup the bot and forget it.
 *  Configurable command param for great control.
+*  Block direct message to a bot and hence bot could only respond in a public channel, now you know who is using the bot (sounds simple but a killer feature).
 *  Log support. Simple console or winston like, your choice.
 *  exciting features to follow soon.
 
@@ -47,11 +48,11 @@ Pass few information in the `config` and is all you need for the bot. With the b
 
 ### DM to bot: 
 
-* `ping 2` bot will respond back `Hello 2` [sample.hbs].
+* `traffic_stats 2` bot will respond back `Total of 3000 visits in the last 2 mins` [sample.hbs].
 
-* `auto 5` bot for every 5mins will respond back with `Hello 5`.
+* `traffic_peak_stats 5` bot for every 5 mins will respond back with `3000 visits in the last 5 mins`.
 
-* `stop auto` will kill the recursive alerts.
+* `stop traffic_peak_stats` will kill the recursive alerts.
 
 ### Bot in channel/group:
 
@@ -61,7 +62,7 @@ If you add the bot to a channel, message had to appended with the bot name `{bot
 {
   bots: [{
   botCommand: {
-    'PING': {
+    'traffic_stats': {
       commandType: 'DATA',
       allowedParam: [],
       lowerLimit: 1,
@@ -74,7 +75,7 @@ If you add the bot to a channel, message had to appended with the bot name `{bot
         callback({data: 'data fetched from service'});
       }
     },
-    'AUTO': {
+    'traffic_peak_stats': {
       commandType: 'RECURSIVE',
       lowerLimit: 1,
       upperLimit: 5,
@@ -89,7 +90,7 @@ If you add the bot to a channel, message had to appended with the bot name `{bot
     },
     'STOP': {
       commandType: 'KILL',
-      parentTask: 'AUTO'
+      parentTask: 'traffic_peak_stats'
     }
   },
   botToken: ''
@@ -120,6 +121,8 @@ so no spaces, try to keep it short and nice for some to remember.
 `template` - This take the *compiled* handlebars template for the data that you would be sending.
 
 `data` - This takes a callback with which the data will be given to the bot.
+
+`blockDirectMessage` - Block a bot from responding to a DM and hence only allowing it to respond in a public channel.
 
 
 ## Examples
