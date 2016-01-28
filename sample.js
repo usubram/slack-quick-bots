@@ -35,13 +35,29 @@ var config = {
           });
         }
       },
+      'listen_to_dip': {
+        'commandType': 'ALERT',
+        'template': function() {
+          return handlebars.compile(sampleTemplate);
+        },
+        'data': function(command, param, callback) {
+          var dataArr = [
+            [100, 120, 130, 110],
+            [1, 120, 130, 110],
+            [1, 120, 130, 1010],
+            [100, 120, 130, 1010]
+          ]
+          var rand = dataArr[Math.floor(Math.random() * dataArr.length)];
+          callback(rand);
+        }
+      },
       'stop_error': {
         'commandType': 'KILL',
         'parentTask': 'error_rate'
       }
     },
-    'blockDirectMessage': true,
-    'botToken': 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
+    'blockDirectMessage': false,
+    'botToken': 'xoxb-16681282704-l4UkOfmVDe9SOyYbYhtcuPXC'
   }, {
     'botCommand': {
       'traffic_stats': {
@@ -77,7 +93,7 @@ var config = {
         'parentTask': 'traffic_peak_stats'
       }
     },
-    'botToken': 'xoxb-16680277201-33xVzeZqKopVPx03GQYNeBwT'
+    'botToken': 'xoxb-16680277201-Cak8kTqwJle4ZjZHGMPEG8fb'
   }],
   logger: console  // you could pass a winston logger.
 };
