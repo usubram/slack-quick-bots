@@ -1,4 +1,6 @@
 # slack-quick-bots 
+
+[![Join the chat at https://gitter.im/usubram/slack-quick-bots](https://badges.gitter.im/usubram/slack-quick-bots.svg)](https://gitter.im/usubram/slack-quick-bots?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![npm version][npm-badge]][npm-url]
 [![Build Status][travis-badge]][travis-url]
 
