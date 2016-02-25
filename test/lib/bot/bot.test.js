@@ -7,27 +7,28 @@ const sinonChai = require('sinon-chai');
 const _ = require('lodash');
 const Bots = require('./../../../lib/bot/bots');
 const Bot = require('./../../../lib/bot/bot');
+const ResponseHandler = require('./../../../lib/bot/responseHandler');
 const config = require('../../mock/config');
 
 chai.use(sinonChai);
 
-describe('Bot', function () {
+describe('/bot', function () {
   describe('direct message', function () {
 
     var dispatchMessage,
-      respondWithHelp,
-      respondWithError,
+      dispatchMessageEventSpy,
+      setupBotEventsStub,
       slackMessage,
       slackBot;
-
     beforeEach(function () {
 
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
-      respondWithHelp = sinon.stub(Bot.prototype, '_respondWithHelp');
-      respondWithError = sinon.stub(Bot.prototype, '_respondWithError');
-
+      dispatchMessageEventSpy = sinon.spy();
+      setupBotEventsStub = sinon.stub(Bot.prototype, '_setupBotEvents');
       slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBot.bots[0]));
-
+      slackBot.botName = 'botname';
+      slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
+      slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
       slackMessage = {
         type: 'message',
         channel: 'D0GL06JD7',
@@ -40,8 +41,7 @@ describe('Bot', function () {
 
     afterEach(function () {
       dispatchMessage.restore();
-      respondWithHelp.restore();
-      respondWithError.restore();
+      setupBotEventsStub.restore();
       slackBot = {};
       slackMessage = {};
     });
@@ -50,11 +50,9 @@ describe('Bot', function () {
       expect(slackBot).to.be.ok;
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
-      expect(dispatchMessage).to.have.been.calledWith(undefined, 'D0GL06JD7', 'Hello 1');
-      expect(dispatchMessage).to.have.been.calledWith(undefined, 'D0GL06JD7', '', 'typing');
+      expect(dispatchMessage).to.have.been.calledWith('D0GL06JD7', '', 'typing');
+      expect(dispatchMessageEventSpy).to.have.been.calledWith({ message: { channels: ["D0GL06JD7"], data: "Hello 1" } });
       expect(dispatchMessage).to.have.been.calledTwice;
-      expect(respondWithHelp).to.not.have.called;
-      expect(respondWithError).to.not.have.called;
     });
 
     it('Should call _dispatchMessage with empty message', function () {
@@ -62,9 +60,8 @@ describe('Bot', function () {
       slackMessage.text = '';
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
-      expect(dispatchMessage).to.not.have.been.calledWith(undefined, 'D0GL06JD7', '', 'typing');
-      expect(dispatchMessage).to.not.have.been.calledOnce;
-      expect(respondWithHelp).to.have.calledOnce;
+      expect(dispatchMessage).to.not.have.been.calledWith('D0GL06JD7', '', 'typing');
+      expect(dispatchMessage).to.not.have.been.calledTwice;
     });
 
     it('Should call _dispatchMessage with wrong command', function () {
@@ -72,28 +69,25 @@ describe('Bot', function () {
       slackMessage.text = 'wrong command';
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
-      expect(dispatchMessage).to.not.have.been.calledWith(undefined, 'D0GL06JD7', '', 'typing');
-      expect(dispatchMessage).to.not.have.been.calledOnce;
-      expect(respondWithHelp).to.have.calledOnce;
+      expect(dispatchMessage).to.not.have.been.calledWith('D0GL06JD7', '', 'typing');
+      expect(dispatchMessage).to.not.have.been.calledTwice;
     });
 
   });
 
   describe('channel message', function () {
     var dispatchMessage,
-      respondWithHelp,
-      respondWithError,
+      dispatchMessageEventSpy,
       slackMessage,
       slackBot;
 
     beforeEach(function () {
 
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
-      respondWithHelp = sinon.stub(Bot.prototype, '_respondWithHelp');
-      respondWithError = sinon.stub(Bot.prototype, '_respondWithError');
-
+      dispatchMessageEventSpy = sinon.spy();
       slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBot.bots[0]));
-
+      slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
+      slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
       slackBot.botName = 'botname';
       slackMessage = {
         type: 'message',
@@ -108,8 +102,6 @@ describe('Bot', function () {
 
     afterEach(function () {
       dispatchMessage.restore();
-      respondWithHelp.restore();
-      respondWithError.restore();
       slackBot = null;
       slackMessage = {};
     });
@@ -118,11 +110,9 @@ describe('Bot', function () {
       expect(slackBot).to.be.ok;
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
+      expect(dispatchMessage).to.have.been.calledWith('C0GL06JD7', '', 'typing');
+      expect(dispatchMessageEventSpy).to.have.been.calledWith({ message: { channels: ["C0GL06JD7"], data: "Hello 1" } });
       expect(dispatchMessage).to.have.been.calledTwice;
-      expect(respondWithHelp).to.not.have.called;
-      expect(respondWithError).to.not.have.called;
-      expect(dispatchMessage).to.have.been.calledWith(undefined, 'C0GL06JD7', '', 'typing');
-      expect(dispatchMessage).to.have.been.calledWith(undefined, 'C0GL06JD7', 'Hello 1');
     });
 
     it('Should call _dispatchMessage with botname and command without param', function () {
@@ -132,11 +122,8 @@ describe('Bot', function () {
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
       expect(dispatchMessage).to.have.been.calledTwice;
-      expect(respondWithHelp).to.not.have.called;
-      expect(respondWithError).to.not.have.called;
-
-      expect(dispatchMessage).to.have.been.calledWith(undefined, 'C0GL06JD7', '', 'typing');
-      expect(dispatchMessage).to.have.been.calledWith(undefined, 'C0GL06JD7', 'Hello 1');
+      expect(dispatchMessage).to.have.been.calledWith('C0GL06JD7', '', 'typing');
+      expect(dispatchMessageEventSpy).to.have.been.calledWith({ message: { channels: ["C0GL06JD7"], data: "Hello 1" } });
     });
 
     it('Should not call _dispatchMessage', function () {
@@ -145,9 +132,6 @@ describe('Bot', function () {
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
       expect(dispatchMessage).to.not.have.been.called;
-      expect(respondWithHelp).to.not.have.called;
-      expect(respondWithError).to.not.have.called;
-
     });
 
     it('Should not call _dispatchMessage without botname', function () {
@@ -157,9 +141,6 @@ describe('Bot', function () {
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
       expect(dispatchMessage).to.not.have.been.called;
-      expect(respondWithHelp).to.not.have.called;
-      expect(respondWithError).to.not.have.called;
-
     });
 
     it('Should show help message for message starting with botname and wrong command', function () {
@@ -169,10 +150,7 @@ describe('Bot', function () {
 
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
-      expect(dispatchMessage).to.not.have.been.called;
-      expect(respondWithHelp).to.have.calledOnce;
-      expect(respondWithError).to.not.have.called;
-
+      expect(dispatchMessage).to.have.been.called;
     });
   });
 

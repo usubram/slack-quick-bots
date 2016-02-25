@@ -10,7 +10,7 @@ const config = require('../../mock/config');
 
 chai.use(sinonChai);
 
-describe('Bots', function () {
+describe('/bots', function () {
   beforeEach(function () {
     this.slackBots = new Bots(config.BotsTest.bots).getBots();
   });
