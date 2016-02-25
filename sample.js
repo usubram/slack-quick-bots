@@ -8,7 +8,7 @@ const sampleTemplate = fs.readFileSync('./sample.hbs', 'utf8');
 var config = {
   'bots': [{
     'botCommand': {
-      'log_error': {
+      'log': {
         'commandType': 'DATA',
         'allowedParam': [1, 2],
         'defaultParamValue': 1,
@@ -21,7 +21,7 @@ var config = {
           });
         }
       },
-      'error_rate': {
+      'error': {
         'commandType': 'RECURSIVE',
         'lowerLimit': 0,
         'upperLimit': 100,
@@ -35,16 +35,41 @@ var config = {
           });
         }
       },
-      'stop_error': {
+      'alert': {
+        'commandType': 'ALERT',
+        'timeInterval': 1, // time due which call to the back is made.
+        'template': function() {
+          return handlebars.compile(sampleTemplate);
+        },
+        'data': function(command, param, callback) {
+          var dataArr = [ // Sample data
+            [100, 120, 130, 110, 123, 90],
+            [1, 120, 130, 110, 90, 85],
+            [1, 120, 130, 1010, 140, 145],
+            [100, 120, 130, 250, 140, 145],
+            [100, 120, 130, 300, 140, 145],
+            [100, 400, 130, 300, 140, 145],
+            [100, 90, 130, 300, 140, 145],
+            [100, 120, 130, 1010, 150, 90]
+          ]
+          var rand = dataArr[Math.floor(Math.random() * dataArr.length)];
+          callback(rand);
+        }
+      },
+      'stopAlert': {
         'commandType': 'KILL',
-        'parentTask': 'error_rate'
+        'parentTask': 'alert'
+      },
+      'stopError': {
+        'commandType': 'KILL',
+        'parentTask': 'error'
       }
     },
-    'blockDirectMessage': true,
-    'botToken': 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
+    'blockDirectMessage': false,
+    'botToken': ''
   }, {
     'botCommand': {
-      'traffic_stats': {
+      'traffic': {
         'commandType': 'DATA',
         'allowedParam': ['what', 'there'],
         'timeUnit': 'm',
@@ -58,7 +83,7 @@ var config = {
           });
         }
       },
-      'traffic_peak_stats': {
+      'start': {
         'commandType': 'RECURSIVE',
         'lowerLimit': 0,
         'upperLimit': 100,
@@ -72,12 +97,12 @@ var config = {
           });
         }
       },
-      'stop_stats': {
+      'stop': {
         'commandType': 'KILL',
-        'parentTask': 'traffic_peak_stats'
+        'parentTask': 'start'
       }
     },
-    'botToken': 'xoxb-16680277201-33xVzeZqKopVPx03GQYNeBwT'
+    'botToken': ''
   }],
   logger: console  // you could pass a winston logger.
 };

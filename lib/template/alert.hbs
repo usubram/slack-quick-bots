@@ -1,0 +1,26 @@
+{{#with message}}
+{{#if alert}}
+```
+Alert:\n
+Threshold % is, how far the data is spread between them.\n
+Threshold: {{perct}}%\n
+Time: {{time}}\n
+
+{{#each dataset}}{{this}}{{#if @last}} {{else}}, {{/if}}{{/each}}
+```
+{{/if}}
+{{#if sample}}
+{{#if dataset}}
+
+Most recent threshold percentages are below and last updated at *{{time}}* \n
+
+> {{#each dataset}}{{this}}%{{#if @last}} {{else}}, {{/if}}{{/each}} \n \n
+
+> _tip_: threshold percentage is how far the data is spread between them. `100, 120, 110, 130, 140` - will have low percentage compared to `20, 100, 120, 130, 50`. So choose a threshold percentage based on the above values
+{{else}}
+```
+No data available yet. Please try after sometime.
+```
+{{/if}}
+{{/if}}
+{{/with}}

@@ -8,11 +8,12 @@ const _ = require('lodash');
 const Bots = require('./../../../lib/bot/bots');
 const Bot = require('./../../../lib/bot/bot');
 const Command = require('./../../../lib/command/command');
+const ResponseHandler = require('./../../../lib/bot/responseHandler');
 const config = require('../../mock/config');
 
 chai.use(sinonChai);
 
-describe('Command', function () {
+describe('/command', function () {
   describe('Test allowed param', function () {
 
     var respondToCommand,
@@ -30,6 +31,7 @@ describe('Command', function () {
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
 
       slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBotForAllowedParam.bots[0]));
+      slackBot.responseHandler = new ResponseHandler(config.singleBotForAllowedParam.bots[0].botCommand, 'botname');
 
       slackMessage = {
         type: 'message',
@@ -125,6 +127,7 @@ describe('Command', function () {
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
 
       slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBotForAllowedParam.bots[0]));
+      slackBot.responseHandler = new ResponseHandler(config.singleBotForAllowedParam.bots[0].botCommand, 'botname');
 
       slackMessage = {
         type: 'message',
@@ -233,6 +236,7 @@ describe('Command', function () {
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
 
       slackBot = new Bot(Bots.prototype._normalizeCommand(config.commandTypeBots.bots[0]));
+      slackBot.responseHandler = new ResponseHandler(config.commandTypeBots.bots[0].botCommand, 'botname');
 
       slackMessage = {
         type: 'message',
