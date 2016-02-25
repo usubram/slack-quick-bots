@@ -1,6 +1,16 @@
-```
-A little help, try command(s)
+A little help, try command(s)\n
 {{#each command}}
-{{../prefix}} {{@key}}{{#if upperLimit}} {{lowerLimit}} to {{{upperLimit}}} {{/if}}{{#if allowedParam}} {{#each allowedParam}}{{.}}{{#if @last}} {{else}} | {{/if}}{{/each}}{{/if}}
-{{/each}}
-```
+> {{#if ../prefix}} <@{{../prefix}}>{{/if}} *{{@key}}* 
+{{#if inContext}}
+{{#if upperLimit}} {{lowerLimit}} to {{{upperLimit}}} {{/if}}
+{{#if allowedParam}}
+{{#each allowedParam}}
+{{.}}{{#if @last}} {{else}} | {{/if}}
+{{/each}}\n
+{{/if}}{{/if}}
+{{#if aLimit }}
+_`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{{aLimit}}}`_{{/if}}
+{{#if aParam}}
+_`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{aParam}}`_
+{{/if}}\n
+{{/each}}\n
