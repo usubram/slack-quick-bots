@@ -6,11 +6,15 @@ Slack is awesome!! and this is slack bot solution for enterprise.
 
 ## Why slack-quick-bots
 
-slack-quick-bots is another slack bot module to help create multiple bots with minimal code. Basically, with `slack-quick-bots` running in a single machine you could run multiple bots all doing different operation or pulling data from different sources. 
+STOP writing code for your bot, just pass your data to this module and rest is taken care.
+
+slack-quick-bots is another slack bot module to help create multiple bots with very minimal code.
+
+Basically, with `slack-quick-bots` running in a single machine you could run multiple bots all doing different operation or pulling data from different sources.
 
 Some of the salient features
 
-*  Pre-defined bot command behaviors with user preferred command name. Pre-defined command includes data, recursive and recursive task killer command.
+*  Pre-defined bot command behaviors with user preferred command name. Pre-defined command includes `data`, `recursive`, `alert` and recursive task killer command.
 *  Seamlessly use multiple bot inside same channel. Just do @botname {command} or {botname}
 *  Auto generated contextual help/error messages, so just setup the bot and forget it.
 *  Configurable command param for great control.
@@ -112,7 +116,11 @@ so no spaces, try to keep it short and nice for some to remember.
 
   `Data` - Any data, but mind the limit size of the websocket.
 
-  `Recursive` - Have this command send your data/alert recursive for a configurable time (minutes/hours)
+  `Recursive` - Have this command send your data recursive for a configurable time (minutes/hours)
+
+  `alert` - Have this command send your alert for a configurable time (minutes/hours) when the data has
+  a dip or a peak. This command basically takes a series of data and computes the variance between them and
+  alerts. Make sure to pass a even number of events.
 
   `Kill` - Command to kill the recursive command you setup. The `parentTask` tie them together.
 

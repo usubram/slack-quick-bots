@@ -9,6 +9,7 @@ const SlackBot = require('./../../lib/index');
 const connector = require('./../../lib/connector');
 const socket = require('./../../lib/bot/socket');
 const config = require('../mock/config');
+const mockSocket = require('../test-utils/mockSocket');
 
 chai.use(sinonChai);
 describe('single bot', function () {
@@ -16,7 +17,7 @@ describe('single bot', function () {
   beforeEach(function () {
     this.slackConnect = sinon.stub(connector, 'connect', function () {
       return new Promise(function (resolve) {
-        resolve({slackData: {url: 'dummy'}});
+        resolve({slackData: {url: 'ws://localhost:4080'}});
       });
     });
     this.webSocket = sinon.stub(socket, 'createSocket', function () {
