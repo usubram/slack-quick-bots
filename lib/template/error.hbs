@@ -10,7 +10,12 @@ A little help, try command(s)\n
 {{/if}}{{/if}}
 {{#if aLimit }}
 _`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{{aLimit}}}`_{{/if}}
+{{#if alertContext}}
+`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup 90` - here *90* is the threshold percentage. \n
+`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} sample` - to get an idea on the current threshold\n
+{{else}}
 {{#if aParam}}
 _`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{aParam}}`_
 {{/if}}\n
+{{/if}}
 {{/each}}\n
