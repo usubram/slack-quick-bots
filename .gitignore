@@ -9,3 +9,5 @@ node_modules
 */*/._*
 .settings
 log/.*
+/coverage
+/data/*.*
