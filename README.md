@@ -14,7 +14,7 @@ Basically, with `slack-quick-bots` running in a single machine you could run mul
 
 Some of the salient features
 
-*  Pre-defined bot command behaviors with user preferred command name. Pre-defined command includes `data`, `recursive`, `alert` and recursive task killer command.
+*  Pre-defined bot command behaviors with user preferred command name. Pre-defined command includes `data`, `recursive`, `alert` and predefined stop command.
 *  Seamlessly use multiple bot inside same channel. Just do @botname {command} or {botname}
 *  Auto generated contextual help/error messages, so just setup the bot and forget it.
 *  Configurable command param for great control.
@@ -50,13 +50,13 @@ Ping the bot with your custom command or add the bot to the channel/group to wat
 
 Pass few information in the `config` and is all you need for the bot. With the below config are running a bot with command,
 
-### DM to bot: 
+### DM to bot:
 
-* `traffic_stats 2` bot will respond back `Total of 3000 visits in the last 2 mins` [sample.hbs].
+* `traffic 2` bot will respond back `Total of 3000 visits in the last 2 mins` [sample.hbs].
 
-* `traffic_peak_stats 5` bot for every 5 mins will respond back with `3000 visits in the last 5 mins`.
+* `error 5` bot for every 5 mins will respond back with `10 errors in the last 5 mins`.
 
-* `stop traffic_peak_stats` will kill the recursive alerts.
+* `stop error` will stop the recursive alerts.
 
 ### Bot in channel/group:
 
@@ -66,7 +66,7 @@ If you add the bot to a channel, message had to appended with the bot name `{bot
 {
   bots: [{
   botCommand: {
-    'traffic_stats': {
+    'traffic': {
       commandType: 'DATA',
       allowedParam: [],
       lowerLimit: 1,
@@ -79,7 +79,7 @@ If you add the bot to a channel, message had to appended with the bot name `{bot
         callback({data: 'data fetched from service'});
       }
     },
-    'traffic_peak_stats': {
+    'error': {
       commandType: 'RECURSIVE',
       lowerLimit: 1,
       upperLimit: 5,
@@ -92,9 +92,18 @@ If you add the bot to a channel, message had to appended with the bot name `{bot
         callback({data: 'data fetched from service'});
       }
     },
-    'STOP': {
-      commandType: 'KILL',
-      parentTask: 'traffic_peak_stats'
+    'alert': {
+      commandType: 'ALERT',
+      lowerLimit: 1,
+      upperLimit: 5,
+      timeUnit: 'm',
+      defaultParamValue: 5,
+      template: function() {
+        return handlebars.compile(sampleTemplate);
+      },
+      data: function(command, param, callback) {
+        callback({data: 'data fetched from service'});
+      }
     }
   },
   botToken: ''
@@ -112,7 +121,7 @@ _( More coming soon)_
 `botCommand` - Object to hold all the fancy command that you would like. Object key is command,
 so no spaces, try to keep it short and nice for some to remember.
 
-`commandType` - Currently, only data, recursive, kill commands are supported.
+`commandType` - Currently, only data, recursive commands are supported.
 
   `Data` - Any data, but mind the limit size of the websocket.
 
@@ -121,8 +130,6 @@ so no spaces, try to keep it short and nice for some to remember.
   `alert` - Have this command send your alert for a configurable time (minutes/hours) when the data has
   a dip or a peak. This command basically takes a series of data and computes the variance between them and
   alerts. Make sure to pass a even number of events.
-
-  `Kill` - Command to kill the recursive command you setup. The `parentTask` tie them together.
 
 `timeUnit` - This attribute is for `Recursive` command. Currently, accepts, `h` for hours and `s` for minutes. Default - `m`.
 
