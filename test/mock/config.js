@@ -132,6 +132,27 @@ exports = module.exports = {
               'param': param
             });
           }
+        }
+      },
+      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
+    }]
+  },
+  BotsTestWithRecursiveTasks: {
+    bots: [{
+      botCommand: {
+        'PING-ME': {
+          commandType: 'DATA',
+          allowedParam: [1, 2],
+          defaultParamValue: 1,
+          template: function () {
+            return handlebars.compile(sampleTemplate);
+          },
+          data: function (command, param, callback) {
+            console.log(param);
+            callback({
+              'param': param
+            });
+          }
         },
         'auto data': {
           commandType: 'RECURSIVE',
