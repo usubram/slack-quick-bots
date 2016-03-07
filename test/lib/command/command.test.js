@@ -29,8 +29,7 @@ describe('/command', function () {
       isLimitValid = sinon.spy(Command.prototype, '_isLimitValid');
       respondToCommand = sinon.spy(Command.prototype, 'respondToCommand');
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
-
-      slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBotForAllowedParam.bots[0]));
+      slackBot = new Bots(config.singleBotForAllowedParam.bots).getBots()[0];
       slackBot.responseHandler = new ResponseHandler(config.singleBotForAllowedParam.bots[0].botCommand, 'botname');
 
       slackMessage = {
@@ -126,7 +125,7 @@ describe('/command', function () {
       respondToCommand = sinon.spy(Command.prototype, 'respondToCommand');
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
 
-      slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBotForAllowedParam.bots[0]));
+      slackBot = new Bots(config.singleBotForAllowedParam.bots).getBots()[0];
       slackBot.responseHandler = new ResponseHandler(config.singleBotForAllowedParam.bots[0].botCommand, 'botname');
 
       slackMessage = {
@@ -235,7 +234,7 @@ describe('/command', function () {
 
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
 
-      slackBot = new Bot(Bots.prototype._normalizeCommand(config.commandTypeBots.bots[0]));
+      slackBot = new Bots(config.commandTypeBots.bots).getBots()[0];
       slackBot.responseHandler = new ResponseHandler(config.commandTypeBots.bots[0].botCommand, 'botname');
 
       slackMessage = {

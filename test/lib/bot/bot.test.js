@@ -25,7 +25,8 @@ describe('/bot', function () {
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
       dispatchMessageEventSpy = sinon.spy();
       setupBotEventsStub = sinon.stub(Bot.prototype, '_setupBotEvents');
-      slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBot.bots[0]));
+      // slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBot.bots[0]));
+      slackBot = new Bots(config.singleBot.bots).getBots()[0];
       slackBot.botName = 'botname';
       slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
       slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
@@ -85,7 +86,7 @@ describe('/bot', function () {
 
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
       dispatchMessageEventSpy = sinon.spy();
-      slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBot.bots[0]));
+      slackBot = new Bots(config.singleBot.bots).getBots()[0];
       slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
       slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
       slackBot.botName = 'botname';
@@ -165,7 +166,7 @@ describe('/bot', function () {
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
       dispatchMessageEventSpy = sinon.spy();
       setupBotEventsStub = sinon.stub(Bot.prototype, '_setupBotEvents');
-      slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBot.bots[0]));
+      slackBot = new Bots(config.singleBot.bots).getBots()[0];
       slackBot.botName = 'botname';
       slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
       slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
@@ -224,7 +225,7 @@ describe('/bot', function () {
 
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
       dispatchMessageEventSpy = sinon.spy();
-      slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBot.bots[0]));
+      slackBot = new Bots(config.singleBot.bots).getBots()[0];
       slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
       slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
       slackBot.botName = 'botname';
@@ -294,7 +295,7 @@ describe('/bot', function () {
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
       dispatchMessageEventSpy = sinon.spy();
       setupBotEventsStub = sinon.stub(Bot.prototype, '_setupBotEvents');
-      slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBot.bots[0]));
+      slackBot = new Bots(config.singleBot.bots).getBots()[0];
       slackBot.botName = 'botname';
       slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
       slackBot.command.eventEmitter.on('command:setup:recursive', dispatchMessageEventSpy);
@@ -367,7 +368,7 @@ describe('/bot', function () {
 
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
       dispatchMessageEventSpy = sinon.spy();
-      slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBot.bots[0]));
+      slackBot = new Bots(config.singleBot.bots).getBots()[0];
       slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
       slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
       slackBot.botName = 'botname';

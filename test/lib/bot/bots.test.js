@@ -11,32 +11,66 @@ const config = require('../../mock/config');
 chai.use(sinonChai);
 
 describe('/bots', function () {
-  beforeEach(function () {
-    this.slackBots = new Bots(config.BotsTest.bots).getBots();
-  });
-
-  afterEach(function () {
-    this.slackBots = null;
-  });
-
   describe('Should instantiate bots correctly', function () {
-
-    it('Should contain bot token and command for bots', function () {
-      expect(this.slackBots).to.be.ok;
-      _.forEach(this.slackBots, function (botInfo) {
-        expect(botInfo.command).to.be.ok;
-      });
+    var slackBots;
+    beforeEach(function () {
+      slackBots = new Bots(config.BotsTest.bots).getBots();
     });
 
-    it('Should contain normalized bots', function () {
-      expect(this.slackBots).to.be.ok;
-      _.forEach(this.slackBots, function (botInfo) {
-        expect(botInfo.command.commands['pingMe']).to.be.ok;
-        expect(botInfo.command.commands['autoData']).to.be.ok;
-        expect(botInfo.command.commands['stop'].parentTask).to.equal('autoData');
-      });
+    afterEach(function () {
+      slackBots = null;
     });
 
+    describe('Should instantiate bots correctly', function () {
+
+      it('Should contain bot token and command for bots', function () {
+        expect(slackBots).to.be.ok;
+        _.forEach(slackBots, function (botInfo) {
+          expect(botInfo.command).to.be.ok;
+        });
+      });
+
+      it('Should contain normalized bots', function () {
+        expect(slackBots).to.be.ok;
+        _.forEach(slackBots, function (botInfo) {
+          expect(botInfo.command.commands['pingMe']).to.be.ok;
+          expect(botInfo.command.commands['stop']).to.be.undefined;
+        });
+      });
+
+    });
+  });
+
+  describe('Should instantiate bots correctly with recurive tasks', function () {
+    var slackBots;
+    beforeEach(function () {
+      slackBots = new Bots(config.BotsTestWithRecursiveTasks.bots).getBots();
+    });
+
+    afterEach(function () {
+      slackBots = null;
+    });
+
+    describe('Should instantiate bots correctly', function () {
+
+      it('Should contain bot token and command for bots', function () {
+        expect(slackBots).to.be.ok;
+        _.forEach(slackBots, function (botInfo) {
+          expect(botInfo.command).to.be.ok;
+        });
+      });
+
+      it('Should contain normalized bots', function () {
+        expect(slackBots).to.be.ok;
+        _.forEach(slackBots, function (botInfo) {
+          expect(botInfo.command.commands['pingMe']).to.be.ok;
+          expect(botInfo.command.commands['autoData']).to.be.ok;
+          expect(botInfo.command.commands['stop']).to.be.ok;
+          expect(botInfo.command.commands['stop'].allowedParam).to.deep.equal(['autoData']);
+        });
+      });
+
+    });
   });
 
 });
