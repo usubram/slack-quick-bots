@@ -51,21 +51,13 @@ var config = {
             [100, 400, 130, 300, 140, 145],
             [100, 90, 130, 300, 140, 145],
             [100, 120, 130, 1010, 150, 90]
-          ]
+          ];
           var rand = dataArr[Math.floor(Math.random() * dataArr.length)];
           callback(rand);
         }
-      },
-      'stopAlert': {
-        'commandType': 'KILL',
-        'parentTask': 'alert'
-      },
-      'stopError': {
-        'commandType': 'KILL',
-        'parentTask': 'error'
       }
     },
-    'blockDirectMessage': false,
+    'blockDirectMessage': true,
     'botToken': ''
   }, {
     'botCommand': {
@@ -96,10 +88,6 @@ var config = {
             'param': param
           });
         }
-      },
-      'stop': {
-        'commandType': 'KILL',
-        'parentTask': 'start'
       }
     },
     'botToken': ''
