@@ -57,8 +57,9 @@ var config = {
         }
       }
     },
-    'blockDirectMessage': true,
-    'botToken': ''
+    'blockDirectMessage': false,
+    'exclusiveChannel': ['C0HJZTD36', 'C0R4LF4M8'],
+    'botToken': 'xoxb-16681282704-l4UkOfmVDe9SOyYbYhtcuPXC'
   }, {
     'botCommand': {
       'traffic': {
@@ -90,7 +91,7 @@ var config = {
         }
       }
     },
-    'botToken': ''
+    'botToken': 'xoxb-16680277201-Cak8kTqwJle4ZjZHGMPEG8fb'
   }],
   logger: console  // you could pass a winston logger.
 };
