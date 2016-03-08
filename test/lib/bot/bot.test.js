@@ -6,6 +6,7 @@ const chai = require('chai'),
 const sinonChai = require('sinon-chai');
 const _ = require('lodash');
 const Bots = require('./../../../lib/bot/bots');
+const storage = require('./../../../lib/storage/storage');
 const Bot = require('./../../../lib/bot/bot');
 const ResponseHandler = require('./../../../lib/bot/responseHandler');
 const config = require('../../mock/config');
@@ -25,7 +26,6 @@ describe('/bot', function () {
       dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
       dispatchMessageEventSpy = sinon.spy();
       setupBotEventsStub = sinon.stub(Bot.prototype, '_setupBotEvents');
-      // slackBot = new Bot(Bots.prototype._normalizeCommand(config.singleBot.bots[0]));
       slackBot = new Bots(config.singleBot.bots).getBots()[0];
       slackBot.botName = 'botname';
       slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
@@ -424,6 +424,28 @@ describe('/bot', function () {
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
       expect(dispatchMessage).to.not.have.been.called;
+    });
+  });
+
+  describe('validate if read event is called on bootstrap', function () {
+    var slackBot,
+      getEventsSpy;
+
+    beforeEach(function () {
+      getEventsSpy = sinon.spy(storage, 'getEvents');
+      slackBot = new Bots(config.singleBot.bots).getBots()[0];
+    });
+
+    afterEach(function () {
+      slackBot = undefined;
+      getEventsSpy.restore();
+    });
+
+    it('Should ', function () {
+      slackBot.eventEmitter.emit('attachSocket', { ws: { on: _.noop }, slackData:
+        { url: 'hello', self: { name: 'botName', id: 'botName' } }
+      });
+      expect(getEventsSpy).to.have.been.calledOnce;
     });
   });
 });
