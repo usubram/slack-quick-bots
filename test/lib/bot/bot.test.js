@@ -52,7 +52,7 @@ describe('/bot', function () {
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
       expect(dispatchMessage).to.have.been.calledWith('D0GL06JD7', '', 'typing');
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ message: { channels: ["D0GL06JD7"], data: "Hello 1" } });
+      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["D0GL06JD7"], message: { data: "Hello 1" } });
       expect(dispatchMessage).to.have.been.calledTwice;
     });
 
@@ -112,7 +112,7 @@ describe('/bot', function () {
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
       expect(dispatchMessage).to.have.been.calledWith('C0GL06JD7', '', 'typing');
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ message: { channels: ["C0GL06JD7"], data: "Hello 1" } });
+      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["C0GL06JD7"], message: { data: "Hello 1" } });
       expect(dispatchMessage).to.have.been.calledTwice;
     });
 
@@ -124,7 +124,7 @@ describe('/bot', function () {
 
       expect(dispatchMessage).to.have.been.calledTwice;
       expect(dispatchMessage).to.have.been.calledWith('C0GL06JD7', '', 'typing');
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ message: { channels: ["C0GL06JD7"], data: "Hello 1" } });
+      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["C0GL06JD7"], message: { data: "Hello 1" } });
     });
 
     it('Should not call _dispatchMessage', function () {
@@ -192,7 +192,7 @@ describe('/bot', function () {
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
       expect(dispatchMessage).to.have.been.calledWith('D0GL06JD7', '', 'typing');
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ message: { channels: ["D0GL06JD7"], data: "Hello 1" } });
+      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["D0GL06JD7"], message: { data: "Hello 1" } });
       expect(dispatchMessage).to.have.been.calledTwice;
     });
 
@@ -251,7 +251,7 @@ describe('/bot', function () {
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
       expect(dispatchMessage).to.have.been.calledWith('C0GL06JD7', '', 'typing');
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ message: { channels: ["C0GL06JD7"], data: "Hello 1" } });
+      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["C0GL06JD7"], message: { data: "Hello 1" } });
       expect(dispatchMessage).to.have.been.calledTwice;
     });
 
@@ -263,7 +263,7 @@ describe('/bot', function () {
 
       expect(dispatchMessage).to.have.been.calledTwice;
       expect(dispatchMessage).to.have.been.calledWith('C0GL06JD7', '', 'typing');
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ message: { channels: ["C0GL06JD7"], data: "Hello 1" } });
+      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["C0GL06JD7"], message: { data: "Hello 1" } });
     });
 
     it('Should not call _dispatchMessage', function () {
@@ -321,8 +321,11 @@ describe('/bot', function () {
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
       expect(dispatchMessage).to.have.been.calledWith('D0GL06JD7', '', 'typing');
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ message:
+      expect(dispatchMessageEventSpy).to.have.been.calledWith(
         {
+          message: {
+            recursive_success: true
+          },
           channels: ["D0GL06JD7"],
           parsedMessage: {
             channel: "D0GL06JD7",
@@ -333,9 +336,8 @@ describe('/bot', function () {
             type: "message",
             user: "U0GG92T45"
           }
-        },
-        recursive_success: true
-      });
+        }
+      );
       expect(dispatchMessage).to.have.been.calledThrice;
     });
 
@@ -394,7 +396,7 @@ describe('/bot', function () {
       Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
 
       expect(dispatchMessage).to.have.been.calledWith('C0GL06JD7', '', 'typing');
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ message: { channels: ["C0GL06JD7"], data: "Hello 1" } });
+      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["C0GL06JD7"], message: { data: "Hello 1" } });
       expect(dispatchMessage).to.have.been.calledTwice;
     });
 
@@ -406,7 +408,7 @@ describe('/bot', function () {
 
       expect(dispatchMessage).to.have.been.calledTwice;
       expect(dispatchMessage).to.have.been.calledWith('C0GL06JD7', '', 'typing');
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ message: { channels: ["C0GL06JD7"], data: "Hello 1" } });
+      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["C0GL06JD7"], message: { data: "Hello 1" } });
     });
 
     it('Should not call _dispatchMessage', function () {
