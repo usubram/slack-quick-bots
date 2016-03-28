@@ -104,7 +104,7 @@ describe('/command', function () {
       expect(isLimitValid).to.have.been.calledOnce;
       expect(isLimitValid.returnValues).to.have.length(1);
       expect(isLimitValid.returnValues[0]).to.equal(true);
-      expect(respondToCommand).to.not.have.been.calledOnce;
+      expect(respondToCommand).to.not.have.been.called;
     });
 
   });
@@ -215,6 +215,77 @@ describe('/command', function () {
 
   });
 
+  describe('_isCommandAllowed', function () {
+
+    var respondToCommand,
+      isCommandAllowedSpy,
+      handleErrorMessageSpy,
+      dispatchMessage,
+      slackMessage,
+      slackBot;
+
+    beforeEach(function () {
+
+      isCommandAllowedSpy = sinon.spy(Command.prototype, '_isCommandAllowed');
+      respondToCommand = sinon.spy(Command.prototype, 'respondToCommand');
+      handleErrorMessageSpy = sinon.spy(Bot.prototype, 'handleErrorMessage');
+      dispatchMessage = sinon.stub(Bot.prototype, '_dispatchMessage');
+
+      slackBot = new Bots(config.isCommandAllowed.bots).getBots()[0];
+      slackBot.command.slackData = {
+        users: [
+        { id: 'U0GG92T45', name: 'user1' },
+        { id: 'U0GG92T46', name: 'user2' }
+        ]
+      };
+      slackBot.responseHandler = new ResponseHandler(config.isCommandAllowed.bots[0].botCommand, 'botname');
+
+      slackMessage = {
+        type: 'message',
+        channel: 'D0GL06JD7',
+        user: 'U0GG92T45',
+        text: 'ping 1',
+        ts: '1453007224.000007',
+        team: 'T0GGDKVDE'
+      };
+    });
+
+    afterEach(function () {
+      isCommandAllowedSpy.restore();
+      handleErrorMessageSpy.restore();
+      respondToCommand.restore();
+      dispatchMessage.restore();
+      slackBot = {};
+      slackMessage = {};
+    });
+
+    it('Should block user and respond error', function () {
+      expect(slackBot).to.be.ok;
+      Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
+      expect(respondToCommand).to.have.been.called;
+      expect(handleErrorMessageSpy).to.not.have.been.called;
+      expect(dispatchMessage).to.have.been.calledTwice;
+    });
+
+    it('Should respond to messages for allowed user', function () {
+      slackMessage.user = 'U0GG92T46';
+      expect(slackBot).to.be.ok;
+      Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
+      expect(respondToCommand).to.not.have.been.called;
+      expect(handleErrorMessageSpy.args[0][1].restricted_user).to.be.ok;
+      expect(dispatchMessage).to.not.have.been.calledTwice;
+    });
+
+    it('Should not error out if the user is not found', function () {
+      slackMessage.user = 'U0GG92T47';
+      expect(slackBot).to.be.ok;
+      Bot.prototype._handleMessage.apply(slackBot, [slackMessage]);
+      expect(respondToCommand).to.not.have.been.called;
+      expect(handleErrorMessageSpy.args[0][1].restricted_user).to.be.ok;
+      expect(dispatchMessage).to.not.have.been.calledTwice;
+    });
+
+  });
   describe('Test command types', function () {
 
     var respondToCommand,

@@ -279,5 +279,26 @@ exports = module.exports = {
       },
       botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
     }]
+  },
+  isCommandAllowed: {
+    bots: [{
+      botCommand: {
+        PING: {
+          commandType: 'DATA',
+          allowedParam: [1, 2],
+          defaultParamValue: 1,
+          template: function () {
+            return handlebars.compile(sampleTemplate);
+          },
+          data: function (command, param, callback) {
+            callback({
+              'param': param
+            });
+          }
+        }
+      },
+      allowedUsers: ['U0GG92T45'],
+      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
+    }]
   }
 };

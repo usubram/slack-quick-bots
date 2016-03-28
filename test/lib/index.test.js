@@ -37,7 +37,6 @@ describe('single bot', function () {
   describe('Should instantiate slackbots correctly', function () {
 
     it('Should contain all the basic config', function () {
-      console.log('this.testBots', this.testBots);
       expect(this.testBots.config.slack).to.be.ok;
       expect(this.testBots.config.bots).to.be.ok;
     });
