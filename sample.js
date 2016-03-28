@@ -19,7 +19,8 @@ var config = {
           callback({
             'param': param
           });
-        }
+        },
+        'allowedUsers': ['john']
       },
       'error': {
         'commandType': 'RECURSIVE',
@@ -38,9 +39,6 @@ var config = {
       'alert': {
         'commandType': 'ALERT',
         'timeInterval': 1, // time due which call to the back is made.
-        'template': function() {
-          return handlebars.compile(sampleTemplate);
-        },
         'data': function(command, param, callback) {
           var dataArr = [ // Sample data
             [100, 120, 130, 110, 123, 90],
@@ -58,8 +56,7 @@ var config = {
       }
     },
     'blockDirectMessage': false,
-    'exclusiveChannel': ['C0HJZTD36', 'C0R4LF4M8'],
-    'botToken': 'xoxb-16681282704-l4UkOfmVDe9SOyYbYhtcuPXC'
+    'botToken': ''
   }, {
     'botCommand': {
       'traffic': {
@@ -91,7 +88,9 @@ var config = {
         }
       }
     },
-    'botToken': 'xoxb-16680277201-Cak8kTqwJle4ZjZHGMPEG8fb'
+    'botToken': '',
+    'allowedUsers': ['john'],
+    'blockDirectMessage': true
   }],
   logger: console  // you could pass a winston logger.
 };
