@@ -1,3 +1,9 @@
+{{#if restricted_user}}
+I'm configured to only respond to\n
+{{#each users}}
+<@{{this}}>\n
+{{/each}}
+{{else}}
 A little help, try command(s)\n
 {{#each command}}
 > {{#if ../prefix}} <@{{../prefix}}>{{/if}} *{{@key}}* 
@@ -19,3 +25,4 @@ _`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{aParam}}`_
 {{/if}}\n
 {{/if}}
 {{/each}}\n
+{{/if}}
