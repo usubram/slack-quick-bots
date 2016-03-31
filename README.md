@@ -1,4 +1,4 @@
-# slack-quick-bots 
+# [slack-quick-bots](http://www.slackbot.rocks)
 [![npm version][npm-badge]][npm-url]
 [![Build Status][travis-badge]][travis-url]
 
@@ -19,6 +19,7 @@ Some of the salient features
 *  Auto generated contextual help/error messages, so just setup the bot and forget it.
 *  Configurable command param for great control.
 *  Block direct message to a bot and hence bot could only respond in a public channel, now you know who is using the bot (sounds simple but a killer feature).
+*  Access control a bot or specific bot command based on slack user id.
 *  Log support. Simple console or winston like, your choice.
 *  exciting features to follow soon.
 
@@ -50,104 +51,8 @@ Ping the bot with your custom command or add the bot to the channel/group to wat
 
 Pass few information in the `config` and is all you need for the bot. With the below config are running a bot with command,
 
-### DM to bot:
-
-* `traffic 2` bot will respond back `Total of 3000 visits in the last 2 mins` [sample.hbs].
-
-* `error 5` bot for every 5 mins will respond back with `10 errors in the last 5 mins`.
-
-* `stop error` will stop the recursive alerts.
-
-### Bot in channel/group:
-
-If you add the bot to a channel, message had to appended with the bot name `{botname} ping 2`.
-
-```javascript
-{
-  bots: [{
-  botCommand: {
-    'traffic': {
-      commandType: 'DATA',
-      allowedParam: [],
-      lowerLimit: 1,
-      upperLimit: 5,
-      defaultParamValue: 5,
-      template: function() {
-        return handlebars.compile({sampleTemplate});
-      },
-      data: function(command, param, callback) {
-        callback({data: 'data fetched from service'});
-      }
-    },
-    'error': {
-      commandType: 'RECURSIVE',
-      lowerLimit: 1,
-      upperLimit: 5,
-      timeUnit: 'm',
-      defaultParamValue: 5,
-      template: function() {
-        return handlebars.compile(sampleTemplate);
-      },
-      data: function(command, param, callback) {
-        callback({data: 'data fetched from service'});
-      }
-    },
-    'alert': {
-      commandType: 'ALERT',
-      lowerLimit: 1,
-      upperLimit: 5,
-      timeUnit: 'm',
-      defaultParamValue: 5,
-      template: function() {
-        return handlebars.compile(sampleTemplate);
-      },
-      data: function(command, param, callback) {
-        callback({data: 'data fetched from service'});
-      }
-    }
-  },
-  botToken: ''
-  }]
-}
-```
-
 ## Documentation
-_( More coming soon)_
-
-`bots` - Array to hold bots information.
-
-`botToken` - Holds the slack api bot token.
-
-`botCommand` - Object to hold all the fancy command that you would like. Object key is command,
-so no spaces, try to keep it short and nice for some to remember.
-
-`commandType` - Currently, only data, recursive commands are supported.
-
-  `Data` - Any data, but mind the limit size of the websocket.
-
-  `Recursive` - Have this command send your data recursive for a configurable time (minutes/hours)
-
-  `alert` - Have this command send your alert for a configurable time (minutes/hours) when the data has
-  a dip or a peak. This command basically takes a series of data and computes the variance between them and
-  alerts. Make sure to pass a even number of events.
-
-`timeUnit` - This attribute is for `Recursive` command. Currently, accepts, `h` for hours and `s` for minutes. Default - `m`.
-
-`template` - This take the *compiled* handlebars template for the data that you would be sending.
-
-`data` - This takes a callback with which the data will be given to the bot.
-
-`blockDirectMessage` - Block a bot from responding to a DM and hence only allowing it to respond in a public channel.
-
-
-## Examples
-_(Coming soon)_
-
-## Contributing
-_(Coming soon)_
-
-## Release History
-_(Nothing yet)_
+[www.slackbot.rocks](http://www.slackbot.rocks)
 
 ## License
 Copyright (c) 2016 Umashankar Subramanian  
