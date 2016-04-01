@@ -1,8 +1,8 @@
-# [slack-quick-bots](http://www.slackbot.rocks)
+# [slack-quick-bots](http://www.slack-quick-bots.io)
 [![npm version][npm-badge]][npm-url]
 [![Build Status][travis-badge]][travis-url]
 
-Slack is awesome!! and this is slack bot solution for enterprise.
+Slack is awesome!! and this is slack bot solution for enterprise. For Latest docs visit [www.slack-quick-bots.io](http://www.slack-quick-bots.io)
 
 ## Why slack-quick-bots
 
@@ -52,7 +52,7 @@ Ping the bot with your custom command or add the bot to the channel/group to wat
 Pass few information in the `config` and is all you need for the bot. With the below config are running a bot with command,
 
 ## Documentation
-[www.slackbot.rocks](http://www.slackbot.rocks)
+[www.slack-quick-bots.io](http://www.slack-quick-bots.io)
 
 ## License
 Copyright (c) 2016 Umashankar Subramanian  
