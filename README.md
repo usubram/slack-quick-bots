@@ -38,7 +38,7 @@ Do `npm install slack-quick-bots` in your app. Set up the below `config` by defi
 
 ## Step 3: 
 
-To get started immediately, try [sample.js](https://github.com/usubram/slack-quick-bots/blob/master/sample.js)
+To get started immediately, try the [reference app](https://github.com/usubram/slack-quick-bots-reference.git) or look [sample.js](https://github.com/usubram/slack-quick-bots/blob/master/sample.js)
 
 ```javascript
 var SlackBot = require('slack-quick-bots');
@@ -51,6 +51,10 @@ mybots.start(); // 'awesome'
 Ping the bot with your custom command or add the bot to the channel/group to watch the fun.
 
 Pass few information in the `config` and is all you need for the bot. With the below config are running a bot with command,
+
+## Reference app
+
+[slack-quick-bots-reference](https://github.com/usubram/slack-quick-bots-reference.git)
 
 ## Documentation
 [www.slack-quick-bots.io](http://www.slack-quick-bots.io)
