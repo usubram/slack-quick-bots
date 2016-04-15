@@ -1,3 +1,11 @@
+/*
+ * slack-bot
+ * https://github.com/usubram/slack-bot
+ *
+ * Copyright (c) 2016 Umashankar Subramanian
+ * Licensed under the MIT license.
+ */
+
 'use strict';
 
 const SlackBot = require('./lib/index');
