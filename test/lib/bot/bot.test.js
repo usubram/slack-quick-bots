@@ -30,6 +30,10 @@ describe('/bot', function () {
       slackBot.botName = 'botname';
       slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
       slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
+      slackBot.command.slackData = {
+        users: [{ id: 'U0GG92T45', name: 'user1' },
+        { id: 'U0GG92T46', name: 'user2' }]
+      };
       slackMessage = {
         type: 'message',
         channel: 'D0GL06JD7',
@@ -90,6 +94,10 @@ describe('/bot', function () {
       slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
       slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
       slackBot.botName = 'botname';
+      slackBot.command.slackData = {
+        users: [{ id: 'U0GG92T45', name: 'user1' },
+        { id: 'U0GG92T46', name: 'user2' }]
+      };
       slackMessage = {
         type: 'message',
         channel: 'C0GL06JD7',
@@ -170,6 +178,10 @@ describe('/bot', function () {
       slackBot.botName = 'botname';
       slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
       slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
+      slackBot.command.slackData = {
+        users: [{ id: 'U0GG92T45', name: 'user1' },
+        { id: 'U0GG92T46', name: 'user2' }]
+      };
       slackMessage = {
         type: 'message',
         channel: 'D0GL06JD7',
@@ -229,6 +241,10 @@ describe('/bot', function () {
       slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
       slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
       slackBot.botName = 'botname';
+      slackBot.command.slackData = {
+        users: [{ id: 'U0GG92T45', name: 'user1' },
+        { id: 'U0GG92T46', name: 'user2' }]
+      };
       slackMessage = {
         type: 'message',
         channel: 'C0GL06JD7',
@@ -299,6 +315,10 @@ describe('/bot', function () {
       slackBot.botName = 'botname';
       slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
       slackBot.command.eventEmitter.on('command:setup:recursive', dispatchMessageEventSpy);
+      slackBot.command.slackData = {
+        users: [{ id: 'U0GG92T45', name: 'user1' },
+        { id: 'U0GG92T46', name: 'user2' }]
+      };
       slackMessage = {
         type: 'message',
         channel: 'D0GL06JD7',
@@ -374,6 +394,10 @@ describe('/bot', function () {
       slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
       slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
       slackBot.botName = 'botname';
+      slackBot.command.slackData = {
+        users: [{ id: 'U0GG92T45', name: 'user1' },
+        { id: 'U0GG92T46', name: 'user2' }]
+      };
       slackMessage = {
         type: 'message',
         channel: 'C0GL06JD7',
