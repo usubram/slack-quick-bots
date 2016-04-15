@@ -206,6 +206,21 @@ exports = module.exports = {
             });
           }
         },
+        hybrid: {
+          commandType: 'DATA',
+          allowedParam: ['test', 'validate'],
+          lowerLimit: 1,
+          upperLimit: 10,
+          defaultParamValue: 1,
+          template: function () {
+            return handlebars.compile(sampleTemplate);
+          },
+          data: function (command, param, callback) {
+            callback({
+              'param': param
+            });
+          }
+        },
         AUTO: {
           commandType: 'RECURSIVE',
           lowerLimit: 0,
@@ -272,9 +287,16 @@ exports = module.exports = {
             });
           }
         },
-        STOP: {
-          commandType: 'KILL',
-          parentTask: 'AUTO'
+        alert: {
+          commandType: 'ALERT',
+          template: function () {
+            return handlebars.compile(sampleTemplate);
+          },
+          data: function (command, param, callback) {
+            callback({
+              'param': param
+            });
+          }
         }
       },
       botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
