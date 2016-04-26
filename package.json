@@ -42,6 +42,7 @@
     "form-data": "^0.2.0",
     "handlebars": "^4.0.5",
     "lodash": "^4.11.0",
+    "plotter": "https://github.com/usubram/nodejs-plotter/tarball/master",
     "uuid": "^2.0.2",
     "ws": "^1.0.1"
   },
