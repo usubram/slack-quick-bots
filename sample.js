@@ -19,15 +19,16 @@ var config = {
       log: {
         commandType: 'DATA',
         allowedUsers: ['john'],
-        allowedParam: ['GH', 2],
-        defaultParamValue: 'GH',
+        allowedParam: [1, 2],
+        defaultParamValue: 1,
         template: function() {
           return handlebars.compile(sampleTemplate);
         },
         data: function(input, options, callback) {
-          console.log(input.command);
-          console.log(input.params);
-          console.log(JSON.stringify(options));
+          // input.command - for command name.
+          // input.params - for params in array.
+          // options.user.email - email in slack.
+          // options.hookUrl - custom webhook url.
           callback({
             param: input.params
           });
@@ -70,7 +71,7 @@ var config = {
         },
         data: function(input, options, callback) {
           callback({
-            param: input.param
+            param: input.params
           });
         }
       },
@@ -95,7 +96,7 @@ var config = {
     },
     blockDirectMessage: false,
     webHook: true,
-    botToken: 'xoxb-16681282704-QVryOqEwRJbpLW52AnxGosEx'
+    botToken: ''
   }, {
     botCommand: {
       traffic: {
@@ -108,7 +109,7 @@ var config = {
         },
         data: function(input, options, callback) {
           callback({
-            param: input.param
+            param: input.params
           });
         }
       },
@@ -122,12 +123,12 @@ var config = {
         },
         data: function(input, options, callback) {
           callback({
-            param: input.param
+            param: input.params
           });
         }
       }
     },
-    botToken: 'xoxb-16680277201-zbPGVBj6H4B0VmvgQFleN13j',
+    botToken: '',
     webHook: true
     allowedUsers: ['john'],
     blockDirectMessage: true
