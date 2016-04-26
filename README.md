@@ -15,6 +15,7 @@ Basically, with `slack-quick-bots` running in a single machine you could run mul
 Some of the salient features
 
 *  Pre-defined bot command behaviors with user preferred command name. Pre-defined command includes `data`, `recursive`, `alert` and predefined stop command.
+*  Now `slack-quick-bots` supports custom webhooks. Using dynamic runtime generated webhooks, push messages to channel as the bot.
 *  Ability to generate cool graphs for your metrics in realtime. Has a dependency on [gnuplot](http://www.gnuplot.info) and [nodejs-plotter](https://github.com/usubram/nodejs-plotter).
 *  Seamlessly use multiple bot inside same channel. Just do @botname {command} or {botname}.
 *  Auto generated contextual help/error messages, so just setup the bot and forget it.
