@@ -1,6 +1,6 @@
 const handlebars = require('handlebars');
 const fs = require('fs');
-const sampleTemplate = fs.readFileSync('./sample.hbs', 'utf8');
+const sampleTemplate = fs.readFileSync('./test/mock/template/sampleTemplate.hbs', 'utf8');
 
 exports = module.exports = {
   singleBot: {
@@ -13,9 +13,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -27,9 +27,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -51,10 +51,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
-            console.log(param);
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -66,9 +65,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -87,10 +86,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
-            console.log(param);
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -102,9 +100,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -126,10 +124,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
-            console.log(param);
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         }
@@ -147,10 +144,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
-            console.log(param);
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -162,9 +158,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -186,9 +182,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -200,9 +196,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -215,9 +211,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -229,9 +225,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -253,9 +249,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -267,9 +263,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -281,9 +277,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         },
@@ -292,9 +288,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         }
@@ -312,9 +308,9 @@ exports = module.exports = {
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
-          data: function (command, param, callback) {
+          data: function (input, options, callback) {
             callback({
-              'param': param
+              'param': input.params
             });
           }
         }
