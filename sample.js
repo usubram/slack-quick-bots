@@ -14,25 +14,28 @@ const fs = require('fs');
 const sampleTemplate = fs.readFileSync('./sample.hbs', 'utf8');
 
 var config = {
-  'bots': [{
-    'botCommand': {
-      'log': {
-        'commandType': 'DATA',
-        'allowedUsers': ['john'],
-        'allowedParam': [1, 2],
-        'defaultParamValue': 1,
-        'template': function() {
+  bots: [{
+    botCommand: {
+      log: {
+        commandType: 'DATA',
+        allowedUsers: ['john'],
+        allowedParam: ['GH', 2],
+        defaultParamValue: 'GH',
+        template: function() {
           return handlebars.compile(sampleTemplate);
         },
-        'data': function(command, param, callback) {
+        data: function(input, options, callback) {
+          console.log(input.command);
+          console.log(input.params);
+          console.log(JSON.stringify(options));
           callback({
-            'param': param
+            param: input.params
           });
         }
       },
-      'trend': {
-        'commandType': 'DATA',
-        'responseType': {
+      trend: {
+        commandType: 'DATA',
+        responseType: {
           type: 'svg',
           ylabel: 'errors',
           timeUnit: 'm',
@@ -40,9 +43,9 @@ var config = {
           logscale: false,
           style: 'lines'
         },
-        'allowedParam': [1, 2],
-        'defaultParamValue': 1,
-        'data': function(command, param, callback) {
+        allowedParam: [1, 2],
+        defaultParamValue: 1,
+        data: function(input, options, callback) {
           var dataArr = [ // Sample data
             [100, 120, 130, 110, 123, 90],
             [1, 120, 130, 110, 90, 85],
@@ -57,24 +60,24 @@ var config = {
           callback(rand);
         }
       },
-      'error': {
-        'commandType': 'RECURSIVE',
-        'lowerLimit': 0,
-        'upperLimit': 100,
-        'defaultParamValue': 1,
-        'template': function() {
+      error: {
+        commandType: 'RECURSIVE',
+        lowerLimit: 0,
+        upperLimit: 100,
+        defaultParamValue: 1,
+        template: function() {
           return handlebars.compile(sampleTemplate);
         },
-        'data': function(command, param, callback) {
+        data: function(input, options, callback) {
           callback({
-            'param': param
+            param: input.param
           });
         }
       },
-      'alert': {
-        'commandType': 'ALERT',
-        'timeInterval': 1, // time due which call to the back is made.
-        'data': function(command, param, callback) {
+      alert: {
+        commandType: 'ALERT',
+        timeInterval: 1, // time due which call to the back is made.
+        data: function(input, options, callback) {
           var dataArr = [ // Sample data
             [100, 120, 130, 110, 123, 90],
             [1, 120, 130, 110, 90, 85],
@@ -90,44 +93,50 @@ var config = {
         }
       }
     },
-    'blockDirectMessage': false,
-    'botToken': ''
+    blockDirectMessage: false,
+    webHook: true,
+    botToken: 'xoxb-16681282704-QVryOqEwRJbpLW52AnxGosEx'
   }, {
-    'botCommand': {
-      'traffic': {
-        'commandType': 'DATA',
-        'allowedParam': ['what', 'there'],
-        'timeUnit': 'm',
-        'defaultParamValue': 'what',
-        'template': function() {
+    botCommand: {
+      traffic: {
+        commandType: 'DATA',
+        allowedParam: ['what', 'there'],
+        timeUnit: 'm',
+        defaultParamValue: 'what',
+        template: function() {
           return handlebars.compile(sampleTemplate);
         },
-        'data': function(command, param, callback) {
+        data: function(input, options, callback) {
           callback({
-            'param': param
+            param: input.param
           });
         }
       },
-      'start': {
-        'commandType': 'RECURSIVE',
-        'lowerLimit': 0,
-        'upperLimit': 100,
-        'defaultParamValue': 1,
-        'template': function() {
+      start: {
+        commandType: 'RECURSIVE',
+        lowerLimit: 0,
+        upperLimit: 100,
+        defaultParamValue: 1,
+        template: function() {
           return handlebars.compile(sampleTemplate);
         },
-        'data': function(command, param, callback) {
+        data: function(input, options, callback) {
           callback({
-            'param': param
+            param: input.param
           });
         }
       }
     },
-    'botToken': '',
-    'allowedUsers': ['john'],
-    'blockDirectMessage': true
+    botToken: 'xoxb-16680277201-zbPGVBj6H4B0VmvgQFleN13j',
+    webHook: true
+    allowedUsers: ['john'],
+    blockDirectMessage: true
   }],
-  logger: console  // you could pass a winston logger.
+  logger: console, // you could pass a winston logger.
+  server: {
+    port: 8080,
+    webHook: true
+  }
 };
 
 var slackBot = new SlackBot(config);
