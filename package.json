@@ -41,8 +41,8 @@
   "dependencies": {
     "form-data": "^0.2.0",
     "handlebars": "^4.0.5",
-    "lodash": "^4.5.1",
-    "plotter": "https://github.com/usubram/nodejs-plotter/tarball/master",
+    "lodash": "^4.11.0",
+    "uuid": "^2.0.2",
     "ws": "^1.0.1"
   },
   "devDependencies": {
