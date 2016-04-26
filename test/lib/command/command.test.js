@@ -14,7 +14,7 @@ const config = require('../../mock/config');
 
 chai.use(sinonChai);
 
-describe.only('/command', function () {
+describe('/command', function () {
 
   describe('validateCommand', function () {
 
@@ -68,7 +68,6 @@ describe.only('/command', function () {
       it('Should fail command vaidation with value 3', function () {
         slackMessage.text = 'ping 3';
         botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          console.log('err', err);
           expect(err.param).to.be.eq(true);
         });
       });
