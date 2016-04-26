@@ -97,7 +97,8 @@ var config = {
     blockDirectMessage: false,
     webHook: true,
     botToken: ''
-  }, {
+  },
+  {
     botCommand: {
       traffic: {
         commandType: 'DATA',
@@ -129,7 +130,7 @@ var config = {
       }
     },
     botToken: '',
-    webHook: true
+    webHook: true,
     allowedUsers: ['john'],
     blockDirectMessage: true
   }],
