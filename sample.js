@@ -18,9 +18,10 @@ var config = {
     botCommand: {
       log: {
         commandType: 'DATA',
-        allowedUsers: ['john'],
+        //allowedUsers: ['john'],
         allowedParam: [1, 2],
         defaultParamValue: 1,
+        staticHook: true,
         template: function() {
           return handlebars.compile(sampleTemplate);
         },
@@ -29,6 +30,8 @@ var config = {
           // input.params - for params in array.
           // options.user.email - email in slack.
           // options.hookUrl - custom webhook url.
+          console.log(options.hookUrl);
+          console.log(options.channel);
           callback({
             param: input.params
           });
@@ -37,7 +40,7 @@ var config = {
       trend: {
         commandType: 'DATA',
         responseType: {
-          type: 'svg',
+          type: 'png',
           ylabel: 'errors',
           timeUnit: 'm',
           title: 'Log data',
@@ -96,7 +99,7 @@ var config = {
     },
     blockDirectMessage: false,
     webHook: true,
-    botToken: ''
+    botToken: 'xoxb-16680277201-zbPGVBj6H4B0VmvgQFleN13j'
   },
   {
     botCommand: {
@@ -129,14 +132,14 @@ var config = {
         }
       }
     },
-    botToken: '',
+    botToken: 'xoxb-16681282704-QVryOqEwRJbpLW52AnxGosEx',
     webHook: true,
-    allowedUsers: ['john'],
-    blockDirectMessage: true
+    // allowedUsers: ['john'],
+    // blockDirectMessage: true
   }],
   logger: console, // you could pass a winston logger.
   server: {
-    port: 8080,
+    port: 9090,
     webHook: true
   }
 };

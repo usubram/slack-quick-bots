@@ -1,6 +1,4 @@
-Hello {{param}}
-
-{{#if hook}}
-  This is the data posted from custom hook.
-  {{hook}}
+{{#if properties}}
+   hook is there.
+  {{properties.tenantName}} changed to {{hook.properties.status}} from {{hook.properties.prevStatus}}
 {{/if}}
