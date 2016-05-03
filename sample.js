@@ -18,10 +18,8 @@ var config = {
     botCommand: {
       log: {
         commandType: 'DATA',
-        //allowedUsers: ['john'],
-        allowedParam: [1, 2],
-        defaultParamValue: 1,
-        staticHook: true,
+        allowedParam: ['*'], // allow any argument to a command
+        helpText: ':small_orange_diamond: this is log command \\n',
         template: function() {
           return handlebars.compile(sampleTemplate);
         },
@@ -30,8 +28,6 @@ var config = {
           // input.params - for params in array.
           // options.user.email - email in slack.
           // options.hookUrl - custom webhook url.
-          console.log(options.hookUrl);
-          console.log(options.channel);
           callback({
             param: input.params
           });
@@ -49,6 +45,7 @@ var config = {
         },
         allowedParam: [1, 2],
         defaultParamValue: 1,
+        helpText: ':small_red_triangle_down: this is trend command \\n',
         data: function(input, options, callback) {
           var dataArr = [ // Sample data
             [100, 120, 130, 110, 123, 90],
@@ -69,6 +66,7 @@ var config = {
         lowerLimit: 0,
         upperLimit: 100,
         defaultParamValue: 1,
+        helpText: ':small_orange_diamond: this is error command \\n',
         template: function() {
           return handlebars.compile(sampleTemplate);
         },
@@ -81,6 +79,7 @@ var config = {
       alert: {
         commandType: 'ALERT',
         timeInterval: 1, // time due which call to the back is made.
+        helpText: ':small_red_triangle_down: this a alert command \\n',
         data: function(input, options, callback) {
           var dataArr = [ // Sample data
             [100, 120, 130, 110, 123, 90],
@@ -99,7 +98,7 @@ var config = {
     },
     blockDirectMessage: false,
     webHook: true,
-    botToken: 'xoxb-16680277201-zbPGVBj6H4B0VmvgQFleN13j'
+    botToken: ''
   },
   {
     botCommand: {
@@ -132,10 +131,10 @@ var config = {
         }
       }
     },
-    botToken: 'xoxb-16681282704-QVryOqEwRJbpLW52AnxGosEx',
+    botToken: '',
     webHook: true,
-    // allowedUsers: ['john'],
-    // blockDirectMessage: true
+    allowedUsers: ['john'],
+    blockDirectMessage: true
   }],
   logger: console, // you could pass a winston logger.
   server: {
