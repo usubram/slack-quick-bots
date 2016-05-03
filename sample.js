@@ -28,6 +28,7 @@ var config = {
           // input.params - for params in array.
           // options.user.email - email in slack.
           // options.hookUrl - custom webhook url.
+          // options.channel - channel from which the command was fired.
           callback({
             param: input.params
           });
@@ -36,7 +37,7 @@ var config = {
       trend: {
         commandType: 'DATA',
         responseType: {
-          type: 'png',
+          type: 'svg',
           ylabel: 'errors',
           timeUnit: 'm',
           title: 'Log data',
