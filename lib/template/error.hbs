@@ -27,5 +27,8 @@
 			 _`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{aParam}}`_
 			{{/if}}\n
 		{{/if}}
+		{{#if helpText}}
+			{{{helpText}}}
+		{{/if}}
 	{{/each}}\n
 {{/if}}
