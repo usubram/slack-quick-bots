@@ -50,7 +50,7 @@ describe('/message', function () {
       var parsedMessage = message.parse(slackMessage, false);
       slackMessage.message = {
         commandPrefix: 'ping',
-        command: 1
+        command: '1'
       };
       expect(parsedMessage).to.deep.equal(slackMessage);
     });
@@ -104,7 +104,7 @@ describe('/message', function () {
       var parsedMessage = message.parse(slackMessage, false);
       slackMessage.message = {
         commandPrefix: 1,
-        command: 2,
+        command: '2',
         params: [3]
       };
       expect(parsedMessage).to.deep.equal(slackMessage);
