@@ -8,10 +8,10 @@
 
 'use strict';
 
-const _ = require('lodash');
-const botLogger = require('./../../lib/utils/logger');
+var _ = require('lodash');
+var botLogger = require('./../../lib/utils/logger');
 
-const internals = {
+var internals = {
   channelCommandKey: ['commandPrefix', 'command', 'params'],
   directCommandKey: ['command', 'params']
 };
@@ -30,7 +30,7 @@ exports.parse = function (message, isDirectMessage) {
   });
   var keys = isDirectMessage ? internals.directCommandKey : internals.channelCommandKey;
   parsedCommand.message = internals.mapCommand(messageArr, keys);
-  
+
   if (parsedCommand.message.command) {
     parsedCommand.message.command = _.camelCase(parsedCommand.message.command);
   }
@@ -42,7 +42,7 @@ exports.parse = function (message, isDirectMessage) {
 
 internals.mapCommand = function (messageArr, keys) {
   var messageMap = _.reduce(messageArr, function (result, value, key) {
-    var maxLength = keys.length -1;
+    var maxLength = keys.length - 1;
     if (key < maxLength) {
       result[keys[key]] = value;
     } else {

@@ -1,6 +1,6 @@
 const handlebars = require('handlebars');
 const fs = require('fs');
-const sampleTemplate = fs.readFileSync('./test/mock/template/sampleTemplate.hbs', 'utf8');
+const sampleTemplate = fs.readFileSync('./test/mock/template/sample-template.hbs', 'utf8');
 
 exports = module.exports = {
   singleBot: {

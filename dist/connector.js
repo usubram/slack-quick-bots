@@ -9,9 +9,10 @@
 'use strict';
 
 // Load modules
-const http = require('https');
-const querystring = require('querystring');
-const botLogger = require('../lib/utils/logger');
+
+var http = require('https');
+var querystring = require('querystring');
+var botLogger = require('../lib/utils/logger');
 
 var internals = {
   retryCountStore: {},
@@ -35,9 +36,8 @@ var internals = {
 };
 
 module.exports.connect = function (botInfo) {
-  botLogger.logger.info('Connector: trying to connect bot with token ending' +
-    ' with ...', botInfo.config.botToken.substring(botInfo.config.botToken.length - 5));
-  return new Promise((resolve, reject) => {
+  botLogger.logger.info('Connector: trying to connect bot with token ending' + ' with ...', botInfo.config.botToken.substring(botInfo.config.botToken.length - 5));
+  return new Promise(function (resolve, reject) {
     internals.callRtm(botInfo, resolve, reject);
   });
 };
@@ -48,19 +48,18 @@ internals.callRtm = function (botInfo, resolve, reject) {
   internals.postData.token = botInfo.config.botToken;
   postData = querystring.stringify(internals.postData);
   internals.options['Content-Length'] = internals.postData.length;
-  internals.makeRequest(internals.options, postData).then((slackData) => {
+  internals.makeRequest(internals.options, postData).then(function (slackData) {
     // reset retry counter.
     internals.retryCountStore[botInfo.config.botToken] = 0;
     botInfo.slackData = slackData;
     resolve(botInfo);
-
-  }).catch(() => {
+  }).catch(function () {
     internals.retryConnection(botInfo, resolve, reject);
   });
 };
 
 internals.makeRequest = function (options, postData) {
-  return new Promise((resolve, reject) => {
+  return new Promise(function (resolve, reject) {
     var req = http.request(options, function (response) {
       var responseStr = '';
       response.on('data', function (chunk) {
@@ -97,20 +96,16 @@ internals.retryConnection = function (botInfo, resolve, reject) {
   if (!internals.retryCountStore[botInfo.config.botToken]) {
     internals.retryCountStore[botInfo.config.botToken] = 1;
   }
-  internals.retryCountStore[botInfo.config.botToken] =
-    internals.retryCountStore[botInfo.config.botToken] * 2;
+  internals.retryCountStore[botInfo.config.botToken] = internals.retryCountStore[botInfo.config.botToken] * 2;
   /*
     Initial retry is 5 seconds and consecutive
     retry is mulitple of number of retries to allow
     enough time for network recovery or for something bad.
   */
   var timer = 1000 * internals.retryCountStore[botInfo.config.botToken];
-  botLogger.logger.info('Connector: Will attempt to retry for bot token ' +
-    botInfo.config.botToken.substring(botInfo.config.botToken.length - 5) + ' in ' +
-    timer / 1000 + 'seconds');
-  setTimeout(() => {
-    botLogger.logger.info('Connector: retrying for  ' +
-    botInfo.config.botToken.substring(botInfo.config.botToken.length - 5));
+  botLogger.logger.info('Connector: Will attempt to retry for bot token ' + botInfo.config.botToken.substring(botInfo.config.botToken.length - 5) + ' in ' + timer / 1000 + 'seconds');
+  setTimeout(function () {
+    botLogger.logger.info('Connector: retrying for  ' + botInfo.config.botToken.substring(botInfo.config.botToken.length - 5));
     internals.callRtm(botInfo, resolve, reject);
   }, timer);
 };

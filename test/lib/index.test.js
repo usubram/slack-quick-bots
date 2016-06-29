@@ -9,7 +9,6 @@ const SlackBot = require('./../../lib/index');
 const connector = require('./../../lib/connector');
 const socket = require('./../../lib/bot/socket');
 const config = require('../mock/config');
-const mockSocket = require('../test-utils/mockSocket');
 
 chai.use(sinonChai);
 describe('single bot', function () {

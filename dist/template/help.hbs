@@ -1,0 +1,19 @@
+  ```
+{{#if recursive_success}}
+	Ok. I will start sending you messages as commanded.
+{{/if}}
+{{#if recursive_stop}}
+	I got it. I won't be sending you messages any more.
+{{/if}}
+{{#if recursive_fail}}
+	Something wrong? If you are still getting messages from me, report the issue to the bot owner.
+{{/if}}
+{{#if alert_notification}}
+	Ok. I will alert you if the data variation exceed the threshold of *{{threshold}}%*. Increase your threshold if you see too many alerts.\n
+
+	Try `sample` to know the current variance percentage.
+{{/if}}
+{{#if bot_direct_message_error}}
+	Hello user! I'm asked not to have 1:1 conversation. Add me to a public channel, I can answer you there.
+{{/if}}
+```
