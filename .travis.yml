@@ -6,3 +6,4 @@ before_script:
   - npm install -g babel-core
   - npm install -g mocha
   - npm install -g jshint
+  - npm install babel-register
