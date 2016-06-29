@@ -3,5 +3,6 @@ node_js:
   - '4.0.0'
 before_script:
   - npm install -g babel-cli
+  - npm install -g babel-core
   - npm install -g mocha
   - npm install -g jshint
