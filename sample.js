@@ -97,9 +97,9 @@ var config = {
         }
       }
     },
-//    blockDirectMessage: false,
+    blockDirectMessage: false,
     webHook: true,
-    botToken: 'xoxb-16680277201-SpA35ZpRqndVDwnElCwzBkZX'
+    botToken: ''
   },
   {
     botCommand: {
@@ -132,12 +132,12 @@ var config = {
         }
       }
     },
-    botToken: 'xoxb-16681282704-bfgYJMOllqWzKLyjR5EmU1Hm',
+    botToken: '',
     webHook: true,
-//    allowedUsers: ['john'],
-//    blockDirectMessage: true
+    allowedUsers: ['john'],
+    blockDirectMessage: true
   }],
-//  logger: console, // you could pass a winston logger.
+  logger: console, // you could pass a winston logger.
   server: {
     port: 9090,
     webHook: true
