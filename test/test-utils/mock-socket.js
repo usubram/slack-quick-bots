@@ -1,4 +1,4 @@
-const socketResponse = require('./../mock/socketResponse').socketResponse;
+const socketResponse = require('./../mock/socket-response').socketResponse;
 
 var WebSocketServer = require('ws').Server;
 exports.connect = function () {

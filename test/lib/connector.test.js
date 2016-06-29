@@ -10,7 +10,6 @@ const config = require('../mock/config');
 const connectorRewire = rewire('./../../lib/connector');
 const Bots = require('./../../lib/bot/bots');
 const Bot = require('./../../lib/bot/bot');
-const mockSocket = require('../test-utils/mockSocket');
 
 chai.use(sinonChai);
 
@@ -22,7 +21,7 @@ describe('/connector', function () {
       connectionResponse;
 
     beforeEach(function () {
-      setupBotEventsStub = sinon.stub(Bot.prototype, '_setupBotEvents');
+      setupBotEventsStub = sinon.stub(Bot.prototype, 'setupBotEvents');
       slackBot = new Bots(config.singleBot.bots).getBots()[0];
       retryConnectionStub = sinon.stub(connectorRewire.__get__('internals'), "retryConnection");
       connectorRewire.__set__('internals.makeRequest', function () {

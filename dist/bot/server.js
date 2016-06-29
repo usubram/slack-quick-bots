@@ -9,10 +9,11 @@
 'use strict';
 
 // Load modules
-const http = require('http');
 
-const externals = {};
-const internals = {
+var http = require('http');
+
+var externals = {};
+var internals = {
   defaultPort: 8080
 };
 

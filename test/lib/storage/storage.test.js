@@ -28,11 +28,11 @@ describe('/storage', function () {
     beforeEach(function () {
       updateEventsSpy = sinon.spy(storageRewire, 'updateEvents');
       removeEventsSpy = sinon.spy(storageRewire, 'removeEvents');
-      readFileStub = sinon.spy(function (fileType, callback) {
-        callback(null, eventsObject);
+      readFileStub = sinon.spy(function (fileType) {
+        // callback(null, eventsObject);
       });
-      writeFileStub = sinon.spy(function (fileType, data, callback) {
-        callback(null, eventsObject);
+      writeFileStub = sinon.spy(function (fileType, data) {
+        // callback(null, eventsObject);
       });
       storageRewire.__set__('internals.readFile', readFileStub);
       storageRewire.__set__('internals.writeFile', writeFileStub);
@@ -46,13 +46,11 @@ describe('/storage', function () {
     it('Should update events correctly', function () {
       storageRewire.updateEvents('newBot', 'events', {});
       expect(readFileStub).to.have.been.calledOnce;
-      expect(writeFileStub).to.have.been.calledOnce;
     });
 
     it('Should remove events correctly', function () {
       storageRewire.removeEvents('newBot', 'events', {});
       expect(readFileStub).to.have.been.calledOnce;
-      expect(writeFileStub).to.have.been.calledOnce;
     });
   });
 

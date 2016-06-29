@@ -9,40 +9,51 @@
 'use strict';
 
 // Load modules
-const _ = require('lodash');
-const Bot = require('./bot');
-const botLogger = require('./../../lib/utils/logger');
 
-const externals = {};
-const internals = {
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var _ = require('lodash');
+var Bot = require('./bot');
+var botLogger = require('./../../lib/utils/logger');
+
+var externals = {};
+var internals = {
   config: {
     bots: []
   },
   alertParams: ['sample', 'setup']
 };
 
-externals.Bots = class {
-  constructor (bots) {
+externals.Bots = function () {
+  function _class(bots) {
+    _classCallCheck(this, _class);
+
     this.bots = [];
     internals.config.bots = bots;
     internals.init(this.bots);
     return this;
   }
 
-  getBots () {
-    return this.bots;
-  }
-};
+  _createClass(_class, [{
+    key: 'getBots',
+    value: function getBots() {
+      return this.bots;
+    }
+  }]);
+
+  return _class;
+}();
 
 internals.init = function (bots) {
-  _.forEach(internals.config.bots, (bot) => {
+  _.forEach(internals.config.bots, function (bot) {
     var newbot = new Bot(internals.normalizeCommand(bot));
     if (newbot) {
       botLogger.logger.info('Bots: Bot instantiated correctly');
       bots.push(newbot);
     } else {
-      botLogger.logger.warn('Bots: Error creating bot object,' +
-        'something bad with this bot config %j', bot);
+      botLogger.logger.warn('Bots: Error creating bot object,' + 'something bad with this bot config %j', bot);
     }
   });
   botLogger.logger.info('Bots: All bots read completed');
@@ -55,8 +66,7 @@ internals.normalizeCommand = function (bot) {
     var commandKey = _.camelCase(key);
     if (value) {
       normalizedCommand[commandKey] = value;
-      _.forEach(value,
-        function (commandAttr, commandAttrkey) {
+      _.forEach(value, function (commandAttr, commandAttrkey) {
         var command = _.camelCase(commandAttr);
         if (commandAttrkey === 'commandType') {
           value[commandAttrkey] = command;

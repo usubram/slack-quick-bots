@@ -1,0 +1,34 @@
+{{#if restricted_user}}
+	I'm configured to only respond to\n
+	{{#each users}}
+		<@{{this}}>\n
+	{{/each}}
+{{else}}
+	A little help, try command(s)\n
+	{{#each command}}
+		> {{#if ../prefix}} <@{{../prefix}}>{{/if}} *{{@key}}* 
+		{{#if inContext}}
+			{{#if upperLimit}}
+				{{lowerLimit}} to {{{upperLimit}}}
+			{{/if}}
+			{{#if allowedParam}}
+				{{#each allowedParam}}
+					 {{.}}{{#if @last}} {{else}} | {{/if}}
+				{{/each}}\n
+			{{/if}}
+		{{/if}}
+		{{#if aLimit }}
+		 _`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{{aLimit}}}`_{{/if}}
+		{{#if alertContext}}
+			`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup 90` - here *90* is the threshold percentage. \n
+			`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} sample` - to get an idea on the current threshold\n
+		{{else}}
+			{{#if aParam}}
+			 _`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{aParam}}`_
+			{{/if}}\n
+		{{/if}}
+		{{#if helpText}}
+			{{{helpText}}}
+		{{/if}}
+	{{/each}}\n
+{{/if}}
