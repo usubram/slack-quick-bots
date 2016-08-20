@@ -11,8 +11,9 @@
 var fs = require('fs');
 var _ = require('lodash');
 var path = require('path');
+var root = '..';
 
-var botLogger = require('./../../lib/utils/logger');
+var botLogger = require(path.join(root, 'utils/logger'));
 
 var internals = {
   STORAGE_DIRECTORY: path.join(process.cwd(), 'data'),
@@ -32,40 +33,51 @@ exports = module.exports.createEventDirectory = function () {
 };
 
 exports = module.exports.updateEvents = function (botName, eventType, data) {
-  Promise.resolve(internals.readFile('events')).then(function (eventsData) {
-    if (data && data.parsedMessage && data.channels) {
-      eventsData = eventsData ? eventsData : {};
-      eventsData[botName] = eventsData[botName] ? eventsData[botName] : {};
-      _.forEach(data.channels, function (channel) {
-        eventsData[botName][channel + '_' + data.parsedMessage.message.command] = data;
-      });
-      return internals.writeFile('events', eventsData);
-    }
-  }).then(function (responseData) {
-    botLogger.logger.info('storage: events updates successfully');
-    botLogger.logger.debug('storage: events updated successfully for ', responseData);
-  }).catch(function (err) {
-    botLogger.logger.info('storage: events update failed');
-    botLogger.logger.debug('storage: error updating events for ', err);
+  return new Promise(function (resolve, reject) {
+    Promise.resolve(internals.readFile(eventType)).then(function (eventsData) {
+      if (data && data.parsedMessage && data.channels) {
+        eventsData = eventsData ? eventsData : {};
+        eventsData[botName] = eventsData[botName] ? eventsData[botName] : {};
+        _.forEach(data.channels, function (channel) {
+          eventsData[botName][channel + '_' + data.parsedMessage.message.command] = data;
+        });
+        return internals.writeFile('events', eventsData);
+      }
+    }).then(function (responseData) {
+      botLogger.logger.info('storage: events updates successfully');
+      botLogger.logger.debug('storage: events updated successfully for ', responseData);
+      resolve(responseData);
+    }).catch(function (err) {
+      botLogger.logger.info('storage: events update failed');
+      botLogger.logger.debug('storage: error updating events for ', err);
+      reject(err);
+    });
   });
 };
 
 exports = module.exports.removeEvents = function (botName, eventType, data) {
-  Promise.resolve(internals.readFile('events')).then(function (eventsData) {
-    if (data && data.parsedMessage && data.channels) {
-      eventsData = eventsData ? eventsData : {};
-      eventsData[botName] = eventsData[botName] ? eventsData[botName] : {};
-      _.forEach(data.channels, function (channel) {
-        delete eventsData[botName][channel + '_' + data.command];
-      });
-      return internals.writeFile('events', eventsData);
-    }
-  }).then(function (responseData) {
-    botLogger.logger.info('storage: events updates successfully');
-    botLogger.logger.debug('storage: events updated successfully for ', responseData);
-  }).catch(function (err) {
-    botLogger.logger.info('storage: events update failed');
-    botLogger.logger.debug('storage: error updating events for ', err);
+  return new Promise(function (resolve, reject) {
+    internals.readFile(eventType).then(function (eventsData) {
+      if (_.get(data, 'channels', []).length) {
+        _.forEach(data.channels, function (channel) {
+          var eventPath = [botName, channel + '_' + _.get(data, 'commandToKill')];
+          if (!_.unset(eventsData, eventPath)) {
+            botLogger.logger.info('storage: events updates successfully');
+          }
+        });
+      }
+      return eventsData;
+    }).then(function (rData) {
+      return internals.writeFile('events', rData);
+    }).then(function (responseData) {
+      botLogger.logger.info('storage: events updates successfully');
+      botLogger.logger.debug('storage: events updated successfully for ', responseData);
+      resolve(responseData);
+    }).catch(function (err) {
+      botLogger.logger.info('storage: events update failed');
+      botLogger.logger.debug('storage: error updating events for ', err);
+      reject(err);
+    });
   });
 };
 
@@ -107,7 +119,7 @@ internals.writeFile = function (fileType, data) {
   }
 
   return new Promise(function (resolve, reject) {
-    fs.writeFile(path, fileData, { encoding: 'utf8', flag: 'w+' }, function (err, data) {
+    fs.writeFile(path, fileData, { encoding: 'utf8', flag: 'w+' }, function (err) {
       if (err) {
         botLogger.logger.info('storage: write file failed');
         botLogger.logger.debug('storage: write file failed', err, path);

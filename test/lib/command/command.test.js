@@ -1,18 +1,22 @@
 'use strict';
 
-const sinon = require('sinon');
-const chai = require('chai'),
-  expect = chai.expect;
-const sinonChai = require('sinon-chai');
 const _ = require('lodash');
-const rewire = require('rewire');
-const Command = rewire('./../../../lib/command/command');
-const CommandInternal = rewire('./../../../lib/command/command').__get__('internals');
-const botsInternal = rewire('./../../../lib/bot/bots').__get__('internals');
-const message = require('./../../../lib/command/message');
-const config = require('../../mock/config');
+const botLogger = require('../../../lib/utils/logger');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 
-chai.use(sinonChai);
+const uuid = require('uuid');
+const root = '../../../';
+
+const SlackBot = require(root + 'lib/index');
+const config = require(root + 'test/mock/config');
+const responseHandler = require(root + 'lib/bot/response-handler');
+const messageParser = require(root + 'lib/command/message');
+
+botLogger.setLogger();
+
+chai.use(chaiAsPromised);
+chai.should();
 
 describe('/command', function () {
 
@@ -20,17 +24,17 @@ describe('/command', function () {
 
     describe('isAllowedParamValid', function () {
 
-      var botCommand,
-        slackMessage;
+      var testBots;
+      var errorContext;
+      var slackMessage;
 
       beforeEach(function () {
-        botsInternal.normalizeCommand(config.singleBotForAllowedParam.bots[0]);
-        botCommand = new Command(config.singleBotForAllowedParam.bots[0].botCommand);
-        botCommand.slackData = {
-          users: [{ id: 'U0GG92T45', name: 'user1' },
-          { id: 'U0GG92T46', name: 'user2' }]
+        testBots = new SlackBot(config.singleBotForAllowedParam);
+        errorContext = {
+          error: true
         };
         slackMessage = {
+          id: uuid.v4(),
           type: 'message',
           channel: 'D0GL06JD7',
           user: 'U0GG92T45',
@@ -41,51 +45,55 @@ describe('/command', function () {
       });
 
       afterEach(function () {
-        botCommand = undefined;
-        slackMessage = {};
+        testBots.shutdown();
       });
 
-      it('Should pass command vaidation with default value', function () {
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err).to.be.undefined;
-        });
+      it('Should pass command vaidation with default value', function (done) {
+        Promise.resolve(testBots.start().then(function () {
+          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+        })).should.eventually.equal('Hello 1').and.notify(done);
       });
 
-      it('Should pass command vaidation with value 1', function () {
+      it('Should pass command vaidation with value 1', function (done) {
         slackMessage.text = 'ping 1';
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err).to.be.undefined;
-        });
+        Promise.resolve(testBots.start().then(function () {
+          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+        })).should.eventually.equal('Hello 1').and.notify(done);
       });
 
-      it('Should pass command vaidation with value 2', function () {
+      it('Should pass command vaidation with value 2', function (done) {
         slackMessage.text = 'ping 2';
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err).to.be.undefined;
-        });
+        Promise.resolve(testBots.start().then(function () {
+          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+        })).should.eventually.equal('Hello 2').and.notify(done);
       });
 
-      it('Should fail command vaidation with value 3', function () {
+      it('Should fail command vaidation with value 3', function (done) {
         slackMessage.text = 'ping 3';
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err.param).to.be.eq(true);
-        });
+        delete errorContext.error;
+        errorContext.param = true;
+        errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+        var errorMessage = responseHandler
+          .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
+        Promise.resolve(testBots.start().then(function () {
+          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+        })).should.eventually.equal(errorMessage).and.notify(done);
       });
     });
 
     describe('isLimitValid', function () {
 
-      var botCommand,
-        slackMessage;
+      var testBots;
+      var errorContext;
+      var slackMessage;
 
       beforeEach(function () {
-        botsInternal.normalizeCommand(config.singleBotForAllowedParam.bots[0]);
-        botCommand = new Command(config.singleBotForAllowedParam.bots[0].botCommand);
-        botCommand.slackData = {
-          users: [{ id: 'U0GG92T45', name: 'user1' },
-          { id: 'U0GG92T46', name: 'user2' }]
+        testBots = new SlackBot(config.singleBotForAllowedParam);
+        errorContext = {
+          error: true
         };
         slackMessage = {
+          id: uuid.v4(),
           type: 'message',
           channel: 'D0GL06JD7',
           user: 'U0GG92T45',
@@ -96,51 +104,55 @@ describe('/command', function () {
       });
 
       afterEach(function () {
-        botCommand = undefined;
-        slackMessage = {};
+        testBots.shutdown();
       });
 
-      it('Should pass command vaidation with default value', function () {
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err).to.be.undefined;
-        });
+      it('Should pass command vaidation with default value', function (done) {
+        Promise.resolve(testBots.start().then(function () {
+          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+        })).should.eventually.equal('Hello 1').and.notify(done);
       });
 
-      it('Should pass command vaidation with value 1', function () {
+      it('Should pass command vaidation with value 1', function (done) {
         slackMessage.text = 'pingLimit 1';
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err).to.be.undefined;
-        });
+        Promise.resolve(testBots.start().then(function () {
+          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+        })).should.eventually.equal('Hello 1').and.notify(done);
       });
 
-      it('Should pass command vaidation with value 2', function () {
+      it('Should pass command vaidation with value 2', function (done) {
         slackMessage.text = 'pingLimit 2';
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err).to.be.undefined;
-        });
+        Promise.resolve(testBots.start().then(function () {
+          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+        })).should.eventually.equal('Hello 2').and.notify(done);
       });
 
-      it('Should fail command vaidation with value 30', function () {
+      it('Should fail command vaidation with value 30', function (done) {
         slackMessage.text = 'pingLimit 30';
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err.limit).to.be.eq(true);
-        });
+        delete errorContext.error;
+        errorContext.limit = true;
+        errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+        var errorMessage = responseHandler
+          .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
+        Promise.resolve(testBots.start().then(function () {
+          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+        })).should.eventually.equal(errorMessage).and.notify(done);
       });
     });
 
     describe('isLimitValid and isAllowedParamValid', function () {
 
-      var botCommand,
-        slackMessage;
+      var testBots;
+      var errorContext;
+      var slackMessage;
 
       beforeEach(function () {
-        botsInternal.normalizeCommand(config.singleBotForAllowedParam.bots[0]);
-        botCommand = new Command(config.singleBotForAllowedParam.bots[0].botCommand);
-        botCommand.slackData = {
-          users: [{ id: 'U0GG92T45', name: 'user1' },
-          { id: 'U0GG92T46', name: 'user2' }]
+        testBots = new SlackBot(config.singleBotForAllowedParam);
+        errorContext = {
+          error: true
         };
         slackMessage = {
+          id: uuid.v4(),
           type: 'message',
           channel: 'D0GL06JD7',
           user: 'U0GG92T45',
@@ -151,108 +163,56 @@ describe('/command', function () {
       });
 
       afterEach(function () {
-        botCommand = undefined;
-        slackMessage = {};
+        testBots.shutdown();
       });
 
-      it('Should pass command vaidation with default value', function () {
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err).to.be.undefined;
-        });
+      it('Should pass command vaidation with default value', function (done) {
+        Promise.resolve(testBots.start().then(function () {
+          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+        })).should.eventually.equal('Hello 1').and.notify(done);
       });
 
-      it('Should pass command vaidation with value 1', function () {
+      it('Should pass command vaidation with value 1', function (done) {
         slackMessage.text = 'hybrid 1';
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err).to.be.undefined;
-        });
+        Promise.resolve(testBots.start().then(function () {
+          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+        })).should.eventually.equal('Hello 1').and.notify(done);
       });
 
-      it('Should pass command vaidation with value 2', function () {
+      it('Should pass command vaidation with value 2', function (done) {
         slackMessage.text = 'hybrid 2';
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err).to.be.undefined;
-        });
+        Promise.resolve(testBots.start().then(function () {
+          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+        })).should.eventually.equal('Hello 2').and.notify(done);
       });
 
-      it('Should fail command vaidation with value 30', function () {
+      it('Should fail command vaidation with value 30', function (done) {
         slackMessage.text = 'hybrid 30';
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err.limit).to.be.eq(true);
-        });
-      });
-    });
-
-    describe('isCommandAllowed', function () {
-
-      var botCommand,
-        slackMessage;
-
-      beforeEach(function () {
-        botsInternal.normalizeCommand(config.singleBotForAllowedParam.bots[0]);
-        botCommand = new Command(config.singleBotForAllowedParam.bots[0].botCommand);
-        botCommand.slackData = {
-          users: [{ id: 'U0GG92T45', name: 'user1' },
-          { id: 'U0GG92T46', name: 'user2' }]
-        };
-        slackMessage = {
-          type: 'message',
-          channel: 'D0GL06JD7',
-          user: 'U0GG92T45',
-          text: 'pingLimit',
-          ts: '1453007224.000007',
-          team: 'T0GGDKVDE'
-        };
-      });
-
-      afterEach(function () {
-        botCommand = undefined;
-        slackMessage = {};
-      });
-
-      it('Should pass command vaidation with default value', function () {
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err).to.be.undefined;
-        });
-      });
-
-      it('Should pass command vaidation with value 1', function () {
-        slackMessage.text = 'pingLimit 1';
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err).to.be.undefined;
-        });
-      });
-
-      it('Should pass command vaidation with value 2', function () {
-        slackMessage.text = 'pingLimit 2';
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err).to.be.undefined;
-        });
-      });
-
-      it('Should fail command vaidation with value 30', function () {
-        slackMessage.text = 'pingLimit 30';
-        botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-          expect(err.limit).to.be.eq(true);
-        });
+        delete errorContext.error;
+        errorContext.limit = true;
+        errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+        var errorMessage = responseHandler
+          .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
+        Promise.resolve(testBots.start().then(function () {
+          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+        })).should.eventually.equal(errorMessage).and.notify(done);
       });
     });
   });
 
   describe('isCommandAllowed', function () {
 
-    var botCommand,
-      slackMessage;
+    var testBots;
+    var errorContext;
+    var slackMessage;
 
     beforeEach(function () {
-      botsInternal.normalizeCommand(config.isCommandAllowed.bots[0]);
-      botCommand = new Command(config.isCommandAllowed.bots[0].botCommand);
-      botCommand.slackData = {
-        users: [{ id: 'U0GG92T45', name: 'user1' },
-        { id: 'U0GG92T46', name: 'user2' }]
+      testBots = new SlackBot(config.isCommandAllowed);
+      errorContext = {
+        error: true
       };
-
       slackMessage = {
+        id: uuid.v4(),
         type: 'message',
         channel: 'D0GL06JD7',
         user: 'U0GG92T46',
@@ -263,58 +223,50 @@ describe('/command', function () {
     });
 
     afterEach(function () {
-      botCommand = {};
-      slackMessage = {};
+      testBots.shutdown();
     });
 
-    it('Should block user and respond error', function () {
-      botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-        expect(err.restricted_user).to.be.eq(true);
-      });
+    it('Should block user and respond error', function (done) {
+      delete errorContext.error;
+      errorContext.restricted_user = true;
+      errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+      errorContext.users = testBots.bots[0].config.allowedUsers;
+      var errorMessage = responseHandler
+        .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal(errorMessage).and.notify(done);
     });
 
-    it('Should respond to messages for allowed user', function () {
+    it('Should respond to messages for allowed user', function (done) {
       slackMessage.user = 'U0GG92T45';
-      botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-        expect(err).to.be.undefined;
-      });
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal('Hello 1').and.notify(done);
     });
 
-    it('Should not error out if the user is not found', function () {
+    it('Should not error out if the user is not found', function (done) {
       slackMessage.user = 'U0GG92T47';
-      botCommand.validateCommand(message.parse(slackMessage, true), function (err) {
-        expect(err).to.be.undefined;
-      });
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal('Hello 1').and.notify(done);
     });
 
   });
 
   describe('Test command types', function () {
 
-    var botCommand,
-      getData,
-      setUpRecursiveTask,
-      killTask,
-      alertTask,
-      slackMessage;
+    var testBots;
+    var errorContext;
+    var slackMessage;
 
     beforeEach(function () {
-      botsInternal.normalizeCommand(config.commandTypeBots.bots[0]);
-      botCommand = new Command(config.commandTypeBots.bots[0].botCommand);
-      botCommand.slackData = {
-        users: [{ id: 'U0GG92T45', name: 'user1' },
-        { id: 'U0GG92T46', name: 'user2' }]
+      testBots = new SlackBot(config.commandTypeBots);
+      errorContext = {
+        error: true
       };
-      getData = sinon.spy();
-      setUpRecursiveTask = sinon.spy();
-      killTask = sinon.spy();
-      alertTask = sinon.spy();
-      Command.__set__('internals.getData', getData);
-      Command.__set__('internals.setUpRecursiveTask', setUpRecursiveTask);
-      Command.__set__('internals.killTask', killTask);
-      Command.__set__('internals.handleAlertTask', alertTask);
-
       slackMessage = {
+        id: uuid.v4(),
         type: 'message',
         channel: 'D0GL06JD7',
         user: 'U0GG92T45',
@@ -325,32 +277,45 @@ describe('/command', function () {
     });
 
     afterEach(function () {
-      slackMessage = {};
-      botCommand = {};
+      testBots.shutdown();
     });
 
-    it('Should call getData for data command', function () {
+    it('Should call getData for data command', function (done) {
       slackMessage.text = 'ping';
-      botCommand.respondToCommand(message.parse(slackMessage, true));
-      expect(getData).to.have.been.calledOnce;
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal('Hello 1').and.notify(done);
     });
 
-    it('Should call setUpRecursiveTask for recursive command', function () {
+    it('Should call setUpRecursiveTask for recursive command', function (done) {
       slackMessage.text = 'auto';
-      botCommand.respondToCommand(message.parse(slackMessage, true));
-      expect(setUpRecursiveTask).to.have.been.calledOnce;
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal(undefined).and.notify(done);
     });
 
-    it('Should call killTask for kill command', function () {
+    it('Should call killTask for kill command', function (done) {
       slackMessage.text = 'stop';
-      botCommand.respondToCommand(message.parse(slackMessage, true));
-      expect(killTask).to.have.been.calledOnce;
+      delete errorContext.error;
+      errorContext.param = true;
+      errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+      var errorMessage = responseHandler
+        .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal(errorMessage).and.notify(done);
     });
 
-    it('Should call alertTask for alert command', function () {
+    it('Should call alertTask for alert command', function (done) {
       slackMessage.text = 'alert';
-      botCommand.respondToCommand(message.parse(slackMessage, true));
-      expect(alertTask).to.have.been.calledOnce;
+      delete errorContext.error;
+      errorContext.param = true;
+      errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+      var errorMessage = responseHandler
+        .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal(errorMessage).and.notify(done);
     });
 
   });

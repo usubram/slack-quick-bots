@@ -13,7 +13,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var _ = require('lodash');
-var env = require('./environment');
+var path = require('path');
+var root = '..';
+
+var env = require(path.join(root, 'utils/environment'));
 
 var externals = {};
 

@@ -11,9 +11,12 @@
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var _ = require('lodash');
+var path = require('path');
 var plot = require('plotter').plot;
-var botLogger = require('./../../lib/utils/logger');
-var postAttachmentFromStream = require('./../../lib/slackApi/post-attachment').postAttachmentFromStream;
+var root = '..';
+
+var botLogger = require(path.join(root, 'utils/logger'));
+var postAttachmentFromStream = require(path.join(root, 'slackApi/post-attachment')).postAttachmentFromStream;
 
 var externals = {};
 var internals = {
@@ -24,10 +27,12 @@ externals.StreamFile = function () {
   function _class(channel, data, config) {
     _classCallCheck(this, _class);
 
+    console.log('config', config);
     if (data.responseType) {
       config = _.merge(config, data.responseType);
     }
-    if (_.includes(internals.graphFileTypes, config.responseType) && config.style) {
+    console.log('config', config);
+    if (_.includes(internals.graphFileTypes, config.type) && config.style) {
       return internals.handleGraphResponse(channel, data, config);
     } else {
       return internals.handleFileResponse(channel, data, config);

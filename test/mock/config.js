@@ -38,6 +38,12 @@ exports = module.exports = {
           parentTask: 'AUTO'
         }
       },
+      mock: {
+        self: {
+          name: 'testbot1',
+          id: 'U1234567'
+        }
+      },
       botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
     }]
   },
@@ -76,6 +82,12 @@ exports = module.exports = {
           parentTask: 'AUTO'
         }
       },
+      mock: {
+        self: {
+          name: 'testbot1',
+          id: 'U1234567'
+        }
+      },
       botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
     }, {
       botCommand: {
@@ -111,7 +123,13 @@ exports = module.exports = {
           parentTask: 'AUTO'
         }
       },
-      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
+      mock: {
+        self: {
+          name: 'testbot2',
+          id: 'U1234567'
+        }
+      },
+      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwKrtm'
     }]
   },
   BotsTest: {
@@ -236,6 +254,12 @@ exports = module.exports = {
           parentTask: 'AUTO'
         }
       },
+      mock: {
+        self: {
+          name: 'testbot2',
+          id: 'U1234567'
+        }
+      },
       botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
     }]
   },
@@ -285,6 +309,7 @@ exports = module.exports = {
         },
         alert: {
           commandType: 'ALERT',
+          timeInterval: 1,
           template: function () {
             return handlebars.compile(sampleTemplate);
           },
@@ -294,6 +319,17 @@ exports = module.exports = {
             });
           }
         }
+      },
+      mock: {
+        self: {
+          name: 'testbot1',
+          id: 'U1234567'
+        },
+        users: [{
+          id: 'U0GG92T45', name: 'user1'
+        }, {
+          id: 'U0GG92T46', name: 'user2'
+        }]
       },
       botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
     }]
@@ -316,6 +352,17 @@ exports = module.exports = {
         }
       },
       allowedUsers: ['U0GG92T45'],
+      mock: {
+        self: {
+          name: 'testbot2',
+          id: 'U1234567'
+        },
+        users: [{
+          id: 'U0GG92T45', name: 'user1'
+        }, {
+          id: 'U0GG92T46', name: 'user2'
+        }]
+      },
       botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
     }]
   }

@@ -1,480 +1,139 @@
 'use strict';
 
-const botLogger = require('./../../../lib/utils/logger');
-const sinon = require('sinon');
-const chai = require('chai'),
-  expect = chai.expect;
-const sinonChai = require('sinon-chai');
 const _ = require('lodash');
-const Bots = require('./../../../lib/bot/bots');
-const storage = require('./../../../lib/storage/storage');
-const Bot = require('./../../../lib/bot/bot');
-const ResponseHandler = require('./../../../lib/bot/response-handler');
-const config = require('../../mock/config');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+
+const uuid = require('uuid');
+const root = '../../../';
+
+const botLogger = require(root + 'lib/utils/logger');
+const SlackBot = require(root + 'lib/index');
+const config = require(root + 'test/mock/config');
+const responseHandler = require(root + 'lib/bot/response-handler');
+const messageParser = require(root + 'lib/command/message');
 
 botLogger.setLogger();
 
-chai.use(sinonChai);
+chai.use(chaiAsPromised);
+chai.should();
 
-describe('/bot', function () {
+describe('/bot.js', function () {
   describe('direct message', function () {
 
-    var dispatchMessage,
-      dispatchMessageEventSpy,
-      setupBotEventsStub,
-      slackMessage,
-      slackBot;
-    beforeEach(function () {
+    var testBots;
+    var errorContext;
+    var slackMessage = {
+      id: uuid.v4(),
+      type: 'message',
+      channel: 'D0GL06JD7',
+      user: 'U0GG92T45',
+      text: 'ping 1',
+      team: 'T0GGDKVDE'
+    };
 
-      dispatchMessage = sinon.stub(Bot.prototype, 'dispatchMessage');
-      dispatchMessageEventSpy = sinon.spy();
-      setupBotEventsStub = sinon.stub(Bot.prototype, 'setupBotEvents');
-      slackBot = new Bots(config.singleBot.bots).getBots()[0];
-      slackBot.botName = 'botname';
-      slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
-      slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
-      slackBot.command.slackData = {
-        users: [{ id: 'U0GG92T45', name: 'user1' },
-        { id: 'U0GG92T46', name: 'user2' }]
-      };
-      slackMessage = {
-        type: 'message',
-        channel: 'D0GL06JD7',
-        user: 'U0GG92T45',
-        text: 'ping 1',
-        ts: '1453007224.000007',
-        team: 'T0GGDKVDE'
+    beforeEach(function () {
+      testBots = new SlackBot(config.singleBot);
+      errorContext = {
+        error: true
       };
     });
 
     afterEach(function () {
-      dispatchMessage.restore();
-      setupBotEventsStub.restore();
-      slackBot = {};
-      slackMessage = {};
+      testBots.shutdown();
     });
 
-    it('Should call dispatchMessage with correct arguments', function () {
-      expect(slackBot).to.be.ok;
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.have.been.calledWith({ channels: 'D0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["D0GL06JD7"], message: { data: "Hello 1" } });
-      expect(dispatchMessage).to.have.been.calledTwice;
+    it('Should with the expected response', function (done) {
+      slackMessage.text = 'ping 1';
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal('Hello 1').and.notify(done);
     });
 
-    it('Should call dispatchMessage with empty message', function () {
-      expect(slackBot).to.be.ok;
+    it('Should respond with empty message', function (done) {
       slackMessage.text = '';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.not.have.been.calledWith({ channels: 'D0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessage).to.not.have.been.calledTwice;
+      errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+      var errorMessage = responseHandler
+        .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal(errorMessage).and.notify(done);
     });
 
-    it('Should call dispatchMessage with wrong command', function () {
-      expect(slackBot).to.be.ok;
+    it('Should respond with error message', function (done) {
       slackMessage.text = 'wrong command';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.not.have.been.calledWith({ channels: 'D0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessage).to.not.have.been.calledTwice;
+      errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+      var errorMessage = responseHandler
+        .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
+      testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      }).then(function (response){
+        Promise.resolve(response).should.eventually.equal(errorMessage).and.notify(done)
+      });
     });
 
   });
 
   describe('channel message', function () {
-    var dispatchMessage,
-      dispatchMessageEventSpy,
-      slackMessage,
-      slackBot;
+
+    var testBots;
+    var errorContext;
+    var slackMessage = {
+      id: uuid.v4(),
+      type: 'message',
+      channel: 'C0GL06JD7',
+      user: 'U0GG92T45',
+      text: 'testbot1 ping 1',
+      team: 'T0GGDKVDE'
+    };
 
     beforeEach(function () {
-
-      dispatchMessage = sinon.stub(Bot.prototype, 'dispatchMessage');
-      dispatchMessageEventSpy = sinon.spy();
-      slackBot = new Bots(config.singleBot.bots).getBots()[0];
-      slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
-      slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
-      slackBot.botName = 'botname';
-      slackBot.command.slackData = {
-        users: [{ id: 'U0GG92T45', name: 'user1' },
-        { id: 'U0GG92T46', name: 'user2' }]
+      testBots = new SlackBot(config.singleBot);
+      errorContext = {
+        error: true
       };
-      slackMessage = {
-        type: 'message',
-        channel: 'C0GL06JD7',
-        user: 'U0GG92T45',
-        text: 'botname ping 1',
-        ts: '1453007224.000007',
-        team: 'T0GGDKVDE'
-      };
-
     });
 
     afterEach(function () {
-      dispatchMessage.restore();
-      slackBot = null;
-      slackMessage = {};
+      testBots.shutdown();
     });
 
-    it('Should call dispatchMessage with correct arguments', function () {
-      expect(slackBot).to.be.ok;
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.have.been.calledWith({ channels: 'C0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["C0GL06JD7"], message: { data: "Hello 1" } });
-      expect(dispatchMessage).to.have.been.calledTwice;
+    it('Should call dispatchMessage with correct arguments', function (done) {
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal('Hello 1').and.notify(done);
     });
 
-    it('Should call dispatchMessage with botname and command without param', function () {
-      expect(slackBot).to.be.ok;
-      slackBot.botName = 'botname';
-      slackMessage.text = 'botname ping';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.have.been.calledTwice;
-      expect(dispatchMessage).to.have.been.calledWith({ channels: 'C0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["C0GL06JD7"], message: { data: "Hello 1" } });
+    it('Should call dispatchMessage with botname and command without param', function (done) {
+      slackMessage.text = 'testbot1 ping';
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal('Hello 1').and.notify(done);
     });
 
-    it('Should not call dispatchMessage', function () {
-      expect(slackBot).to.be.ok;
-      slackBot.botName = 'name';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.not.have.been.called;
+    it('Should not call dispatchMessage', function (done) {
+      slackMessage.text = 'hello';
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal(undefined).and.notify(done);
     });
 
-    it('Should not call dispatchMessage without botname', function () {
-      expect(slackBot).to.be.ok;
-      slackBot.botName = 'botname';
+    it('Should not call dispatchMessage without botname', function (done) {
       slackMessage.text = 'ping 1';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.not.have.been.called;
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal(undefined).and.notify(done);
     });
 
-    it('Should show help message for message starting with botname and wrong command', function () {
-      expect(slackBot).to.be.ok;
-      slackBot.botName = 'botname';
-      slackMessage.text = 'botname wrong command';
-
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.have.been.called;
-    });
-  });
-
-  describe('validate command type - data for DM', function () {
-    var dispatchMessage,
-      dispatchMessageEventSpy,
-      setupBotEventsStub,
-      slackMessage,
-      slackBot;
-    beforeEach(function () {
-
-      dispatchMessage = sinon.stub(Bot.prototype, 'dispatchMessage');
-      dispatchMessageEventSpy = sinon.spy();
-      setupBotEventsStub = sinon.stub(Bot.prototype, 'setupBotEvents');
-      slackBot = new Bots(config.singleBot.bots).getBots()[0];
-      slackBot.botName = 'botname';
-      slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
-      slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
-      slackBot.command.slackData = {
-        users: [{ id: 'U0GG92T45', name: 'user1' },
-        { id: 'U0GG92T46', name: 'user2' }]
-      };
-      slackMessage = {
-        type: 'message',
-        channel: 'D0GL06JD7',
-        user: 'U0GG92T45',
-        text: 'ping 1',
-        ts: '1453007224.000007',
-        team: 'T0GGDKVDE'
-      };
-    });
-
-    afterEach(function () {
-      dispatchMessage.restore();
-      setupBotEventsStub.restore();
-      slackBot = {};
-      slackMessage = {};
-    });
-
-    it('Should call dispatchMessage with correct arguments', function () {
-      expect(slackBot).to.be.ok;
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.have.been.calledWith({ channels: 'D0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["D0GL06JD7"], message: { data: "Hello 1" } });
-      expect(dispatchMessage).to.have.been.calledTwice;
-    });
-
-    it('Should call dispatchMessage with empty message', function () {
-      expect(slackBot).to.be.ok;
-      slackMessage.text = '';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.not.have.been.calledWith({ channels: 'D0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessage).to.not.have.been.calledTwice;
-    });
-
-    it('Should call dispatchMessage with wrong command', function () {
-      expect(slackBot).to.be.ok;
-      slackMessage.text = 'wrong command';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.not.have.been.calledWith({ channels: 'D0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessage).to.not.have.been.calledTwice;
+    it('Should show help message for message starting with botname and wrong command', function (done) {
+      slackMessage.text = 'testbot1 wrong command';
+      errorContext.parsedMessage = messageParser.parse(slackMessage);
+      var errorMessage = responseHandler
+        .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal(errorMessage).and.notify(done);
     });
   });
 
-  describe('validate command type - data in channel', function () {
-    var dispatchMessage,
-      dispatchMessageEventSpy,
-      slackMessage,
-      slackBot;
-
-    beforeEach(function () {
-
-      dispatchMessage = sinon.stub(Bot.prototype, 'dispatchMessage');
-      dispatchMessageEventSpy = sinon.spy();
-      slackBot = new Bots(config.singleBot.bots).getBots()[0];
-      slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
-      slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
-      slackBot.botName = 'botname';
-      slackBot.command.slackData = {
-        users: [{ id: 'U0GG92T45', name: 'user1' },
-        { id: 'U0GG92T46', name: 'user2' }]
-      };
-      slackMessage = {
-        type: 'message',
-        channel: 'C0GL06JD7',
-        user: 'U0GG92T45',
-        text: 'botname ping 1',
-        ts: '1453007224.000007',
-        team: 'T0GGDKVDE'
-      };
-
-    });
-
-    afterEach(function () {
-      dispatchMessage.restore();
-      slackBot = null;
-      slackMessage = {};
-    });
-
-    it('Should call dispatchMessage with correct arguments', function () {
-      expect(slackBot).to.be.ok;
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.have.been.calledWith({ channels: 'C0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["C0GL06JD7"], message: { data: "Hello 1" } });
-      expect(dispatchMessage).to.have.been.calledTwice;
-    });
-
-    it('Should call dispatchMessage with botname and command without param', function () {
-      expect(slackBot).to.be.ok;
-      slackBot.botName = 'botname';
-      slackMessage.text = 'botname ping';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.have.been.calledTwice;
-      expect(dispatchMessage).to.have.been.calledWith({ channels: 'C0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["C0GL06JD7"], message: { data: "Hello 1" } });
-    });
-
-    it('Should not call dispatchMessage', function () {
-      expect(slackBot).to.be.ok;
-      slackBot.botName = 'name';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.not.have.been.called;
-    });
-
-    it('Should not call dispatchMessage without botname', function () {
-      expect(slackBot).to.be.ok;
-      slackBot.botName = 'botname';
-      slackMessage.text = 'ping 1';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.not.have.been.called;
-    });
-  });
-
-  describe('validate command type - recursive for DM', function () {
-    var dispatchMessage,
-      dispatchMessageEventSpy,
-      setupBotEventsStub,
-      slackMessage,
-      slackBot;
-    beforeEach(function () {
-
-      dispatchMessage = sinon.stub(Bot.prototype, 'dispatchMessage');
-      dispatchMessageEventSpy = sinon.spy();
-      setupBotEventsStub = sinon.stub(Bot.prototype, 'setupBotEvents');
-      slackBot = new Bots(config.singleBot.bots).getBots()[0];
-      slackBot.botName = 'botname';
-      slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
-      slackBot.command.eventEmitter.on('command:setup:recursive', dispatchMessageEventSpy);
-      slackBot.command.slackData = {
-        users: [{ id: 'U0GG92T45', name: 'user1' },
-        { id: 'U0GG92T46', name: 'user2' }]
-      };
-      slackMessage = {
-        type: 'message',
-        channel: 'D0GL06JD7',
-        user: 'U0GG92T45',
-        text: 'auto 1',
-        ts: '1453007224.000007',
-        team: 'T0GGDKVDE'
-      };
-    });
-
-    afterEach(function () {
-      dispatchMessage.restore();
-      setupBotEventsStub.restore();
-      slackBot = {};
-      slackMessage = {};
-    });
-
-    it('Should call dispatchMessage with correct arguments', function () {
-      expect(slackBot).to.be.ok;
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.have.been.calledWith({ channels: 'D0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessageEventSpy).to.have.been.calledWith(
-        {
-          message: {
-            recursive_success: true
-          },
-          channels: ["D0GL06JD7"],
-          parsedMessage: {
-            channel: "D0GL06JD7",
-            message: { command: "auto", params: [1] },
-            team: "T0GGDKVDE",
-            text: "auto 1",
-            ts: "1453007224.000007",
-            type: "message",
-            user: "U0GG92T45"
-          }
-        }
-      );
-      expect(dispatchMessage).to.have.been.calledThrice;
-    });
-
-    it('Should call dispatchMessage with empty message', function () {
-      expect(slackBot).to.be.ok;
-      slackMessage.text = '';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.not.have.been.calledWith({ channels: 'D0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessage).to.not.have.been.calledTwice;
-    });
-
-    it('Should call dispatchMessage with wrong command', function () {
-      expect(slackBot).to.be.ok;
-      slackMessage.text = 'wrong command';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.not.have.been.calledWith({ channels:'D0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessage).to.not.have.been.calledTwice;
-    });
-  });
-
-  describe('validate command type - recursive in channel', function () {
-    var dispatchMessage,
-      dispatchMessageEventSpy,
-      slackMessage,
-      slackBot;
-
-    beforeEach(function () {
-
-      dispatchMessage = sinon.stub(Bot.prototype, 'dispatchMessage');
-      dispatchMessageEventSpy = sinon.spy();
-      slackBot = new Bots(config.singleBot.bots).getBots()[0];
-      slackBot.responseHandler = new ResponseHandler(config.singleBot.bots[0].botCommand, 'botname');
-      slackBot.command.eventEmitter.on('command:data:respond', dispatchMessageEventSpy);
-      slackBot.botName = 'botname';
-      slackBot.command.slackData = {
-        users: [{ id: 'U0GG92T45', name: 'user1' },
-        { id: 'U0GG92T46', name: 'user2' }]
-      };
-      slackMessage = {
-        type: 'message',
-        channel: 'C0GL06JD7',
-        user: 'U0GG92T45',
-        text: 'botname ping 1',
-        ts: '1453007224.000007',
-        team: 'T0GGDKVDE'
-      };
-
-    });
-
-    afterEach(function () {
-      dispatchMessage.restore();
-      slackBot = null;
-      slackMessage = {};
-    });
-
-    it('Should call dispatchMessage with correct arguments', function () {
-      expect(slackBot).to.be.ok;
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.have.been.calledWith({ channels:'C0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["C0GL06JD7"], message: { data: "Hello 1" } });
-      expect(dispatchMessage).to.have.been.calledTwice;
-    });
-
-    it('Should call dispatchMessage with botname and command without param', function () {
-      expect(slackBot).to.be.ok;
-      slackBot.botName = 'botname';
-      slackMessage.text = 'botname ping';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.have.been.calledTwice;
-      expect(dispatchMessage).to.have.been.calledWith({ channels:'C0GL06JD7', message: '', type: 'typing' });
-      expect(dispatchMessageEventSpy).to.have.been.calledWith({ channels: ["C0GL06JD7"], message: { data: "Hello 1" } });
-    });
-
-    it('Should not call dispatchMessage', function () {
-      expect(slackBot).to.be.ok;
-      slackBot.botName = 'name';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.not.have.been.called;
-    });
-
-    it('Should not call dispatchMessage without botname', function () {
-      expect(slackBot).to.be.ok;
-      slackBot.botName = 'botname';
-      slackMessage.text = 'ping 1';
-      Bot.prototype.handleMessage.apply(slackBot, [slackMessage]);
-
-      expect(dispatchMessage).to.not.have.been.called;
-    });
-  });
-
-  describe('validate if read event is called on bootstrap', function () {
-    var slackBot,
-      getEventsSpy;
-
-    beforeEach(function () {
-      getEventsSpy = sinon.spy(storage, 'getEvents');
-      slackBot = new Bots(config.singleBot.bots).getBots()[0];
-    });
-
-    afterEach(function () {
-      slackBot = undefined;
-      getEventsSpy.restore();
-    });
-
-    it('Should ', function () {
-      slackBot.eventEmitter.emit('attachSocket', { ws: { on: _.noop }, slackData:
-        { url: 'hello', self: { name: 'botName', id: 'botName' } }
-      });
-      expect(getEventsSpy).to.have.been.calledOnce;
-    });
-  });
 });
