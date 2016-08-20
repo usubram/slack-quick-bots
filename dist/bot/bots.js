@@ -15,8 +15,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var _ = require('lodash');
-var Bot = require('./bot');
-var botLogger = require('./../../lib/utils/logger');
+var path = require('path');
+var root = '..';
+
+var Bot = require(path.join(root, 'bot/bot'));
+var botLogger = require(path.join(root, 'utils/logger'));
 
 var externals = {};
 var internals = {

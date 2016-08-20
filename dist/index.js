@@ -14,17 +14,17 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var _ = require('lodash');
 var url = require('url');
 var assert = require('assert');
-var _ = require('lodash');
 
+var botLogger = require('./utils/logger');
 var Bots = require('./bot/bots');
 var connector = require('./connector');
 var socket = require('./bot/socket');
 var server = require('./bot/server');
-
-var botLogger = require('./../lib/utils/logger');
-var storage = require('./../lib/storage/storage');
+var socketServer = require('./bot/socket-server');
+var storage = require('./storage/storage');
 
 var externals = {};
 
@@ -58,14 +58,13 @@ externals.SlackBot = function () {
       var _this = this;
 
       botLogger.logger.info('Index: contacting slack for connection');
-
       if (this.config.server) {
-        this.setupServer.call(this, this.config, function (err, server) {
+        return this.setupServer(this.config, function (err, server) {
           _this.server = server;
-          _this.initializeBots.call(_this, server);
+          return _this.initializeBots(server);
         });
       } else {
-        this.initializeBots.call(this);
+        return this.initializeBots(null);
       }
     }
   }, {
@@ -130,7 +129,7 @@ externals.SlackBot = function () {
           var purposeId = _.nth(paths, 3);
           _.forEach(_this5.bots, function (bot) {
             if (botId === bot.id) {
-              bot.eventEmitter.emit('hookCast', purposeId, responeBody, response, _this5.respondToHook);
+              bot.handleHookRequest(purposeId, responeBody, response);
             }
           });
         })();
@@ -152,7 +151,7 @@ externals.SlackBot = function () {
     value: function initializeBots(server) {
       var _this6 = this;
 
-      this.bots.reduce(function (promiseItem, bot) {
+      return this.bots.reduce(function (promiseItem, bot) {
         botLogger.logger.debug('Index: Creating promise for', bot);
         if (bot.config.webHook) {
           bot.server = server;
@@ -180,8 +179,10 @@ externals.SlackBot = function () {
         botLogger.logger.info('Index: calling startRTM');
         return _this7.startRTM(bot);
       }).then(function (slackResponse) {
-        botLogger.logger.info('Index: calling create socket');
-        socket.createSocket(slackResponse);
+        botLogger.logger.info('Index: calling create socket', slackResponse);
+        return socket.createSocket(slackResponse);
+      }).then(function (botInfo) {
+        return botInfo.setupBotEvents(_.get(bot, 'config.mock'));
       }).catch(function (err, reason) {
         botLogger.logger.info('Index: error', err);
         botLogger.logger.info('Index: failed reason', reason);
@@ -190,6 +191,9 @@ externals.SlackBot = function () {
   }, {
     key: 'startRTM',
     value: function startRTM(bot) {
+      if (_.get(bot, 'config.mock')) {
+        return socketServer.connect(bot);
+      }
       botLogger.logger.debug('Index: Connecting for bot %j', bot);
       return connector.connect(bot);
     }

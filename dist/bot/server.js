@@ -11,21 +11,24 @@
 // Load modules
 
 var http = require('http');
+var path = require('path');
+var root = '..';
+
+var botLogger = require(path.join(root, 'utils/logger'));
 
 var externals = {};
 var internals = {
-  defaultPort: 8080
+  defaultPort: 8080,
+  defaultHost: '0.0.0.0'
 };
 
 externals.setupServer = function (config, handler, callback) {
   var server = http.createServer(handler);
   var port = config.port || internals.defaultPort;
-  var hostname = config.hostname || '0.0.0.0';
+  var hostname = config.hostname || internals.defaultHost;
   server.listen(port, hostname, function () {
+    botLogger.logger.info('Server listening on ', port, config.hostname);
     callback(null, server);
-    /* jshint ignore:start */
-    console.log('Server listening on ', port, config.hostname);
-    /* jshint ignore:end */
   }).on('error', function (err) {
     if (err) {
       throw new Error(err);

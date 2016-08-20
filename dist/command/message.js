@@ -9,14 +9,18 @@
 'use strict';
 
 var _ = require('lodash');
-var botLogger = require('./../../lib/utils/logger');
+var path = require('path');
+var root = '..';
 
+var botLogger = require(path.join(root, 'utils/logger'));
+
+var externals = {};
 var internals = {
   channelCommandKey: ['commandPrefix', 'command', 'params'],
   directCommandKey: ['command', 'params']
 };
 
-exports.parse = function (message, isDirectMessage) {
+externals.parse = function (message, isDirectMessage) {
   var parsedCommand = Object.assign({}, message);
   var channelNameRegex = new RegExp(/(?:^<\@)(?:.*)(?:(?:\>$)|(?:\>\:$))/);
   var messageArr = _.map(_.compact(message.text.split(' ')), function (item) {
@@ -34,9 +38,7 @@ exports.parse = function (message, isDirectMessage) {
   if (parsedCommand.message.command) {
     parsedCommand.message.command = _.camelCase(parsedCommand.message.command);
   }
-
   botLogger.logger.debug('message:', parsedCommand);
-
   return parsedCommand;
 };
 
@@ -55,3 +57,5 @@ internals.mapCommand = function (messageArr, keys) {
   }
   return messageMap;
 };
+
+module.exports = externals;

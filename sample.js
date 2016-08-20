@@ -13,6 +13,8 @@ const handlebars = require('handlebars');
 const fs = require('fs');
 const sampleTemplate = fs.readFileSync('./sample.hbs', 'utf8');
 
+var args = process.argv.slice(2);
+
 var config = {
   bots: [{
     botCommand: {
@@ -26,7 +28,7 @@ var config = {
         data: function(input, options, callback) {
           // input.command - for command name.
           // input.params - for params in array.
-          // options.user.email - email in slack.
+          // options.user.profile.email - email in slack.
           // options.hookUrl - custom webhook url.
           // options.channel - channel from which the command was fired.
           callback({
@@ -37,12 +39,13 @@ var config = {
       trend: {
         commandType: 'DATA',
         responseType: {
-          type: 'svg',
+          type: 'png',
           ylabel: 'errors',
           timeUnit: 'm',
           title: 'Log data',
           logscale: false,
-          style: 'lines'
+          style: 'lines',
+          exec: { encoding: 'utf16' }
         },
         allowedParam: [1, 2],
         defaultParamValue: 1,
@@ -81,6 +84,9 @@ var config = {
         commandType: 'ALERT',
         timeInterval: 1, // time due which call to the back is made.
         helpText: ':small_red_triangle_down: this a alert command \\n',
+        template: function() {
+          return handlebars.compile(sampleTemplate);
+        },
         data: function(input, options, callback) {
           var dataArr = [ // Sample data
             [100, 120, 130, 110, 123, 90],
@@ -95,11 +101,25 @@ var config = {
           var rand = dataArr[Math.floor(Math.random() * dataArr.length)];
           callback(rand);
         }
+      },
+      file: {
+        commandType: 'DATA',
+        allowedParam: ['*'],
+        helpText: ':small_red_triangle_down: this a alert command \\n',
+        data: function(input, options, callback) {
+          callback({
+            responseType: {
+              type: 'xml',
+              name: 'hello'
+            },
+            response: '<xml></xml>'
+          });
+        }
       }
     },
     blockDirectMessage: false,
     webHook: true,
-    botToken: ''
+    botToken: args[0]
   },
   {
     botCommand: {
@@ -132,11 +152,12 @@ var config = {
         }
       }
     },
-    botToken: '',
+    botToken: args[1],
     webHook: true,
     allowedUsers: ['john'],
     blockDirectMessage: true
-  }],
+  }
+  ],
   logger: console, // you could pass a winston logger.
   server: {
     port: 9090,

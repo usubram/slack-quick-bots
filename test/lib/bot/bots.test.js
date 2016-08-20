@@ -10,7 +10,7 @@ const config = require('../../mock/config');
 
 chai.use(sinonChai);
 
-describe('/bots', function () {
+describe('/bots.js', function () {
   describe('Should instantiate bots correctly', function () {
     var slackBots;
     beforeEach(function () {
@@ -26,15 +26,15 @@ describe('/bots', function () {
       it('Should contain bot token and command for bots', function () {
         expect(slackBots).to.be.ok;
         _.forEach(slackBots, function (botInfo) {
-          expect(botInfo.command).to.be.ok;
+          expect(botInfo.config.botCommand).to.be.ok;
         });
       });
 
       it('Should contain normalized bots', function () {
         expect(slackBots).to.be.ok;
         _.forEach(slackBots, function (botInfo) {
-          expect(botInfo.command.commands['pingMe']).to.be.ok;
-          expect(botInfo.command.commands['stop']).to.be.undefined;
+          expect(botInfo.config.botCommand['pingMe']).to.be.ok;
+          expect(botInfo.config.botCommand['stop']).to.be.undefined;
         });
       });
 
@@ -56,17 +56,17 @@ describe('/bots', function () {
       it('Should contain bot token and command for bots', function () {
         expect(slackBots).to.be.ok;
         _.forEach(slackBots, function (botInfo) {
-          expect(botInfo.command).to.be.ok;
+          expect(botInfo.config.botCommand).to.be.ok;
         });
       });
 
       it('Should contain normalized bots', function () {
         expect(slackBots).to.be.ok;
         _.forEach(slackBots, function (botInfo) {
-          expect(botInfo.command.commands['pingMe']).to.be.ok;
-          expect(botInfo.command.commands['autoData']).to.be.ok;
-          expect(botInfo.command.commands['stop']).to.be.ok;
-          expect(botInfo.command.commands['stop'].allowedParam).to.deep.equal(['autoData']);
+          expect(botInfo.config.botCommand['pingMe']).to.be.ok;
+          expect(botInfo.config.botCommand['autoData']).to.be.ok;
+          expect(botInfo.config.botCommand['stop']).to.be.ok;
+          expect(botInfo.config.botCommand['stop'].allowedParam).to.deep.equal(['autoData']);
         });
       });
 

@@ -8,11 +8,13 @@
 
 'use strict';
 
-// Load modules
-
-var botLogger = require('./../../lib/utils/logger');
+var _ = require('lodash');
+var path = require('path');
 var WebSocketPlugin = require('ws');
-var connector = require('./../connector');
+var root = '..';
+
+var botLogger = require(path.join(root, 'utils/logger'));
+var connector = require(path.join(root, 'connector'));
 
 function createWebSocket(botInfo) {
   return new WebSocketPlugin(botInfo.slackData.url);
@@ -20,9 +22,8 @@ function createWebSocket(botInfo) {
 
 function createWebSocketPromise(botInfo) {
   return new Promise(function (resolve, reject) {
-    if (botInfo && botInfo.slackData && botInfo.slackData.url) {
+    if (_.get(botInfo, 'slackData.url')) {
       botInfo.ws = createWebSocket(botInfo);
-      botInfo.eventEmitter.emit('attachSocket', botInfo);
       resolve(botInfo);
     } else {
       reject(false);

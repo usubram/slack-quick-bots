@@ -12,7 +12,8 @@
 
 var http = require('https');
 var querystring = require('querystring');
-var botLogger = require('../lib/utils/logger');
+
+var botLogger = require('./utils/logger');
 
 var internals = {
   retryCountStore: {},
