@@ -128,18 +128,10 @@ externals.Bot = function () {
         parsedMessage.message.commandPrefix = _.camelCase(this.botName);
       }
       if (this.config.blockDirectMessage && !responseHandler.isPublicMessage(message)) {
-        this.dispatchMessage({
-          channels: parsedMessage.channel,
-          message: responseHandler.generateBotResponseTemplate({
-            parsedMessage: parsedMessage,
-            channels: [parsedMessage.channel],
-            message: {
-              /* jshint ignore:start */
-              bot_direct_message_error: true
-              /* jshint ignore:end */
-            }
-          })
-        });
+        this.handleBotMessages(parsedMessage);
+        if (_.isFunction(_.get(this, 'events.output'))) {
+          _.get(this, 'events.output')(this.handleBotMessages(parsedMessage));
+        }
         return;
       }
 
@@ -218,6 +210,20 @@ externals.Bot = function () {
       var message = responseHandler.generateErrorTemplate(botName, this.config.botCommand, context);
       this.dispatchMessage({
         channels: context.parsedMessage.channel,
+        message: message
+      });
+      return message;
+    }
+  }, {
+    key: 'handleBotMessages',
+    value: function handleBotMessages(parsedMessage) {
+      var message = responseHandler.generateBotResponseTemplate({
+        /* jshint ignore:start */
+        bot_direct_message_error: true
+        /* jshint ignore:end */
+      });
+      this.dispatchMessage({
+        channels: parsedMessage.channel,
         message: message
       });
       return message;

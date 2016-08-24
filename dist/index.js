@@ -40,14 +40,14 @@ var internals = {
 };
 
 externals.SlackBot = function () {
-  function _class(options) {
+  function _class(options, settings) {
     _classCallCheck(this, _class);
 
     this.config = Object.assign(internals.defaultConfig.slackBotRoot, options);
     botLogger.setLogger(this.config.logger);
     storage.createEventDirectory();
     botLogger.logger.info('Index: config passed');
-    this.assertInputData(this.config);
+    this.assertInputData(this.config, settings);
     this.bots = new Bots(this.config.bots).getBots();
     botLogger.logger.debug('Index: this.bots', this.bots);
   }
@@ -199,11 +199,14 @@ externals.SlackBot = function () {
     }
   }, {
     key: 'assertInputData',
-    value: function assertInputData(config) {
+    value: function assertInputData(config, settings) {
       assert.ok(config.bots, 'Invalid or empty config passed. Refer link here');
       assert.ok(config.bots.length > 0, 'Bots cannot be empty. Refer link here');
       _.forEach(config.bots, function (bot) {
 
+        if (!_.get(settings, 'isMock')) {
+          delete bot.mock;
+        }
         assert.ok(!_.isEmpty(bot.botToken), 'Bot need to have bot token. Refer github docs.');
 
         assert.ok(!_.isEmpty(bot.botCommand), 'Bot need to have atleast one command. Refer github docs.');

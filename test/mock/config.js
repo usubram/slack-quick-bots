@@ -365,5 +365,37 @@ exports = module.exports = {
       },
       botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
     }]
+  },
+  blockDirectMessage: {
+    bots: [{
+      botCommand: {
+        PING: {
+          commandType: 'DATA',
+          allowedParam: [1, 2],
+          defaultParamValue: 1,
+          template: function () {
+            return handlebars.compile(sampleTemplate);
+          },
+          data: function (input, options, callback) {
+            callback({
+              'param': input.params
+            });
+          }
+        }
+      },
+      mock: {
+        self: {
+          name: 'testbot1',
+          id: 'U1234567'
+        },
+        users: [{
+          id: 'U0GG92T45', name: 'user1'
+        }, {
+          id: 'U0GG92T46', name: 'user2'
+        }]
+      },
+      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
+      blockDirectMessage: true
+    }]
   }
 };

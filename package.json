@@ -10,7 +10,7 @@
   "scripts": {
     "build": "babel ./lib --out-dir dist --copy-files",
     "start": "node ./dist/index.js",
-    "test": "mocha --require babel-core/register ./test/lib/*",
+    "test": "NODE_ENV=test mocha --require babel-core/register ./test/lib/*",
     "lint": "jshint **.js && jshint lib/."
   },
   "repository": {
