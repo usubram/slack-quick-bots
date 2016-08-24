@@ -82,9 +82,9 @@ externals.Commands = function () {
       var _this2 = this;
 
       return this.preprocess(parsedMessage).then(function () {
+        return _this2.notify(parsedMessage);
+      }).then(function () {
         return _this2.process(parsedMessage);
-      }).then(function (response) {
-        return _this2.notify(response);
       }).catch(function (err) {
         botLogger.logger.info('Error processing command ', err);
       });

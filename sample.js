@@ -84,9 +84,6 @@ var config = {
         commandType: 'ALERT',
         timeInterval: 1, // time due which call to the back is made.
         helpText: ':small_red_triangle_down: this a alert command \\n',
-        template: function() {
-          return handlebars.compile(sampleTemplate);
-        },
         data: function(input, options, callback) {
           var dataArr = [ // Sample data
             [100, 120, 130, 110, 123, 90],
@@ -120,8 +117,7 @@ var config = {
     blockDirectMessage: false,
     webHook: true,
     botToken: args[0]
-  },
-  {
+  }, {
     botCommand: {
       traffic: {
         commandType: 'DATA',

@@ -27,11 +27,9 @@ externals.StreamFile = function () {
   function _class(channel, data, config) {
     _classCallCheck(this, _class);
 
-    console.log('config', config);
     if (data.responseType) {
       config = _.merge(config, data.responseType);
     }
-    console.log('config', config);
     if (_.includes(internals.graphFileTypes, config.type) && config.style) {
       return internals.handleGraphResponse(channel, data, config);
     } else {

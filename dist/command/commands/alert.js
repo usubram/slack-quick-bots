@@ -121,7 +121,7 @@ externals.Alert = function (_Command) {
           _this4.messageHandler({
             channels: parsedMessage.channel,
             message: responseHandler.generateBotResponseTemplate({
-              template: _this4.template,
+              template: _.isFunction(_this4.template) ? _this4.template : '',
               /* jshint ignore:start */
               alert_notification: true,
               /* jshint ignore:end */
@@ -141,6 +141,7 @@ externals.Alert = function (_Command) {
       var alertTaskChannelPath = _.concat(alertTaskPath, 'channel');
       var dataSamplePathVale = _.concat(alertTaskPath, 'dataSample', 'value');
       var dataSamplePathTime = _.concat(alertTaskPath, 'dataSample', 'time');
+
       if (this.getParams(parsedMessage, 0) === internals.alertParams[1]) {
         this.messageHandler({
           channels: parsedMessage.channel,
@@ -167,7 +168,7 @@ externals.Alert = function (_Command) {
             var alertData = _.get(this, alertTaskChannelPath);
             _.get(this, dataSamplePathVale, []).unshift(varianceResult.perct);
             channelsToAlert = _.flatten(_.compact(_.map(alertData, function (value, key) {
-              if (varianceResult.perct > _.get(_this5, [alertTaskChannelPath, key, 'sentivity'], 0)) {
+              if (varianceResult.perct > _.get(_this5, _.concat(alertTaskChannelPath, key, 'sentivity'), 0)) {
                 return key;
               }
             })));
