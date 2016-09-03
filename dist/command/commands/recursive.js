@@ -47,29 +47,31 @@ externals.Recursive = function (_Command) {
     value: function preprocess(parsedMessage) {
       var _this2 = this;
 
-      return new Promise(function (resolve, reject) {
-        var time = _this2.getParams(parsedMessage, 0);
-        time = _.isNumber(time) ? time : 1;
+      return Promise.resolve({
+        then: function then(onFulfill, onReject) {
+          var time = _this2.getParams(parsedMessage, 0);
+          time = _.isNumber(time) ? time : 1;
 
-        if (_this2.getCommand().timeUnit === 'h') {
-          time = time * 3600000;
-        } else {
-          time = time * 60000; // default to minute
+          if (_this2.getCommand().timeUnit === 'h') {
+            time = time * 3600000;
+          } else {
+            time = time * 60000; // default to minute
+          }
+          _this2.setEventStoreParsedMessage(parsedMessage);
+
+          _this2.setTimer(parsedMessage, setInterval(function () {
+            _this2.quietRespond(parsedMessage);
+          }, time));
+
+          storage.updateEvents(_this2.getSlackData().self.name, 'events', {
+            parsedMessage: parsedMessage,
+            channels: [parsedMessage.channel]
+          }).then(function () {
+            onFulfill(parsedMessage);
+          }).catch(function (err) {
+            onReject(err);
+          });
         }
-        _this2.setEventStoreParsedMessage(parsedMessage);
-
-        _this2.setTimer(parsedMessage, setInterval(function () {
-          _this2.quietRespond(parsedMessage);
-        }, time));
-
-        storage.updateEvents(_this2.getSlackData().self.name, 'events', {
-          parsedMessage: parsedMessage,
-          channels: [parsedMessage.channel]
-        }).then(function () {
-          resolve(parsedMessage);
-        }).catch(function (err) {
-          reject(err);
-        });
       });
     }
   }, {
@@ -77,19 +79,20 @@ externals.Recursive = function (_Command) {
     value: function process(parsedMessage) {
       var _this3 = this;
 
-      return new Promise(function (resolve, reject) {
+      return Promise.resolve({
+        then: function then(onFulfill, onReject) {
+          _this3.callback = function (data) {
+            onFulfill(_this3.message.bind(_this3, parsedMessage)(data));
+          };
 
-        _this3.callback = function (data) {
-          resolve(_this3.message.bind(_this3, parsedMessage)(data));
-        };
-
-        try {
-          _this3.getCommand().data.apply(_this3, [{
-            command: parsedMessage.message.command, params: parsedMessage.message.params
-          }, _this3.buildOptions(parsedMessage, _this3.getSlackData(), _this3.purpose), _this3.callback]);
-        } catch (err) {
-          botLogger.logger.error('Command: error calling handler,' + 'make sure to pass a proper function', err, err.stack);
-          return reject(err);
+          try {
+            _this3.getCommand().data.apply(_this3, [{
+              command: parsedMessage.message.command, params: parsedMessage.message.params
+            }, _this3.buildOptions(parsedMessage, _this3.getSlackData(), _this3.purpose), _this3.callback]);
+          } catch (err) {
+            botLogger.logger.error('Command: error calling handler,' + 'make sure to pass a proper function', err, err.stack);
+            return onReject(err);
+          }
         }
       });
     }
@@ -98,16 +101,18 @@ externals.Recursive = function (_Command) {
     value: function notify(parsedMessage) {
       var _this4 = this;
 
-      return new Promise(function (resolve) {
-        _this4.messageHandler({
-          channels: parsedMessage.channel,
-          message: responseHandler.generateBotResponseTemplate({
-            parsedMessage: parsedMessage,
-            /* jshint ignore:start */
-            recursive_success: true
-          })
-        });
-        resolve();
+      return Promise.resolve({
+        then: function then(onFulfill) {
+          _this4.messageHandler({
+            channels: parsedMessage.channel,
+            message: responseHandler.generateBotResponseTemplate({
+              parsedMessage: parsedMessage,
+              /* jshint ignore:start */
+              recursive_success: true
+            })
+          });
+          onFulfill();
+        }
       });
     }
   }, {

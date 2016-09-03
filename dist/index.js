@@ -179,7 +179,7 @@ externals.SlackBot = function () {
         botLogger.logger.info('Index: calling startRTM');
         return _this7.startRTM(bot);
       }).then(function (slackResponse) {
-        botLogger.logger.info('Index: calling create socket', slackResponse);
+        botLogger.logger.debug('Index: calling create socket', slackResponse);
         return socket.createSocket(slackResponse);
       }).then(function (botInfo) {
         return botInfo.setupBotEvents(_.get(bot, 'config.mock'));

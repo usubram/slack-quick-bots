@@ -60,36 +60,39 @@ internals.callRtm = function (botInfo, resolve, reject) {
 };
 
 internals.makeRequest = function (options, postData) {
-  return new Promise(function (resolve, reject) {
-    var req = http.request(options, function (response) {
-      var responseStr = '';
-      response.on('data', function (chunk) {
-        responseStr += chunk;
+  return Promise.resolve({
+    then: function then(onFulfill, onReject) {
+      var req = http.request(options, function (response) {
+        var responseStr = '';
+        response.on('data', function (chunk) {
+          responseStr += chunk;
+        });
+        response.on('end', function () {
+          var slackData = '';
+          try {
+            slackData = JSON.parse(responseStr);
+          } catch (err) {
+            botLogger.logger.error('response', JSON.stringify(responseStr));
+            botLogger.logger.error('Connector: slack response corrupted', slackData);
+            onReject();
+          }
+          if (slackData && slackData.url) {
+            botLogger.logger.info('Connector: got the connection string from slack');
+            onFulfill(slackData);
+          } else if (slackData && slackData.error === 'invalid_auth') {
+            botLogger.logger.info('Connector: slack sent invalid auth');
+            onReject(slackData.error);
+          } else {
+            onReject();
+            botLogger.logger.info('Connector: calling retry');
+          }
+        });
+      }).on('error', function () {
+        onReject();
       });
-      response.on('end', function () {
-        var slackData = '';
-        try {
-          slackData = JSON.parse(responseStr);
-        } catch (err) {
-          botLogger.logger.error('response', JSON.stringify(responseStr));
-          botLogger.logger.error('Connector: slack response corrupted', slackData);
-        }
-        if (slackData && slackData.url) {
-          botLogger.logger.info('Connector: got the connection string from slack');
-          resolve(slackData);
-        } else if (slackData && slackData.error === 'invalid_auth') {
-          botLogger.logger.info('Connector: slack sent invalid auth');
-          reject(slackData.error);
-        } else {
-          reject();
-          botLogger.logger.info('Connector: calling retry');
-        }
-      });
-    }).on('error', function () {
-      reject();
-    });
-    req.write('' + postData);
-    req.end();
+      req.write('' + postData);
+      req.end();
+    }
   });
 };
 
