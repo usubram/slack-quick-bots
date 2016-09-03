@@ -56,7 +56,6 @@ exports = module.exports.updateEvents = function (botName, eventType, data) {
 exports = module.exports.removeEvents = function (botName, eventType, data) {
   return Promise.resolve({
     then: function then(onFulfill, onReject) {
-      console.log('came to readh');
       internals.readFile(eventType).then(function (eventsData) {
         if (_.get(data, 'channels', []).length) {
           _.forEach(data.channels, function (channel) {
