@@ -46,21 +46,23 @@ externals.Data = function (_Command) {
     value: function preprocess(parsedMessage) {
       var _this2 = this;
 
-      return new Promise(function (resolve, reject) {
-        _this2.template = '';
-        _this2.purpose = _this2.getHook() ? _this2.getHook().getHookPurpose(parsedMessage.channel) : '';
-        _this2.hookContext = _this2.getHookContext(_this2.purpose, parsedMessage.channel, parsedMessage.message.command);
+      return Promise.resolve({
+        then: function then(onFulfill, onReject) {
+          _this2.template = '';
+          _this2.purpose = _this2.getHook() ? _this2.getHook().getHookPurpose(parsedMessage.channel) : '';
+          _this2.hookContext = _this2.getHookContext(_this2.purpose, parsedMessage.channel, parsedMessage.message.command);
 
-        _this2.setDefaultParams(_this2.getCommand(), parsedMessage, 0);
+          _this2.setDefaultParams(_this2.getCommand(), parsedMessage, 0);
 
-        try {
-          _this2.template = _this2.getCommand().template ? _this2.getCommand().template() : '';
-        } catch (err) {
-          botLogger.logger.error('Command: make sure to pass a compiled handlebar template', err);
-          return reject(err);
+          try {
+            _this2.template = _this2.getCommand().template ? _this2.getCommand().template() : '';
+          } catch (err) {
+            botLogger.logger.error('Command: make sure to pass a compiled handlebar template', err);
+            return onReject(err);
+          }
+
+          onFulfill(parsedMessage);
         }
-
-        resolve(parsedMessage);
       });
     }
   }, {
@@ -68,17 +70,19 @@ externals.Data = function (_Command) {
     value: function process(parsedMessage) {
       var _this3 = this;
 
-      return new Promise(function (resolve, reject) {
-        try {
-          _this3.callback = function (data) {
-            resolve(_this3.message.bind(_this3, parsedMessage)(data));
-          };
-          _this3.getCommand().data.apply(_this3, [{
-            command: parsedMessage.message.command, params: parsedMessage.message.params
-          }, _this3.buildOptions(parsedMessage, _this3.getSlackData(), _this3.purpose), _this3.callback]);
-        } catch (err) {
-          botLogger.logger.error('Command: error calling handler,' + 'make sure to pass a proper function', err, err.stack);
-          return reject(err);
+      return Promise.resolve({
+        then: function then(onFulfill, onReject) {
+          try {
+            _this3.callback = function (data) {
+              onFulfill(_this3.message.bind(_this3, parsedMessage)(data));
+            };
+            _this3.getCommand().data.apply(_this3, [{
+              command: parsedMessage.message.command, params: parsedMessage.message.params
+            }, _this3.buildOptions(parsedMessage, _this3.getSlackData(), _this3.purpose), _this3.callback]);
+          } catch (err) {
+            botLogger.logger.error('Command: error calling handler,' + 'make sure to pass a proper function', err, err.stack);
+            return onReject(err);
+          }
         }
       });
     }

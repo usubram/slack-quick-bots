@@ -89,20 +89,22 @@ externals.CommandFactory = function () {
     value: function handleMessage(parsedMessage) {
       var _this2 = this;
 
-      return new Promise(function (resolve, reject) {
-        var command = _this2.commandObj[_.get(parsedMessage, 'message.command')];
-        if (command) {
-          command.validate(parsedMessage).then(function () {
-            return command.typingMessage(parsedMessage);
-          }).then(function () {
-            return command.respond(parsedMessage);
-          }).then(function (response) {
-            resolve(response);
-          }).catch(function (err) {
-            reject(err);
-          });
-        } else {
-          reject({ error: true, parsedMessage: parsedMessage });
+      return Promise.resolve({
+        then: function then(onFulfill, onReject) {
+          var command = _this2.commandObj[_.get(parsedMessage, 'message.command')];
+          if (command) {
+            command.validate(parsedMessage).then(function () {
+              return command.typingMessage(parsedMessage);
+            }).then(function () {
+              return command.respond(parsedMessage);
+            }).then(function (response) {
+              onFulfill(response);
+            }).catch(function (err) {
+              onReject(err);
+            });
+          } else {
+            onReject({ error: true, parsedMessage: parsedMessage });
+          }
         }
       });
     }
@@ -111,18 +113,20 @@ externals.CommandFactory = function () {
     value: function handleHook(purposeId, requestData) {
       var _this3 = this;
 
-      return new Promise(function (resolve, reject) {
-        var hookInstance = _.head(_.compact(_.map(_this3.commandObj, ['hookContext', purposeId, 'command'].join('.'))));
-        var commandModel = _.get(_this3.commandObj, hookInstance, undefined);
-        if (requestData && hookInstance && commandModel) {
-          var template = _.get(commandModel, 'command.template', _.noop);
-          var renderedData = requestData.text || template(requestData);
-          resolve({
-            channels: [commandModel.hookContext[purposeId].channel],
-            message: renderedData
-          });
-        } else {
-          reject({ error: 'invalid hook url' });
+      return Promise.resolve({
+        then: function then(onFulfill, onReject) {
+          var hookInstance = _.head(_.compact(_.map(_this3.commandObj, ['hookContext', purposeId, 'command'].join('.'))));
+          var commandModel = _.get(_this3.commandObj, hookInstance, undefined);
+          if (requestData && hookInstance && commandModel) {
+            var template = _.get(commandModel, 'command.template', _.noop);
+            var renderedData = requestData.text || template(requestData);
+            onFulfill({
+              channels: [commandModel.hookContext[purposeId].channel],
+              message: renderedData
+            });
+          } else {
+            onReject({ error: 'invalid hook url' });
+          }
         }
       });
     }

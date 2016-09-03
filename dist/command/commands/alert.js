@@ -50,43 +50,45 @@ externals.Alert = function (_Command) {
     value: function preprocess(parsedMessage) {
       var _this2 = this;
 
-      return new Promise(function (resolve, reject) {
-        if (_this2.getParams(parsedMessage, 0) === internals.alertParams[0]) {
-          var sentivity = _this2.getParams(parsedMessage, 1) || 75;
-          var time = _this2.getParams(parsedMessage, 0);
-          var alertTaskPath = ['eventStore', parsedMessage.message.command];
-          var alertTaskChannelPath = _.concat(alertTaskPath, 'channel');
-          var alertTaskCurrentChannelPath = _.concat(alertTaskChannelPath, parsedMessage.channel);
-          var alertCurrentSentivity = _.concat(alertTaskCurrentChannelPath, 'sentivity');
-          var alertTaskTimer = _.concat(alertTaskPath, 'timer');
-          var alertCurrentMessage = _.concat(alertTaskCurrentChannelPath, 'parsedMessage');
+      return Promise.resolve({
+        then: function then(onFulfill, onReject) {
+          if (_this2.getParams(parsedMessage, 0) === internals.alertParams[0]) {
+            var sentivity = _this2.getParams(parsedMessage, 1) || 75;
+            var time = _this2.getParams(parsedMessage, 0);
+            var alertTaskPath = ['eventStore', parsedMessage.message.command];
+            var alertTaskChannelPath = _.concat(alertTaskPath, 'channel');
+            var alertTaskCurrentChannelPath = _.concat(alertTaskChannelPath, parsedMessage.channel);
+            var alertCurrentSentivity = _.concat(alertTaskCurrentChannelPath, 'sentivity');
+            var alertTaskTimer = _.concat(alertTaskPath, 'timer');
+            var alertCurrentMessage = _.concat(alertTaskCurrentChannelPath, 'parsedMessage');
 
-          time = _.isNumber(time) ? time : 1;
-          if (_this2.getCommand().timeUnit === 'h') {
-            time = time * 3600000;
+            time = _.isNumber(time) ? time : 1;
+            if (_this2.getCommand().timeUnit === 'h') {
+              time = time * 3600000;
+            } else {
+              time = time * 60000; // default to minute
+            }
+
+            _.set(_this2, alertCurrentSentivity, sentivity);
+            _.set(_this2, alertCurrentMessage, parsedMessage);
+
+            if (!_.get(_this2, alertTaskTimer, undefined)) {
+              _.set(_this2, alertTaskTimer, setInterval(function () {
+                _this2.quietRespond(_.get(_this2, alertCurrentMessage, parsedMessage));
+              }, time));
+            }
+
+            storage.updateEvents(_this2.getSlackData().self.name, 'events', {
+              parsedMessage: parsedMessage,
+              channels: [parsedMessage.channel]
+            }).then(function () {
+              onFulfill(parsedMessage);
+            }).catch(function (err) {
+              onReject(err);
+            });
           } else {
-            time = time * 60000; // default to minute
+            onFulfill(parsedMessage);
           }
-
-          _.set(_this2, alertCurrentSentivity, sentivity);
-          _.set(_this2, alertCurrentMessage, parsedMessage);
-
-          if (!_.get(_this2, alertTaskTimer, undefined)) {
-            _.set(_this2, alertTaskTimer, setInterval(function () {
-              _this2.quietRespond(_.get(_this2, alertCurrentMessage, parsedMessage));
-            }, time));
-          }
-
-          storage.updateEvents(_this2.getSlackData().self.name, 'events', {
-            parsedMessage: parsedMessage,
-            channels: [parsedMessage.channel]
-          }).then(function () {
-            resolve(parsedMessage);
-          }).catch(function (err) {
-            reject(err);
-          });
-        } else {
-          resolve(parsedMessage);
         }
       });
     }
@@ -95,19 +97,20 @@ externals.Alert = function (_Command) {
     value: function process(parsedMessage) {
       var _this3 = this;
 
-      return new Promise(function (resolve, reject) {
+      return Promise.resolve({
+        then: function then(onFulfill, onReject) {
+          _this3.callback = function (data) {
+            onFulfill(_this3.message.bind(_this3, parsedMessage)(data));
+          };
 
-        _this3.callback = function (data) {
-          resolve(_this3.message.bind(_this3, parsedMessage)(data));
-        };
-
-        try {
-          _this3.getCommand().data.apply(_this3, [{
-            command: parsedMessage.message.command, params: parsedMessage.message.params
-          }, _this3.buildOptions(parsedMessage, _this3.getSlackData(), _this3.purpose), _this3.callback]);
-        } catch (err) {
-          botLogger.logger.error('Command: error calling handler,' + 'make sure to pass a proper function', err, err.stack);
-          return reject(err);
+          try {
+            _this3.getCommand().data.apply(_this3, [{
+              command: parsedMessage.message.command, params: parsedMessage.message.params
+            }, _this3.buildOptions(parsedMessage, _this3.getSlackData(), _this3.purpose), _this3.callback]);
+          } catch (err) {
+            botLogger.logger.error('Command: error calling handler,' + 'make sure to pass a proper function', err, err.stack);
+            return onReject(err);
+          }
         }
       });
     }
@@ -116,20 +119,22 @@ externals.Alert = function (_Command) {
     value: function notify(parsedMessage) {
       var _this4 = this;
 
-      return new Promise(function (resolve) {
-        if (_this4.getParams(parsedMessage, 0) === internals.alertParams[0]) {
-          _this4.messageHandler({
-            channels: parsedMessage.channel,
-            message: responseHandler.generateBotResponseTemplate({
-              template: _.isFunction(_this4.template) ? _this4.template : '',
-              /* jshint ignore:start */
-              alert_notification: true,
-              /* jshint ignore:end */
-              threshold: _this4.getParams(parsedMessage, 1) || 75
-            })
-          });
+      return Promise.resolve({
+        then: function then(onFulfill) {
+          if (_this4.getParams(parsedMessage, 0) === internals.alertParams[0]) {
+            _this4.messageHandler({
+              channels: parsedMessage.channel,
+              message: responseHandler.generateBotResponseTemplate({
+                template: _.isFunction(_this4.template) ? _this4.template : '',
+                /* jshint ignore:start */
+                alert_notification: true,
+                /* jshint ignore:end */
+                threshold: _this4.getParams(parsedMessage, 1) || 75
+              })
+            });
+          }
+          onFulfill();
         }
-        resolve();
       });
     }
   }, {

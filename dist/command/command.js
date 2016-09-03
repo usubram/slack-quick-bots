@@ -44,35 +44,37 @@ externals.Commands = function () {
     value: function validate(slackResponse) {
       var _this = this;
 
-      return new Promise(function (resolve, reject) {
-        if (!internals.isCommandAllowed(_this.getCommand(), slackResponse, _this.getSlackData().users)) {
-          /* jshint ignore:start */
-          return reject({
-            restricted_user: true,
-            users: _this.getCommand().allowedUsers,
-            parsedMessage: slackResponse
-          });
-          /* jshint ignore:end */
-        } else if (_this.setDefaultParams(_this.getCommand(), slackResponse, 0)) {
-          return resolve();
-        }
-
-        var isLimitValid = internals.isLimitValid(_this.getCommand(), slackResponse);
-        var isAllowedParamValid = internals.isAllowedParamValid(_this.getCommand(), slackResponse);
-
-        if (isLimitValid || isAllowedParamValid) {
-          return resolve();
-        } else if (!isLimitValid || !isAllowedParamValid) {
-          if (!isLimitValid && _this.getCommand().lowerLimit || _this.getCommand().upperLimit) {
-            return reject({ limit: true, parsedMessage: slackResponse });
+      return Promise.resolve({
+        then: function then(onFulfill, onReject) {
+          if (!internals.isCommandAllowed(_this.getCommand(), slackResponse, _this.getSlackData().users)) {
+            /* jshint ignore:start */
+            return onReject({
+              restricted_user: true,
+              users: _this.getCommand().allowedUsers,
+              parsedMessage: slackResponse
+            });
+            /* jshint ignore:end */
+          } else if (_this.setDefaultParams(_this.getCommand(), slackResponse, 0)) {
+            return onFulfill();
           }
-          if (!isAllowedParamValid) {
-            return reject({ param: true, parsedMessage: slackResponse });
+
+          var isLimitValid = internals.isLimitValid(_this.getCommand(), slackResponse);
+          var isAllowedParamValid = internals.isAllowedParamValid(_this.getCommand(), slackResponse);
+
+          if (isLimitValid || isAllowedParamValid) {
+            return onFulfill();
+          } else if (!isLimitValid || !isAllowedParamValid) {
+            if (!isLimitValid && _this.getCommand().lowerLimit || _this.getCommand().upperLimit) {
+              return onReject({ limit: true, parsedMessage: slackResponse });
+            }
+            if (!isAllowedParamValid) {
+              return onReject({ param: true, parsedMessage: slackResponse });
+            }
+          } else if (!internals.isAlertValid(_this.getCommand(), slackResponse)) {
+            onReject({ alert: true, parsedMessage: slackResponse });
+          } else {
+            onFulfill();
           }
-        } else if (!internals.isAlertValid(_this.getCommand(), slackResponse)) {
-          reject({ alert: true, parsedMessage: slackResponse });
-        } else {
-          resolve();
         }
       });
     }
@@ -92,9 +94,7 @@ externals.Commands = function () {
   }, {
     key: 'notify',
     value: function notify(response) {
-      return new Promise(function (resolve) {
-        resolve(response);
-      });
+      return Promise.resolve(response);
     }
   }, {
     key: 'loadEvents',
