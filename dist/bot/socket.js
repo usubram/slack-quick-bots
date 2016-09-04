@@ -21,12 +21,14 @@ function createWebSocket(botInfo) {
 }
 
 function createWebSocketPromise(botInfo) {
-  return new Promise(function (resolve, reject) {
-    if (_.get(botInfo, 'slackData.url')) {
-      botInfo.ws = createWebSocket(botInfo);
-      resolve(botInfo);
-    } else {
-      reject(false);
+  return Promise.resolve({
+    then: function then(onFulfill, onReject) {
+      if (_.get(botInfo, 'slackData.url')) {
+        botInfo.ws = createWebSocket(botInfo);
+        return botInfo.attachEvents(onFulfill);
+      } else {
+        onReject(false);
+      }
     }
   });
 }

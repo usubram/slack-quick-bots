@@ -33,7 +33,7 @@ describe('SlackBot test', function () {
     };
 
     beforeEach(function () {
-      testBots = new SlackBot(config.singleBot);
+      testBots = new SlackBot(config.singleBot, { isMock: true });
       errorContext = {
         error: true
       };
@@ -74,7 +74,7 @@ describe('SlackBot test', function () {
     };
 
     beforeEach(function () {
-      testBots = new SlackBot(config.multipleBot);
+      testBots = new SlackBot(config.multipleBot, { isMock: true });
       errorContext = {
         error: true
       };
