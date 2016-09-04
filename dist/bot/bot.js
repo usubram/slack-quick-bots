@@ -46,112 +46,115 @@ externals.Bot = function () {
     value: function setupBotEvents(testEvents) {
       var _this = this;
 
-      return new Promise(function (resolve) {
+      return Promise.resolve({
+        then: function then(onFulfill) {
+          _this.botName = _this.slackData.self.name;
+          _this.id = _this.slackData.self.id;
+          _this.hook = _this.server ? new Hook(_this.id, _this.server) : undefined;
 
-        botLogger.logger.info('Bot: attaching ws event for', _this.slackData.self.name);
-        _this.botName = _this.slackData.self.name;
-        _this.id = _this.slackData.self.id;
-        _this.hook = _this.server ? new Hook(_this.id, _this.server) : undefined;
-
-        /* jshint ignore:start */
-        _this.ws.on('message', function (data) {
-          var slackMessage = '';
-          try {
-            slackMessage = JSON.parse(data);
-          } catch (err) {
-            botLogger.logger.error('Bot: slack message is not goood', data);
-          }
-
-          if (slackMessage && slackMessage.type === 'message' && slackMessage.reply_to !== '' && !slackMessage.subtype) {
-            _this.handleMessage(slackMessage);
-          }
-        });
-        /* jshint ignore:end */
-
-        _this.ws.on('open', function () {
-          if (!_this.command) {
-            _this.command = _this.loadCommands();
-          }
-
-          _this.reconnection = false;
-          _this.wsPingPongTimmer = setInterval(function () {
-            try {
-              _this.dispatchMessage({
-                channels: '',
-                message: '',
-                type: 'ping'
-              }, function (err) {
-                if (err) {
-                  socket.reconnect(_this);
+          if (testEvents) {
+            _.set(_this, 'events.input', function (message) {
+              return Promise.resolve({
+                then: function then(onTestFulfill) {
+                  _this.ws.send(message);
+                  _.set(_this, 'events.output', onTestFulfill);
                 }
               });
-            } catch (err) {
-              botLogger.logger.info('Bot: ping pong error', err);
-              if (_this.wsPingPongTimmer) {
-                // botLogger.logger.info('Bot: connection closed on ping pong', botInfo.botName);
-                clearInterval(_this.wsPingPongTimmer);
-                socket.reconnect(_this);
-              }
-            }
-          }, 2000);
-          resolve();
-        });
-
-        _this.ws.on('close', function () {
-          if (_this.wsPingPongTimmer) {
-            clearInterval(_this.wsPingPongTimmer);
-          }
-          botLogger.logger.info('Bot: connection closed for', _this.botName);
-          if (!_this.shutdown) {
-            _this.shutdown = false;
-            socket.reconnect(_this);
-          }
-        });
-
-        if (testEvents) {
-          _.set(_this, 'events.input', function (message) {
-            return new Promise(function (resolve) {
-              _this.ws.send(message);
-              _.set(_this, 'events.output', resolve);
             });
-          });
+          }
+          onFulfill();
         }
       });
     }
   }, {
+    key: 'attachEvents',
+    value: function attachEvents(callback) {
+      var _this2 = this;
+
+      this.botName = _.get(this, 'slackData.self.name');
+      this.ws.on('message', function (data) {
+        var slackMessage = '';
+        try {
+          slackMessage = JSON.parse(data);
+        } catch (err) {
+          botLogger.logger.error('Bot: slack message is not goood', data);
+        }
+
+        /* jshint ignore:start */
+        if (slackMessage && slackMessage.type === 'message' && slackMessage.reply_to !== '' && !slackMessage.subtype) {
+          _this2.handleMessage(slackMessage);
+        }
+        /* jshint ignore:end */
+      });
+
+      this.ws.on('open', function () {
+        if (!_this2.command) {
+          _this2.command = _this2.loadCommands();
+        }
+
+        _this2.reconnection = false;
+        _this2.wsPingPongTimmer = setInterval(function () {
+          try {
+            _this2.dispatchMessage({
+              channels: '',
+              message: '',
+              type: 'ping'
+            }, function (err) {
+              if (err) {
+                socket.reconnect(_this2);
+              }
+            });
+          } catch (err) {
+            botLogger.logger.info('Bot: ping pong error', err);
+            if (_this2.wsPingPongTimmer) {
+              botLogger.logger.debug('Bot: connection closed on ping pong', _.get(_this2, 'botName'));
+              clearInterval(_this2.wsPingPongTimmer);
+              socket.reconnect(_this2);
+            }
+          }
+        }, 2000);
+        callback(_this2);
+      });
+
+      this.ws.on('close', function () {
+        if (_this2.wsPingPongTimmer) {
+          clearInterval(_this2.wsPingPongTimmer);
+        }
+        botLogger.logger.info('Bot: connection closed for', _this2.botName);
+        if (!_this2.shutdown) {
+          _this2.shutdown = false;
+          socket.reconnect(_this2);
+        }
+      });
+
+      botLogger.logger.info('Bot: attached ws event for ', this.botName);
+    }
+  }, {
     key: 'handleMessage',
     value: function handleMessage(message) {
-      var _this2 = this;
+      var _this3 = this;
 
       var parsedMessage = messageParser.parse(message, responseHandler.isDirectMessage(message));
       if (this.id === parsedMessage.message.commandPrefix) {
         parsedMessage.message.commandPrefix = _.camelCase(this.botName);
       }
       if (this.config.blockDirectMessage && !responseHandler.isPublicMessage(message)) {
-        this.dispatchMessage({
-          channels: parsedMessage.channel,
-          message: responseHandler.generateBotResponseTemplate({
-            parsedMessage: parsedMessage,
-            channels: [parsedMessage.channel],
-            message: {
-              /* jshint ignore:start */
-              bot_direct_message_error: true
-              /* jshint ignore:end */
-            }
-          })
-        });
+        this.handleBotMessages(parsedMessage);
+        if (_.isFunction(_.get(this, 'events.output'))) {
+          _.get(this, 'events.output')(this.handleBotMessages(parsedMessage));
+        }
         return;
       }
 
       if (responseHandler.isDirectMessage(message) || _.camelCase(this.botName) === parsedMessage.message.commandPrefix) {
         this.command.handleMessage(parsedMessage).then(function (response) {
-          if (_.isFunction(_.get(_this2, 'events.output'))) {
-            _.get(_this2, 'events.output')(response);
+          if (_.isFunction(_.get(_this3, 'events.output'))) {
+            _.get(_this3, 'events.output')(response);
           }
         }).catch(function (err) {
-          _this2.handleErrorMessage(_this2.botName, err);
-          if (_.isFunction(_.get(_this2, 'events.output'))) {
-            _.get(_this2, 'events.output')(_this2.handleErrorMessage(_this2.botName, err));
+          _this3.handleErrorMessage(_this3.botName, err);
+          if (_.isFunction(_.get(_this3, 'events.output'))) {
+            _.get(_this3, 'events.output')(_this3.handleErrorMessage(_this3.botName, err));
           }
         });
         return;
@@ -163,30 +166,30 @@ externals.Bot = function () {
   }, {
     key: 'loadCommands',
     value: function loadCommands() {
-      var _this3 = this;
+      var _this4 = this;
 
       return new CommandFactory({
         getBotConfig: function getBotConfig() {
-          return _this3.config;
+          return _this4.config;
         },
         getSlackData: function getSlackData() {
-          return _this3.slackData;
+          return _this4.slackData;
         },
         getHook: function getHook() {
-          return _this3.hook;
+          return _this4.hook;
         },
         messageHandler: function messageHandler(options, callback) {
-          _this3.dispatchMessage(options, callback);
+          _this4.dispatchMessage(options, callback);
         }
       });
     }
   }, {
     key: 'handleHookRequest',
     value: function handleHookRequest(purposeId, data, response) {
-      var _this4 = this;
+      var _this5 = this;
 
       this.command.handleHook(purposeId, data, response).then(function (cmdResponse) {
-        _this4.dispatchMessage(cmdResponse);
+        _this5.dispatchMessage(cmdResponse);
         response.end('{ "response": "ok" }');
       }).catch(function (errResponse) {
         response.end(JSON.stringify(errResponse));
@@ -195,13 +198,13 @@ externals.Bot = function () {
   }, {
     key: 'dispatchMessage',
     value: function dispatchMessage(options, callback) {
-      var _this5 = this;
+      var _this6 = this;
 
       callback = _.isFunction(callback) ? callback : undefined;
       options.channels = _.isArray(options.channels) ? options.channels : [options.channels];
       _.forEach(options.channels, function (channel) {
         try {
-          _this5.ws.send(JSON.stringify({
+          _this6.ws.send(JSON.stringify({
             'id': '',
             'type': options.type || 'message',
             'channel': channel,
@@ -218,6 +221,20 @@ externals.Bot = function () {
       var message = responseHandler.generateErrorTemplate(botName, this.config.botCommand, context);
       this.dispatchMessage({
         channels: context.parsedMessage.channel,
+        message: message
+      });
+      return message;
+    }
+  }, {
+    key: 'handleBotMessages',
+    value: function handleBotMessages(parsedMessage) {
+      var message = responseHandler.generateBotResponseTemplate({
+        /* jshint ignore:start */
+        bot_direct_message_error: true
+        /* jshint ignore:end */
+      });
+      this.dispatchMessage({
+        channels: parsedMessage.channel,
         message: message
       });
       return message;

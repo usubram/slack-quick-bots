@@ -13,35 +13,48 @@ var FormDataHandler = require('form-data');
 var mime = require('mime');
 
 exports = module.exports.postAttachmentFromStream = function (channel, config, data) {
-  return new Promise(function (resolve, reject) {
-    var form = new FormDataHandler();
-    var fileType = config.type || 'json';
-    form.append('token', config.botToken);
-    form.append('channels', channel[0]);
-    form.append('file', data, {
-      filename: config.name || config.commandName + '_graph.' + fileType,
-      contentType: mime.lookup(fileType),
-      filetype: mime.lookup(fileType)
-    });
-    var options = {
-      host: 'slack.com',
-      path: '/api/files.upload',
-      method: 'POST',
-      headers: form.getHeaders(),
-      rejectUnauthorized: false
-    };
-    var request = http.request(options, function (res) {
-      var responseStr = '';
-      res.on('data', function (chunk) {
-        responseStr += chunk;
+  return Promise.resolve({
+    then: function then(onFulfill, onReject) {
+      var form = new FormDataHandler();
+      var fileType = config.type || 'json';
+
+      form.append('token', config.botToken);
+      form.append('channels', channel[0]);
+      form.append('file', data, {
+        filename: config.name || config.commandName + '_graph.' + fileType,
+        contentType: mime.lookup(fileType),
+        filetype: mime.lookup(fileType)
       });
-      res.on('end', function (err) {
-        if (err) {
-          return reject(err);
-        }
-        resolve(JSON.parse(responseStr));
+
+      var options = {
+        host: 'slack.com',
+        path: '/api/files.upload',
+        method: 'POST',
+        headers: form.getHeaders(),
+        rejectUnauthorized: false
+      };
+
+      var request = http.request(options, function (res) {
+        var responseStr = '';
+
+        res.on('data', function (chunk) {
+          responseStr += chunk;
+        });
+
+        res.on('end', function (err) {
+          if (err) {
+            return onReject(err);
+          }
+          var dataToSend = void 0;
+          try {
+            dataToSend = JSON.parse(responseStr);
+            onFulfill(dataToSend);
+          } catch (parseErr) {
+            onReject(err);
+          }
+        });
       });
-    });
-    form.pipe(request);
+      form.pipe(request);
+    }
   });
 };

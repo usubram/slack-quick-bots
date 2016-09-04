@@ -29,7 +29,7 @@ describe('/command', function () {
       var slackMessage;
 
       beforeEach(function () {
-        testBots = new SlackBot(config.singleBotForAllowedParam);
+        testBots = new SlackBot(config.singleBotForAllowedParam, { isMock: true });
         errorContext = {
           error: true
         };
@@ -88,7 +88,7 @@ describe('/command', function () {
       var slackMessage;
 
       beforeEach(function () {
-        testBots = new SlackBot(config.singleBotForAllowedParam);
+        testBots = new SlackBot(config.singleBotForAllowedParam, { isMock: true });
         errorContext = {
           error: true
         };
@@ -147,7 +147,7 @@ describe('/command', function () {
       var slackMessage;
 
       beforeEach(function () {
-        testBots = new SlackBot(config.singleBotForAllowedParam);
+        testBots = new SlackBot(config.singleBotForAllowedParam, { isMock: true });
         errorContext = {
           error: true
         };
@@ -207,7 +207,7 @@ describe('/command', function () {
     var slackMessage;
 
     beforeEach(function () {
-      testBots = new SlackBot(config.isCommandAllowed);
+      testBots = new SlackBot(config.isCommandAllowed, { isMock: true });
       errorContext = {
         error: true
       };
@@ -254,6 +254,62 @@ describe('/command', function () {
 
   });
 
+  describe('blockDirectMessage', function () {
+
+    var testBots;
+    var errorContext;
+    var slackMessage;
+
+    beforeEach(function () {
+      testBots = new SlackBot(config.blockDirectMessage, { isMock: true });
+      errorContext = {
+        error: true
+      };
+      slackMessage = {
+        id: uuid.v4(),
+        type: 'message',
+        channel: 'D0GL06JD7',
+        user: 'U0GG92T46',
+        text: 'ping 1',
+        ts: '1453007224.000007',
+        team: 'T0GGDKVDE'
+      };
+    });
+
+    afterEach(function () {
+      testBots.shutdown();
+    });
+
+    it('Should respond with blocked message on direct message', function (done) {
+      delete errorContext.error;
+      errorContext.bot_direct_message_error = true;
+      var errorMessage = responseHandler
+        .generateBotResponseTemplate(errorContext);
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal(errorMessage).and.notify(done);
+    });
+
+    it('Should respond with blocked message on private group', function (done) {
+      slackMessage.channel = 'G0GL06JD7';
+      delete errorContext.error;
+      errorContext.bot_direct_message_error = true;
+      var errorMessage = responseHandler
+        .generateBotResponseTemplate(errorContext);
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal(errorMessage).and.notify(done);
+    });
+
+    it('Should respond to messages in public channel', function (done) {
+      slackMessage.channel = 'C0GL06JD7';
+      slackMessage.text = 'testbot1 ping 1';
+      Promise.resolve(testBots.start().then(function () {
+        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
+      })).should.eventually.equal('Hello 1').and.notify(done);
+    });
+  });
+
   describe('Test command types', function () {
 
     var testBots;
@@ -261,7 +317,7 @@ describe('/command', function () {
     var slackMessage;
 
     beforeEach(function () {
-      testBots = new SlackBot(config.commandTypeBots);
+      testBots = new SlackBot(config.commandTypeBots, { isMock: true });
       errorContext = {
         error: true
       };
