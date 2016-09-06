@@ -27,6 +27,7 @@ externals.Commands = function () {
   function _class(options) {
     _classCallCheck(this, _class);
 
+    this.context = options.context;
     this.getBotConfig = options.getBotConfig;
     this.getSlackData = options.getSlackData;
     this.getHook = options.getHook;
@@ -171,8 +172,9 @@ externals.Commands = function () {
     }
   }, {
     key: 'getCommand',
-    value: function getCommand() {
-      return this.getBotConfig().botCommand[this.commandName];
+    value: function getCommand(commandName) {
+      commandName = commandName || this.commandName;
+      return this.getBotConfig().botCommand[commandName];
     }
   }, {
     key: 'getTemplate',
@@ -197,16 +199,6 @@ externals.Commands = function () {
         clearInterval(this.getTimer(parsedMessage));
       }
       _.set(this.eventStore, parsedMessage.channel + '_' + this.commandName + '.timer', callback);
-    }
-  }, {
-    key: 'getStoreParsedMessage',
-    value: function getStoreParsedMessage(parsedMessage) {
-      return _.get(this.eventStore, parsedMessage.channel + '_' + this.commandName + '.parsedMessage');
-    }
-  }, {
-    key: 'setEventStoreParsedMessage',
-    value: function setEventStoreParsedMessage(parsedMessage) {
-      return _.set(this.eventStore, parsedMessage.channel + '_' + this.commandName + '.parsedMessage', parsedMessage);
     }
   }]);
 

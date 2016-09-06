@@ -40,7 +40,7 @@ externals.Alert = function (_Command) {
 
     _classCallCheck(this, _class);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, options));
+    var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, options));
 
     return _ret = _this, _possibleConstructorReturn(_this, _ret);
   }
@@ -233,7 +233,6 @@ internals.calculateVariance = function (dataSetArr) {
 
 internals.standardDeviation = function (values) {
   var avg = internals.average(values);
-
   var squareDiffs = values.map(function (value) {
     var diff = value - avg;
     return diff * diff;
