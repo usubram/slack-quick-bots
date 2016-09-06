@@ -23,6 +23,7 @@ var Data = require(path.join(root, 'command/commands/data'));
 var Recursive = require(path.join(root, 'command/commands/recursive'));
 var Alert = require(path.join(root, 'command/commands/alert'));
 var Kill = require(path.join(root, 'command/commands/kill'));
+var Schedule = require(path.join(root, 'command/commands/schedule'));
 var storage = require(path.join(root, 'storage/storage'));
 
 var externals = {};
@@ -36,10 +37,11 @@ externals.CommandFactory = function () {
     this.commandObj = {};
     this.eventStore = {};
 
-    Promise.resolve(storage.getEvents('events')).then(function (eventsData) {
+    Promise.resolve(storage.getEvents(['events', 'schedule'])).then(function (eventsData) {
       _this.eventStore = _.get(eventsData, options.getSlackData().self.name, {});
       _.forEach(options.getBotConfig().botCommand, function (command, key) {
         _this.commandObj[key] = _this.getCommand({
+          context: _this.commandObj,
           commandName: key,
           getBotConfig: options.getBotConfig,
           getSlackData: options.getSlackData,
@@ -52,6 +54,7 @@ externals.CommandFactory = function () {
       botLogger.logger.error('Error loading storage', err);
       _.forEach(options.getBotConfig().botCommand, function (command, key) {
         _this.commandObj[key] = _this.getCommand({
+          context: _this.commandObj,
           commandName: key,
           getBotConfig: options.getBotConfig,
           getSlackData: options.getSlackData,
@@ -69,17 +72,20 @@ externals.CommandFactory = function () {
     value: function getCommand(options, commandType) {
       var command = void 0;
       switch (commandType) {
+        case 'alert':
+          command = new Alert(options);
+          break;
         case 'data':
           command = new Data(options);
+          break;
+        case 'kill':
+          command = new Kill(options);
           break;
         case 'recursive':
           command = new Recursive(options);
           break;
-        case 'alert':
-          command = new Alert(options);
-          break;
-        case 'kill':
-          command = new Kill(options);
+        case 'schedule':
+          command = new Schedule(options);
           break;
       }
       return command;

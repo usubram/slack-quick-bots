@@ -36,7 +36,7 @@ externals.Data = function (_Command) {
 
     _classCallCheck(this, _class);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, options));
+    var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, options));
 
     return _ret = _this, _possibleConstructorReturn(_this, _ret);
   }

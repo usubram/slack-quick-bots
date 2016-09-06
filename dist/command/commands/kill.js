@@ -36,7 +36,7 @@ externals.Kill = function (_Command) {
 
     _classCallCheck(this, _class);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, options));
+    var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, options));
 
     return _ret = _this, _possibleConstructorReturn(_this, _ret);
   }
@@ -47,7 +47,9 @@ externals.Kill = function (_Command) {
       var killTask = this.getParams(parsedMessage, 0);
       var recursiveTaskTimer = ['eventStore', parsedMessage.channel + '_' + killTask, 'timer'];
       var alertTaskPath = ['eventStore', killTask, 'channel', parsedMessage.channel];
+      var scheduleTaskPath = ['eventStore', parsedMessage.channel + '_schedule_' + this.getParams(parsedMessage, 1), 'timer'];
       var recursiveTimer = _.get(this, recursiveTaskTimer, undefined);
+      var scheduleTimer = _.get(this, scheduleTaskPath, undefined);
       var alertTimer = _.get(this, alertTaskPath, undefined);
 
       if (recursiveTimer) {
@@ -87,6 +89,37 @@ externals.Kill = function (_Command) {
           parsedMessage: parsedMessage,
           channels: [parsedMessage.channel],
           commandToKill: killTask
+        });
+      } else if (scheduleTimer || killTask === 'schedule') {
+        if (!scheduleTimer) {
+          this.messageHandler({
+            channels: parsedMessage.channel,
+            message: responseHandler.generateBotResponseTemplate({
+              parsedMessage: parsedMessage,
+              command: killTask,
+              /* jshint ignore:start */
+              schedule_fail: true
+            })
+          });
+          return;
+        }
+
+        scheduleTimer.stop();
+        _.set(this, scheduleTaskPath, undefined);
+
+        this.messageHandler({
+          channels: parsedMessage.channel,
+          message: responseHandler.generateBotResponseTemplate({
+            parsedMessage: parsedMessage,
+            command: killTask,
+            /* jshint ignore:start */
+            recursive_stop: true
+          })
+        });
+        storage.removeEvents(this.getSlackData().self.name, 'schedule', {
+          parsedMessage: parsedMessage,
+          channels: [parsedMessage.channel],
+          commandToKill: killTask + '_' + this.getParams(parsedMessage, 1)
         });
       } else {
         this.messageHandler({
