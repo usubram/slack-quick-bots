@@ -40,6 +40,8 @@ externals.generateErrorTemplate = function (botName, botCommand, context) {
     command: commandContext,
     /* jshint ignore:start */
     restricted_user: context.restricted_user,
+    invalid_cron: context.invalidCron,
+    invalid_command: context.invalidCommand,
     /* jshint ignore:end */
     users: context.users,
     prefix: externals.isDirectMessage(context.parsedMessage) ? '' : botName

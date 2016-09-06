@@ -114,6 +114,7 @@ var config = {
         }
       }
     },
+    schedule: true,
     blockDirectMessage: false,
     webHook: true,
     botToken: args[0]
@@ -152,8 +153,7 @@ var config = {
     webHook: true,
     allowedUsers: ['john'],
     blockDirectMessage: true
-  }
-  ],
+  }],
   logger: console, // you could pass a winston logger.
   server: {
     port: 9090,

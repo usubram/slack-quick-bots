@@ -65,6 +65,7 @@ internals.init = function (bots) {
 internals.normalizeCommand = function (bot) {
   var normalizedCommand = {};
   var stopTasks = [];
+  var dataTasks = [];
   _.forEach(bot.botCommand, function (value, key) {
     var commandKey = _.camelCase(key);
     if (value) {
@@ -73,18 +74,29 @@ internals.normalizeCommand = function (bot) {
         var command = _.camelCase(commandAttr);
         if (commandAttrkey === 'commandType') {
           value[commandAttrkey] = command;
+          if (command === 'data') {
+            dataTasks.push(commandKey);
+          }
+          if (_.includes(['alert', 'recursive'], command)) {
+            if (command === 'alert') {
+              value.allowedParam = internals.alertParams;
+            }
+            stopTasks.push(commandKey);
+          }
         } else if (commandAttrkey === 'parentTask') {
           value[commandAttrkey] = command;
-        }
-        if (commandAttrkey === 'commandType' && _.includes(['alert', 'recursive'], command)) {
-          if (command === 'alert') {
-            value.allowedParam = internals.alertParams;
-          }
-          stopTasks.push(commandKey);
         }
       });
     }
   });
+
+  if (dataTasks.length > 0 && bot.schedule) {
+    normalizedCommand.schedule = {
+      allowedParam: dataTasks,
+      commandType: 'schedule'
+    };
+    stopTasks.push('schedule');
+  }
 
   if (stopTasks.length > 0) {
     normalizedCommand.stop = {
@@ -92,6 +104,7 @@ internals.normalizeCommand = function (bot) {
       commandType: 'kill'
     };
   }
+
   bot.botCommand = normalizedCommand;
   internals.mergeAllowedUsers(bot);
   return bot;
