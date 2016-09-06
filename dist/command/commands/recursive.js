@@ -37,7 +37,7 @@ externals.Recursive = function (_Command) {
 
     _classCallCheck(this, _class);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, options));
+    var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, options));
 
     return _ret = _this, _possibleConstructorReturn(_this, _ret);
   }
@@ -57,7 +57,6 @@ externals.Recursive = function (_Command) {
           } else {
             time = time * 60000; // default to minute
           }
-          _this2.setEventStoreParsedMessage(parsedMessage);
 
           _this2.setTimer(parsedMessage, setInterval(function () {
             _this2.quietRespond(parsedMessage);

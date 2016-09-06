@@ -22,7 +22,7 @@ var config = {
         commandType: 'DATA',
         lowerLimit: 0,
         upperLimit: 10,
-        //allowedParam: ['*'], // allow any argument to a command
+        allowedParam: ['*'], // allow any argument to a command
         helpText: ':small_orange_diamond: this is log command \\n',
         template: function() {
           return handlebars.compile(sampleTemplate);
@@ -106,6 +106,7 @@ var config = {
         allowedParam: ['*'],
         helpText: ':small_red_triangle_down: this a alert command \\n',
         data: function(input, options, callback) {
+          console.log(callback.toString());
           callback({
             responseType: {
               type: 'xml',

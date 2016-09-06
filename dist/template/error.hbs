@@ -1,34 +1,45 @@
-{{#if restricted_user}}
-	I'm configured to only respond to\n
-	{{#each users}}
-		<@{{this}}>\n
-	{{/each}}
+{{#if invalid_command}}
+	*Invalid schedule command*.\n Make sure to send something like `schedule commandName (*/15 * * * *).`\n
+	The above example schedules _commandName_ every 15 minutes.
 {{else}}
-	A little help, try command(s)\n
-	{{#each command}}
-		> {{#if ../prefix}} <@{{../prefix}}>{{/if}} *{{@key}}* 
-		{{#if inContext}}
-			{{#if upperLimit}}
-				{{lowerLimit}} to {{{upperLimit}}}
-			{{/if}}
-			{{#if allowedParam}}
-				{{#each allowedParam}}
-					 {{.}}{{#if @last}} {{else}} | {{/if}}
-				{{/each}}\n
-			{{/if}}
-		{{/if}}
-		{{#if aLimit }}
-		 _`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{{aLimit}}}`_{{/if}}
-		{{#if alertContext}}
-			`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup 90` - here *90* is the threshold percentage. \n
-			`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} sample` - to get an idea on the current threshold\n
+	{{#if invalid_cron}}
+		*Invalid schedule command*.\n Make sure to send something like `schedule commandName (*/15 * * * *).`\n
+		The above example schedules _commandName_ every 15 minutes.
+	{{else}}
+		{{#if restricted_user}}
+			*Attention!!* \n
+			I'm configured to only respond to\n
+			{{#each users}}
+				<@{{this}}>\n
+			{{/each}}
 		{{else}}
-			{{#if aParam}}
-			 _`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{aParam}}`_
-			{{/if}}\n
+			A little help, try command(s)\n
+			{{#each command}}
+				> {{#if ../prefix}} <@{{../prefix}}>{{/if}} *{{@key}}* 
+				{{#if inContext}}
+					{{#if upperLimit}}
+						{{lowerLimit}} to {{{upperLimit}}}
+					{{/if}}
+					{{#if allowedParam}}
+						{{#each allowedParam}}
+							 {{.}}{{#if @last}} {{else}} | {{/if}}
+						{{/each}}\n
+					{{/if}}	
+				{{/if}}
+				{{#if aLimit }}
+				 _`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{{aLimit}}}`_{{/if}}
+				{{#if alertContext}}
+					`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup 90` - here *90* is the threshold percentage. \n
+					`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} sample` - to get an idea on the current threshold\n
+				{{else}}
+					{{#if aParam}}
+					 _`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{aParam}}`_
+					{{/if}}\n
+				{{/if}}
+				{{#if helpText}}
+					{{{helpText}}}
+				{{/if}}
+			{{/each}}\n
 		{{/if}}
-		{{#if helpText}}
-			{{{helpText}}}
-		{{/if}}
-	{{/each}}\n
-{{/if}}
+	{{/if}}
+	{{/if}}
