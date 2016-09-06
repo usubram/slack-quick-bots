@@ -38,7 +38,6 @@ externals.CommandFactory = function () {
     this.eventStore = {};
 
     Promise.resolve(storage.getEvents(['events', 'schedule'])).then(function (eventsData) {
-      console.log('eventsData', eventsData);
       _this.eventStore = _.get(eventsData, options.getSlackData().self.name, {});
       _.forEach(options.getBotConfig().botCommand, function (command, key) {
         _this.commandObj[key] = _this.getCommand({
