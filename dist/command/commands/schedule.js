@@ -21,7 +21,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var _ = require('lodash');
 var path = require('path');
 var CronJob = require('cron').CronJob;
-
+var cronSendAt = require('cron').sendAt;
+var cronTimeout = require('cron').timeout;
 var root = '..';
 
 var botLogger = require(path.join(root, '../utils/logger'));
@@ -66,6 +67,7 @@ externals.Schedule = function (_Command) {
             });
 
             job.start();
+            botLogger.logger.debug('schduled job for ', internals.getCronExpresion(parsedMessage));
 
             _this2.setTimer(parsedMessage, job);
           } catch (err) {
@@ -109,6 +111,11 @@ externals.Schedule = function (_Command) {
     value: function notify(parsedMessage) {
       var _this4 = this;
 
+      var timeleft = cronTimeout(internals.getCronExpresion(parsedMessage));
+      var nextEvent = void 0;
+      if (timeleft && timeleft > 0) {
+        nextEvent = new Date(Date.now() + timeleft);
+      }
       return Promise.resolve({
         then: function then(onFulfill) {
           _this4.messageHandler({
@@ -116,37 +123,14 @@ externals.Schedule = function (_Command) {
             message: responseHandler.generateBotResponseTemplate({
               parsedMessage: parsedMessage,
               /* jshint ignore:start */
-              schedule_success: true
+              schedule_success: true,
+              next_event: nextEvent || false
               /* jshint ignore:end */
             })
           });
           onFulfill();
         }
       });
-    }
-  }, {
-    key: 'message',
-    value: function message(parsedMessage, data) {
-      var command = this.getCommand(_.get(parsedMessage, 'message.command'));
-      if (data && command.responseType || _.get(data, 'type')) {
-        responseHandler.processFile({
-          channels: [parsedMessage.channel],
-          message: {
-            data: data,
-            commandName: _.get(parsedMessage, 'message.command'),
-            config: command.responseType
-          }
-        }, this.getBotConfig().botToken);
-      } else if (data && _.isFunction(command.template)) {
-        try {
-          this.messageHandler({
-            channels: [parsedMessage.channel],
-            message: command.template()(data)
-          });
-        } catch (err) {
-          botLogger.logger.error('Command: make sure to pass a' + 'compiled handlebar template', err, err.stack);
-        }
-      }
     }
   }, {
     key: 'validate',
@@ -183,6 +167,7 @@ externals.Schedule = function (_Command) {
             testCron.stop();
             onFulfill();
           } catch (err) {
+            botLogger.logger.error('Invalid cron ', err);
             onReject({ invalidCron: true, parsedMessage: parsedMessage });
           }
         }

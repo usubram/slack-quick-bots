@@ -98,6 +98,11 @@ externals.Commands = function () {
       return Promise.resolve(response);
     }
   }, {
+    key: 'message',
+    value: function message() {
+      // Nothing to execute
+    }
+  }, {
     key: 'loadEvents',
     value: function loadEvents() {
       var _this3 = this;
