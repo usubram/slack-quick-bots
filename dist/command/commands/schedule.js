@@ -21,7 +21,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var _ = require('lodash');
 var path = require('path');
 var CronJob = require('cron').CronJob;
-var cronSendAt = require('cron').sendAt;
 var cronTimeout = require('cron').timeout;
 var root = '..';
 
