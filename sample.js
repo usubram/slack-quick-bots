@@ -20,7 +20,7 @@ var config = {
     botCommand: {
       log: {
         commandType: 'DATA',
-        allowedParam: ['*'], // allow any argument to a command
+        allowedParam: ['hello'], // allow any argument to a command
         helpText: ':small_orange_diamond: this is log command \\n',
         template: function() {
           return handlebars.compile(sampleTemplate);
@@ -117,43 +117,51 @@ var config = {
     schedule: true,
     blockDirectMessage: false,
     webHook: true,
-    botToken: args[0]
-  }, {
-    botCommand: {
-      traffic: {
-        commandType: 'DATA',
-        allowedParam: ['what', 'there'],
-        timeUnit: 'm',
-        defaultParamValue: 'what',
-        template: function() {
-          return handlebars.compile(sampleTemplate);
-        },
-        data: function(input, options, callback) {
-          callback({
-            param: input.params
-          });
-        }
-      },
-      start: {
-        commandType: 'RECURSIVE',
-        lowerLimit: 0,
-        upperLimit: 100,
-        defaultParamValue: 1,
-        template: function() {
-          return handlebars.compile(sampleTemplate);
-        },
-        data: function(input, options, callback) {
-          callback({
-            param: input.params
-          });
-        }
+    mock: {
+      self: {
+        name: 'testbot1',
+        id: 'U1234567'
       }
     },
-    botToken: args[1],
-    webHook: true,
-    allowedUsers: ['john'],
-    blockDirectMessage: true
-  }],
+    botToken: args[0]
+  }
+  // , {
+  //   botCommand: {
+  //     traffic: {
+  //       commandType: 'DATA',
+  //       allowedParam: ['what', 'there'],
+  //       timeUnit: 'm',
+  //       defaultParamValue: 'what',
+  //       template: function() {
+  //         return handlebars.compile(sampleTemplate);
+  //       },
+  //       data: function(input, options, callback) {
+  //         callback({
+  //           param: input.params
+  //         });
+  //       }
+  //     },
+  //     start: {
+  //       commandType: 'RECURSIVE',
+  //       lowerLimit: 0,
+  //       upperLimit: 100,
+  //       defaultParamValue: 1,
+  //       template: function() {
+  //         return handlebars.compile(sampleTemplate);
+  //       },
+  //       data: function(input, options, callback) {
+  //         callback({
+  //           param: input.params
+  //         });
+  //       }
+  //     }
+  //   },
+  //   botToken: args[1],
+  //   webHook: true,
+  //   allowedUsers: ['john'],
+  //   blockDirectMessage: true
+  // }
+  ],
   logger: console, // you could pass a winston logger.
   server: {
     port: 9090,
@@ -161,5 +169,6 @@ var config = {
   }
 };
 
+//var slackBot = new SlackBot(config, { isMock: true });
 var slackBot = new SlackBot(config);
 slackBot.start();
