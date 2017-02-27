@@ -5,7 +5,6 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const sinonChai = require('sinon-chai');
 const rewire = require('rewire');
-const storage = require('./../../../lib/storage/storage');
 const storageRewire = rewire('./../../../lib/storage/storage');
 
 chai.use(sinonChai);
@@ -14,10 +13,6 @@ chai.use(chaiAsPromised);
 chai.should();
 
 describe('/storage', function () {
-
-  var eventsObject = {
-    'newBot': {}
-  };
 
   describe('validate if read event is called on bootstrap', function () {
     var updateEventsSpy,
@@ -28,7 +23,7 @@ describe('/storage', function () {
     beforeEach(function () {
       updateEventsSpy = sinon.spy(storageRewire, 'updateEvents');
       removeEventsSpy = sinon.spy(storageRewire, 'removeEvents');
-      readFileStub = sinon.spy(function (fileType) {
+      readFileStub = sinon.spy(function () {
         return Promise.resolve({});
       });
       writeFileStub = sinon.spy(function (fileType, data) {

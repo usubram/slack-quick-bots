@@ -20,11 +20,15 @@ var path = require('path');
 var root = '..';
 
 var botLogger = require(path.join(root, 'utils/logger'));
+var BotInterface = require(path.join(root, 'bot/bot-interface'));
+var Connector = require(path.join(root, 'bot/connector'));
 var CommandFactory = require(path.join(root, 'command/command-factory'));
+var EventEmitter = require('events').EventEmitter;
 var Hook = require(path.join(root, 'bot/hook'));
+var MockConnector = require(path.join(root, 'bot/mock-connector'));
 var messageParser = require(path.join(root, 'command/message'));
+var storage = require(path.join(root, 'storage/storage'));
 var responseHandler = require(path.join(root, 'bot/response-handler'));
-var socket = require(path.join(root, 'bot/socket'));
 
 var internals = {};
 var externals = {};
@@ -36,98 +40,89 @@ externals.Bot = function () {
     this.config = Object.assign({}, bot);
     this.ws = {};
     this.slackData = '';
-    this.botName = '';
     this.hook = {};
-    this.id = '';
+    this.eventEmitter = new EventEmitter();
+    this.interfaceEventEmitter = new EventEmitter();
+
+    this.setupEvents();
+    this.setupIntefaceEvents();
   }
 
   _createClass(_class, [{
-    key: 'setupBotEvents',
-    value: function setupBotEvents(testEvents) {
+    key: 'init',
+    value: function init() {
+      if (_.get(this.config, 'mock')) {
+        botLogger.logger.debug('Bot: Connecting for bot %j', this);
+        this.connectionManager = new MockConnector(this.config.botToken, {
+          socketEventEmitter: this.eventEmitter,
+          mock: _.get(this.config, 'mock')
+        });
+      } else {
+        botLogger.logger.debug('Bot: Connecting for bot %j', this);
+        this.connectionManager = new Connector(this.config.botToken, {
+          socketEventEmitter: this.eventEmitter
+        });
+      }
+
+      this.connectionManager.connect();
+      this.commandFactory = this.loadCommands();
+
+      return this.botInterface;
+    }
+  }, {
+    key: 'setupEvents',
+    value: function setupEvents() {
       var _this = this;
 
-      return Promise.resolve({
-        then: function then(onFulfill) {
-          _this.botName = _this.slackData.self.name;
-          _this.id = _this.slackData.self.id;
-          _this.hook = _this.server ? new Hook(_this.id, _this.server) : undefined;
-
-          if (testEvents) {
-            _.set(_this, 'events.input', function (message) {
-              return Promise.resolve({
-                then: function then(onTestFulfill) {
-                  _this.ws.send(message);
-                  _.set(_this, 'events.output', onTestFulfill);
-                }
-              });
-            });
-          }
-          onFulfill();
-        }
+      this.eventEmitter.on('close', function () {
+        _this.botInterface.emit('close');
+      }).on('connect', function () {
+        _this.loadSavedEvents();
+      }).on('reconnect', function () {
+        _this.reconnect();
+      }).on('shutdown', function () {
+        _this.botInterface.emit('shutdown');
+      }).on('start', function () {
+        _this.botInterface.emit('start');
+      }).on('ping', function (args) {
+        _this.dispatchMessage.apply(_this, args);
+      }).on('message', function (args) {
+        _this.handleMessage.apply(_this, args);
       });
     }
   }, {
-    key: 'attachEvents',
-    value: function attachEvents(callback) {
+    key: 'setupIntefaceEvents',
+    value: function setupIntefaceEvents() {
       var _this2 = this;
 
-      this.botName = _.get(this, 'slackData.self.name');
-      this.ws.on('message', function (data) {
-        var slackMessage = '';
-        try {
-          slackMessage = JSON.parse(data);
-        } catch (err) {
-          botLogger.logger.error('Bot: slack message is not goood', data);
-        }
-
-        /* jshint ignore:start */
-        if (slackMessage && slackMessage.type === 'message' && slackMessage.reply_to !== '' && !slackMessage.subtype) {
-          _this2.handleMessage(slackMessage);
-        }
-        /* jshint ignore:end */
+      this.interfaceEventEmitter.on('injectMessage', function (message) {
+        _this2.injectMessage(message);
       });
 
-      this.ws.on('open', function () {
-        if (!_this2.command) {
-          _this2.command = _this2.loadCommands();
-        }
-
-        _this2.reconnection = false;
-        _this2.wsPingPongTimmer = setInterval(function () {
-          try {
-            _this2.dispatchMessage({
-              channels: '',
-              message: '',
-              type: 'ping'
-            }, function (err) {
-              if (err) {
-                socket.reconnect(_this2);
-              }
-            });
-          } catch (err) {
-            botLogger.logger.info('Bot: ping pong error', err);
-            if (_this2.wsPingPongTimmer) {
-              botLogger.logger.debug('Bot: connection closed on ping pong', _.get(_this2, 'botName'));
-              clearInterval(_this2.wsPingPongTimmer);
-              socket.reconnect(_this2);
-            }
-          }
-        }, 2000);
-        callback(_this2);
+      this.interfaceEventEmitter.on('shutdown', function () {
+        _this2.shutdown();
       });
 
-      this.ws.on('close', function () {
-        if (_this2.wsPingPongTimmer) {
-          clearInterval(_this2.wsPingPongTimmer);
-        }
-        botLogger.logger.info('Bot: connection closed for', _this2.botName);
-        if (!_this2.shutdown) {
-          _this2.shutdown = false;
-          socket.reconnect(_this2);
-        }
+      this.interfaceEventEmitter.on('restart', function () {
+        _this2.close();
       });
 
-      botLogger.logger.info('Bot: attached ws event for ', this.botName);
+      this.interfaceEventEmitter.on('close', function () {
+        _this2.close();
+      });
+
+      this.interfaceEventEmitter.on('start', function () {
+        _this2.start();
+      });
+
+      this.botInterface = new BotInterface({
+        getBotName: function getBotName() {
+          return _this2.getBotName();
+        },
+        getId: function getId() {
+          return _this2.getId();
+        }
+      }, this.interfaceEventEmitter);
     }
   }, {
     key: 'handleMessage',
@@ -135,32 +130,20 @@ externals.Bot = function () {
       var _this3 = this;
 
       var parsedMessage = messageParser.parse(message, responseHandler.isDirectMessage(message));
-      if (this.id === parsedMessage.message.commandPrefix) {
-        parsedMessage.message.commandPrefix = _.camelCase(this.botName);
-      }
-      if (this.config.blockDirectMessage && !responseHandler.isPublicMessage(message)) {
-        this.handleBotMessages(parsedMessage);
-        if (_.isFunction(_.get(this, 'events.output'))) {
-          _.get(this, 'events.output')(this.handleBotMessages(parsedMessage));
-        }
-        return;
+
+      if (this.getId() === parsedMessage.message.commandPrefix) {
+        parsedMessage.message.commandPrefix = this.getBotName();
       }
 
-      if (responseHandler.isDirectMessage(message) || _.camelCase(this.botName) === parsedMessage.message.commandPrefix) {
-        this.command.handleMessage(parsedMessage).then(function (response) {
-          if (_.isFunction(_.get(_this3, 'events.output'))) {
-            _.get(_this3, 'events.output')(response);
-          }
-        }).catch(function (err) {
-          _this3.handleErrorMessage(_this3.botName, err);
-          if (_.isFunction(_.get(_this3, 'events.output'))) {
-            _.get(_this3, 'events.output')(_this3.handleErrorMessage(_this3.botName, err));
-          }
-        });
-        return;
+      if (this.config.blockDirectMessage && !responseHandler.isPublicMessage(message)) {
+        return this.handleBotMessages(parsedMessage);
       }
-      if (_.isFunction(_.get(this, 'events.output'))) {
-        _.get(this, 'events.output')();
+
+      if (responseHandler.isDirectMessage(message) || this.getBotName() === parsedMessage.message.commandPrefix) {
+
+        return this.commandFactory.handleMessage(parsedMessage).catch(function (err) {
+          return _this3.handleErrorMessage(_this3.getBotName(), err);
+        });
       }
     }
   }, {
@@ -173,10 +156,13 @@ externals.Bot = function () {
           return _this4.config;
         },
         getSlackData: function getSlackData() {
-          return _this4.slackData;
+          return _this4.getSlackData();
         },
         getHook: function getHook() {
           return _this4.hook;
+        },
+        getEventStore: function getEventStore() {
+          return _.get(_this4.eventStore, _this4.getBotName());
         },
         messageHandler: function messageHandler(options, callback) {
           _this4.dispatchMessage(options, callback);
@@ -184,12 +170,29 @@ externals.Bot = function () {
       });
     }
   }, {
-    key: 'handleHookRequest',
-    value: function handleHookRequest(purposeId, data, response) {
+    key: 'loadSavedEvents',
+    value: function loadSavedEvents() {
       var _this5 = this;
 
-      this.command.handleHook(purposeId, data, response).then(function (cmdResponse) {
-        _this5.dispatchMessage(cmdResponse);
+      storage.getEvents(['events', 'schedule']).then(function (events) {
+        _this5.eventStore = events;
+        _this5.commandFactory.loadCommands();
+        _this5.botInterface.emit('connect');
+      }).catch(function (err) {
+        botLogger.logger.log('Bot: Error loading event %j', err);
+        _this5.commandFactory.loadCommands();
+        _this5.botInterface.emit('connect');
+      });
+
+      this.hook = this.server ? new Hook(this.getId(), this.server) : undefined;
+    }
+  }, {
+    key: 'handleHookRequest',
+    value: function handleHookRequest(purposeId, data, response) {
+      var _this6 = this;
+
+      this.commandFactory.handleHook(purposeId, data, response).then(function (cmdResponse) {
+        _this6.dispatchMessage(cmdResponse);
         response.end('{ "response": "ok" }');
       }).catch(function (errResponse) {
         response.end(JSON.stringify(errResponse));
@@ -198,46 +201,120 @@ externals.Bot = function () {
   }, {
     key: 'dispatchMessage',
     value: function dispatchMessage(options, callback) {
-      var _this6 = this;
+      var _this7 = this;
 
       callback = _.isFunction(callback) ? callback : undefined;
-      options.channels = _.isArray(options.channels) ? options.channels : [options.channels];
+      options.channels = _.isArray(options.channels) ? options.channels : [options.channels || options.channel];
+
       _.forEach(options.channels, function (channel) {
+
+        var message = {
+          'id': '',
+          'type': options.type || 'message',
+          'channel': channel,
+          'text': '' + options.message
+        };
+
         try {
-          _this6.ws.send(JSON.stringify({
-            'id': '',
-            'type': options.type || 'message',
-            'channel': channel,
-            'text': '' + options.message
-          }, internals.jsonReplacer).replace(/\n/g, '\n'), callback);
+          var messageStr = JSON.stringify(message, internals.jsonReplacer).replace(/\n/g, '\n');
+
+          _this7.connectionManager.socket.sendMessage(messageStr, callback);
         } catch (err) {
           botLogger.logger.error('Bot: socket connection error', err);
         }
+
+        _this7.handleMessageEvent(message);
       });
     }
   }, {
     key: 'handleErrorMessage',
     value: function handleErrorMessage(botName, context) {
-      var message = responseHandler.generateErrorTemplate(botName, this.config.botCommand, context);
+      var renderedData = responseHandler.generateErrorTemplate(botName, this.config.botCommand, context);
       this.dispatchMessage({
         channels: context.parsedMessage.channel,
-        message: message
+        message: renderedData
       });
-      return message;
+
+      return Promise.resolve(renderedData);
     }
   }, {
     key: 'handleBotMessages',
     value: function handleBotMessages(parsedMessage) {
-      var message = responseHandler.generateBotResponseTemplate({
-        /* jshint ignore:start */
-        bot_direct_message_error: true
-        /* jshint ignore:end */
-      });
       this.dispatchMessage({
         channels: parsedMessage.channel,
-        message: message
+        message: responseHandler.generateBotResponseTemplate({
+          /* jshint ignore:start */
+          bot_direct_message_error: true
+          /* jshint ignore:end */
+        })
       });
-      return message;
+    }
+  }, {
+    key: 'close',
+    value: function close() {
+      this.connectionManager.close();
+    }
+  }, {
+    key: 'shutdown',
+    value: function shutdown() {
+      this.connectionManager.shutdown();
+    }
+  }, {
+    key: 'start',
+    value: function start() {
+      this.connectionManager.connect().catch(function (err) {
+        botLogger.logger.log('Bot: Error connecting to slack %j', err);
+      });
+    }
+  }, {
+    key: 'reconnect',
+    value: function reconnect() {
+      this.connectionManager.reconnect();
+    }
+  }, {
+    key: 'getId',
+    value: function getId() {
+      var socket = _.get(this, 'connectionManager.socket');
+      return socket ? socket.getId() : undefined;
+    }
+  }, {
+    key: 'getBotName',
+    value: function getBotName() {
+      var socket = _.get(this, 'connectionManager.socket');
+      return socket ? socket.getBotName() : undefined;
+    }
+  }, {
+    key: 'getSlackData',
+    value: function getSlackData() {
+      var socket = _.get(this, 'connectionManager.socket');
+      return socket ? socket.getSlackData() : undefined;
+    }
+  }, {
+    key: 'injectMessage',
+    value: function injectMessage(messageObj) {
+      var message = _.merge({}, {
+        'id': '',
+        'type': 'message',
+        'channel': 'C1234567',
+        'text': ' '
+      }, messageObj);
+
+      return this.handleMessage(message).catch(function (err) {
+        botLogger.logger.log('Bot: Error handling message %j', err);
+      });
+    }
+  }, {
+    key: 'handleMessageEvent',
+    value: function handleMessageEvent(message) {
+      if (message.type === 'message') {
+        var callbackMessage = {
+          bot: this.getBotName(),
+          message: message.text,
+          completeMessage: JSON.stringify(message, internals.jsonReplacer).replace(/\n/g, '\n')
+        };
+
+        this.botInterface.emit('message', callbackMessage);
+      }
     }
   }]);
 

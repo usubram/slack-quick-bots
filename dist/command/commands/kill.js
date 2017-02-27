@@ -45,12 +45,14 @@ externals.Kill = function (_Command) {
     key: 'respond',
     value: function respond(parsedMessage) {
       var killTask = this.getParams(parsedMessage, 0);
+
       var recursiveTaskTimer = ['eventStore', parsedMessage.channel + '_' + killTask, 'timer'];
       var alertTaskPath = ['eventStore', killTask, 'channel', parsedMessage.channel];
       var scheduleTaskPath = ['eventStore', parsedMessage.channel + '_schedule_' + this.getParams(parsedMessage, 1), 'timer'];
-      var recursiveTimer = _.get(this, recursiveTaskTimer, undefined);
-      var scheduleTimer = _.get(this, scheduleTaskPath, undefined);
-      var alertTimer = _.get(this, alertTaskPath, undefined);
+
+      var recursiveTimer = _.get(this.context[killTask], recursiveTaskTimer);
+      var scheduleTimer = _.get(this.context[killTask], scheduleTaskPath);
+      var alertTimer = _.get(this.context[killTask], alertTaskPath);
 
       if (recursiveTimer) {
         clearInterval(recursiveTimer);
@@ -132,6 +134,12 @@ externals.Kill = function (_Command) {
           })
         });
       }
+    }
+  }, {
+    key: 'process',
+    value: function process(parsedMessage) {
+      this.respond(parsedMessage);
+      return Promise.resolve();
     }
   }]);
 

@@ -1,6 +1,5 @@
 'use strict';
 
-const sinon = require('sinon');
 const chai = require('chai'),
   expect = chai.expect;
 const sinonChai = require('sinon-chai');
@@ -10,7 +9,7 @@ const config = require('../../mock/config');
 
 chai.use(sinonChai);
 
-describe('/bots.js', function () {
+describe('/bots', function () {
   describe('Should instantiate bots correctly', function () {
     var slackBots;
     beforeEach(function () {

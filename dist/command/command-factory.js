@@ -18,56 +18,42 @@ var _ = require('lodash');
 var path = require('path');
 var root = '..';
 
-var botLogger = require(path.join(root, 'utils/logger'));
 var Data = require(path.join(root, 'command/commands/data'));
 var Recursive = require(path.join(root, 'command/commands/recursive'));
 var Alert = require(path.join(root, 'command/commands/alert'));
 var Kill = require(path.join(root, 'command/commands/kill'));
 var Schedule = require(path.join(root, 'command/commands/schedule'));
-var storage = require(path.join(root, 'storage/storage'));
 
 var externals = {};
 
 externals.CommandFactory = function () {
   function _class(options) {
-    var _this = this;
-
     _classCallCheck(this, _class);
 
+    this.options = options;
     this.commandObj = {};
-    this.eventStore = {};
 
-    Promise.resolve(storage.getEvents(['events', 'schedule'])).then(function (eventsData) {
-      _this.eventStore = _.get(eventsData, options.getSlackData().self.name, {});
-      _.forEach(options.getBotConfig().botCommand, function (command, key) {
-        _this.commandObj[key] = _this.getCommand({
-          context: _this.commandObj,
-          commandName: key,
-          getBotConfig: options.getBotConfig,
-          getSlackData: options.getSlackData,
-          getHook: options.getHook,
-          eventStore: _this.eventStore,
-          messageHandler: options.messageHandler
-        }, command.commandType);
-      });
-    }).catch(function (err) {
-      botLogger.logger.error('Error loading storage', err);
-      _.forEach(options.getBotConfig().botCommand, function (command, key) {
-        _this.commandObj[key] = _this.getCommand({
-          context: _this.commandObj,
-          commandName: key,
-          getBotConfig: options.getBotConfig,
-          getSlackData: options.getSlackData,
-          getHook: options.getHook,
-          eventStore: _this.eventStore,
-          messageHandler: options.messageHandler
-        }, command.commandType);
-      });
-    });
     return this;
   }
 
   _createClass(_class, [{
+    key: 'loadCommands',
+    value: function loadCommands() {
+      var _this = this;
+
+      _.forEach(this.options.getBotConfig().botCommand, function (command, key) {
+        _this.commandObj[key] = _this.getCommand({
+          context: _this.commandObj,
+          commandName: key,
+          getBotConfig: _this.options.getBotConfig,
+          getSlackData: _this.options.getSlackData,
+          getHook: _this.options.getHook,
+          getEventStore: _this.options.getEventStore,
+          messageHandler: _this.options.messageHandler
+        }, command.commandType);
+      });
+    }
+  }, {
     key: 'getCommand',
     value: function getCommand(options, commandType) {
       var command = void 0;

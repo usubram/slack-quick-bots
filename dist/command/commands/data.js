@@ -49,7 +49,7 @@ externals.Data = function (_Command) {
       return Promise.resolve({
         then: function then(onFulfill, onReject) {
           _this2.template = '';
-          _this2.purpose = _this2.getHook() ? _this2.getHook().getHookPurpose(parsedMessage.channel) : '';
+          _this2.purpose = _.isEmpty(_this2.getHook()) ? '' : _this2.getHook().getHookPurpose(parsedMessage.channel);
           _this2.hookContext = _this2.getHookContext(_this2.purpose, parsedMessage.channel, parsedMessage.message.command);
 
           _this2.setDefaultParams(_this2.getCommand(), parsedMessage, 0);

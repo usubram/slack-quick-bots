@@ -3,96 +3,134 @@
 const sinon = require('sinon');
 const chai = require('chai'),
   expect = chai.expect;
-const sinonChai = require('sinon-chai');
 const _ = require('lodash');
-const rewire = require('rewire');
 const config = require('../mock/config');
-const ConnectorRewire = rewire('./../../lib/bot/connector');
-const Bots = require('./../../lib/bot/bots');
-const Bot = require('./../../lib/bot/bot');
+const Connector = require('./../../lib/bot/connector');
+const SlackBot = require('./../../lib/index');
 const socketServer = require('./../../lib/bot/socket-server');
 
-chai.use(sinonChai);
-
 describe('/connector', function () {
-  describe('validate successfully connection', function () {
-    var slackBot,
-      setupBotEventsStub,
-      retryConnectionStub,
-      connectionResponse;
+    var slackBot;
+    var clock;
+    var connectSpy;
+    var botConfig;
 
-    beforeEach(function () {
-      setupBotEventsStub = sinon.stub(Bot.prototype, 'setupBotEvents');
-      slackBot = new Bots(config.singleBot.bots).getBots()[0];
-      retryConnectionStub = sinon.stub(connectorRewire.__get__('internals'), "retryConnection");
-      connectorRewire.__set__('internals.makeRequest', function () {
-        return new Promise((resolve, reject) => {
-          resolve({url: 'url.com'});
-        });
-      });
-    });
-
-    afterEach(function () {
-      setupBotEventsStub.restore();
-      retryConnectionStub.restore();
-      slackBot = undefined;
-      connectionResponse = undefined;
-    });
-
-    it('Should pass connection and return connection url', function () {
-      ConnectorRewire.connect(slackBot).then(function (bot) {
-        expect(bot.slackData.url).to.equal('url.com');
-      }).catch(function(err) {
-        setTimeout(function() {
-          throw err; 
-        });
-      });
-      expect(retryConnectionStub).to.not.have.been.called;
-    });
+  beforeEach(function () {
+    botConfig = _.cloneDeep(config.singleBot);
   });
 
-  describe.only('reconnect on disconnection', function () {
-    var slackBot,
-      setupBotEventsStub,
-      connectionResponse,
-      connector,
-      clock;
+  afterEach(function () {
+    slackBot = undefined;
+    socketServer.closeClient();
+    connectSpy.restore();
+    if (clock) {
+      clock.restore();
+    }
+  });
 
-    beforeEach(function (done) {
-      setupBotEventsStub = sinon.stub(Bot.prototype, 'setupBotEvents');
-      slackBot = new Bots(config.singleBot.bots).getBots()[0];
-      socketServer.connect(slackBot).then(() => {
-        console.log('connected.. 1234');
+  it('Should connect to socker server at first attempt and respond', function (done) {
+
+    slackBot = new SlackBot(botConfig, { isMock: true });
+    connectSpy = sinon.spy(Connector.prototype, 'connect');
+
+    slackBot.start().then((botEvt) => {
+      botEvt[0].on('message', (response) => {
+        expect(connectSpy).to.be.calledOnce;
+        expect(response.message).to.equal('Hello 1');
         done();
       });
-      ConnectorRewire.__set__('internals.makeRequest', function () {
-        return new Promise((resolve, reject) => {
-          resolve({ url: 'ws://0.0.0.0:4080' });
+      botEvt[0].on('connect', () => {
+        botEvt[0].injectMessage({
+          text: 'ping 1',
+          channel: 'D1234567'
         });
       });
-      clock = sinon.useFakeTimers();
     });
-
-    afterEach(function () {
-      setupBotEventsStub.restore();
-      clock.restore();
-      slackBot = undefined;
-      connectionResponse = undefined;
-    });
-
-    it('Should pass connection and return connection url', function (done) {
-      slackBot.connectionManager = new ConnectorRewire();
-      //clock.tick(500);
-      slackBot.connectionManager.connect(slackBot).then(function (bot) {
-        expect(bot.slackData.url).to.equal('ws://0.0.0.0:4080');
-        console.log('bot', bot);
-        //done();
-      }).catch(function(err) {
-        // setTimeout(function() {
-        //   throw err;
-        // });
-      });
-      //expect(retryConnectionStub).to.not.have.been.called;
-    }).timeout(500000);
   });
+
+  it('Should connect to socker server after 3rd attempt and respond', function (done) {
+
+    _.set(botConfig, 'bots[0].mock.retryAttempt', 2);
+
+    clock = sinon.useFakeTimers();
+    slackBot = new SlackBot(botConfig, { isMock: true });
+    connectSpy = sinon.spy(Connector.prototype, 'connect');
+
+    slackBot.start().then((botEvt) => {
+      clock.tick(2001);
+      botEvt[0].on('message', (response) => {
+        expect(connectSpy).to.be.calledTwice;
+        expect(response.message).to.equal('Hello 2');
+        done();
+      });
+      botEvt[0].on('connect', () => {
+        botEvt[0].injectMessage({
+          text: 'ping 2',
+          channel: 'D1234567'
+        });
+      });
+    });
+  });
+
+  it('Should fail on auth error and should not retry', function (done) {
+
+    _.set(botConfig, 'bots[0].mock.retryAttempt', 2);
+    _.set(botConfig, 'bots[0].mock', {
+      error: 'invalid_auth'
+    });
+
+    slackBot = new SlackBot(botConfig, { isMock: true });
+    connectSpy = sinon.spy(Connector.prototype, 'connect');
+
+    slackBot.start().then(() => {
+      expect(connectSpy).to.be.calledOnce;
+      done();
+    });
+  });
+
+  it('Should shutdown bot successfully', function (done) {
+
+    slackBot = new SlackBot(botConfig, { isMock: true });
+    connectSpy = sinon.spy(Connector.prototype, 'connect');
+
+    slackBot.start().then((botEvt) => {
+      botEvt[0].on('connect', () => {
+        botEvt[0].shutdown();
+      });
+
+      botEvt[0].on('shutdown', () => {
+        done();
+      });
+    });
+  });
+
+  it('Should close bot successfully', function (done) {
+
+    slackBot = new SlackBot(botConfig, { isMock: true });
+    connectSpy = sinon.spy(Connector.prototype, 'connect');
+    clock = sinon.useFakeTimers();
+    var count = 2;
+
+    slackBot.start().then((botEvt) => {
+
+      botEvt[0].on('connect', () => {
+        --count;
+        botEvt[0].close();
+
+        if (count === 0) {
+          botEvt[0].shutdown();
+        }
+      });
+
+      botEvt[0].on('close', () => {
+        clock.tick(3000);
+      });
+
+      botEvt[0].on('shutdown', () => {
+        done();
+      });
+
+    });
+  });
+
 });

@@ -32,9 +32,10 @@ externals.Commands = function () {
     this.getSlackData = options.getSlackData;
     this.getHook = options.getHook;
     this.commandName = options.commandName;
-    this.eventStore = options.eventStore;
+    this.getEventStore = options.getEventStore;
     this.messageHandler = options.messageHandler;
     this.template = this.getTemplate();
+    this.eventStore = {};
 
     this.loadEvents();
     return this;
@@ -107,7 +108,7 @@ externals.Commands = function () {
     value: function loadEvents() {
       var _this3 = this;
 
-      var savedEvents = _.values(this.eventStore);
+      var savedEvents = _.values(this.getEventStore());
       if (savedEvents) {
         savedEvents.reduce(function (evPromise, savedEvent) {
           if (_.get(savedEvent, 'parsedMessage.message.command') === _this3.commandName) {
@@ -119,7 +120,9 @@ externals.Commands = function () {
   }, {
     key: 'reloadCommand',
     value: function reloadCommand(parsedMessage) {
-      this.preprocess(parsedMessage).then(this.process(parsedMessage)).catch(function (err) {
+      this.preprocess(parsedMessage).then(this.process(parsedMessage)).then(function (parsedMessage) {
+        return Promise.resolve(parsedMessage);
+      }).catch(function (err) {
         botLogger.logger.info('Error processing command ', err);
       });
     }
@@ -203,6 +206,7 @@ externals.Commands = function () {
       if (this.getTimer(parsedMessage)) {
         clearInterval(this.getTimer(parsedMessage));
       }
+
       _.set(this.eventStore, parsedMessage.channel + '_' + this.commandName + '.timer', callback);
     }
   }]);

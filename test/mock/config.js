@@ -42,7 +42,12 @@ exports = module.exports = {
         self: {
           name: 'testbot1',
           id: 'U1234567'
-        }
+        },
+        users: [{
+          id: 'U0GG92T45', name: 'user1'
+        }, {
+          id: 'U0GG92T46', name: 'user2'
+        }]
       },
       botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
     }]
@@ -397,5 +402,26 @@ exports = module.exports = {
       botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
       blockDirectMessage: true
     }]
+  },
+  events: {
+    "testbot1": {
+      "D2U7WA3PD_auto": {
+        "parsedMessage": {
+          "type": "message",
+          "channel": "D2U7WA3PD",
+          "user": "U0VM3V6G3",
+          "text": "auto",
+          "ts": "1488154681.000008",
+          "team": "T0GGDKVDE",
+          "message": {
+            "command": "auto",
+            "params": []
+          }
+        },
+        "channels": [
+          "D2U7WA3PD"
+        ]
+      }
+    }
   }
 };

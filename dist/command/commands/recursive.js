@@ -86,7 +86,8 @@ externals.Recursive = function (_Command) {
 
           try {
             _this3.getCommand().data.apply(_this3, [{
-              command: parsedMessage.message.command, params: parsedMessage.message.params
+              command: parsedMessage.message.command,
+              params: parsedMessage.message.params
             }, _this3.buildOptions(parsedMessage, _this3.getSlackData(), _this3.purpose), _this3.callback]);
           } catch (err) {
             botLogger.logger.error('Command: error calling handler,' + 'make sure to pass a proper function', err, err.stack);
