@@ -20,10 +20,9 @@ var assert = require('assert');
 
 var botLogger = require('./utils/logger');
 var Bots = require('./bot/bots');
-var connector = require('./connector');
+var socketServer = require('./bot/socket-server');
 var socket = require('./bot/socket');
 var server = require('./bot/server');
-var socketServer = require('./bot/socket-server');
 var storage = require('./storage/storage');
 
 var externals = {};
@@ -44,11 +43,16 @@ externals.SlackBot = function () {
     _classCallCheck(this, _class);
 
     this.config = Object.assign(internals.defaultConfig.slackBotRoot, options);
-    botLogger.setLogger(this.config.logger);
-    storage.createEventDirectory();
-    botLogger.logger.info('Index: config passed');
+    this.settings = settings;
+
     this.assertInputData(this.config, settings);
+
+    storage.createEventDirectory();
+    botLogger.setLogger(this.config.logger);
+
     this.bots = new Bots(this.config.bots).getBots();
+
+    botLogger.logger.info('Index: config passed');
     botLogger.logger.debug('Index: this.bots', this.bots);
   }
 
@@ -58,12 +62,22 @@ externals.SlackBot = function () {
       var _this = this;
 
       botLogger.logger.info('Index: contacting slack for connection');
+
       if (this.config.server) {
-        return this.setupServer(this.config, function (err, server) {
-          _this.server = server;
+        return this.setupServer(this.config).then(function (server) {
           return _this.initializeBots(server);
+        }).catch(function (err) {
+          botLogger.logger.debug('Index: Failed setting up server %j', err);
         });
       } else {
+        if (_.get(this.settings, 'isMock')) {
+          return socketServer.connect().then(function () {
+            return _this.initializeBots(null);
+          }).catch(function (err) {
+            botLogger.logger.log('Index: Failed mock start up %j', err);
+          });
+        }
+
         return this.initializeBots(null);
       }
     }
@@ -80,19 +94,14 @@ externals.SlackBot = function () {
     }
   }, {
     key: 'setupServer',
-    value: function setupServer(config, callback) {
+    value: function setupServer(config) {
       var _this3 = this;
 
-      botLogger.logger.info('Index: setting up server');
+      botLogger.logger.info('Index: setting up server', config.server);
       if (config.server) {
-        server.setupServer(config.server, function (request, response) {
+        botLogger.logger.info('Index: setupServer');
+        return server.setupServer(config.server, function (request, response) {
           _this3.handleRoutes.call(_this3, request, response);
-        }, function (err, server) {
-          if (err) {
-            botLogger.logger.info('Index: server start up failed', err);
-          }
-          botLogger.logger.info('Index: server started at ', server.address());
-          callback(null, server);
         });
       }
     }
@@ -119,20 +128,16 @@ externals.SlackBot = function () {
   }, {
     key: 'selectRoutes',
     value: function selectRoutes(route, responeBody, request, response) {
-      var _this5 = this;
-
       var paths = _.split(route.pathname, '/');
       var appRoute = _.nth(paths, 1);
       if (appRoute === 'hook' && request.method === 'POST' && !_.isEmpty(this.bots)) {
-        (function () {
-          var botId = _.nth(paths, 2);
-          var purposeId = _.nth(paths, 3);
-          _.forEach(_this5.bots, function (bot) {
-            if (botId === bot.id) {
-              bot.handleHookRequest(purposeId, responeBody, response);
-            }
-          });
-        })();
+        var botId = _.nth(paths, 2);
+        var purposeId = _.nth(paths, 3);
+        _.forEach(this.bots, function (bot) {
+          if (botId === bot.getId()) {
+            bot.handleHookRequest(purposeId, responeBody, response);
+          }
+        });
       } else {
         response.end('{ "error": "unkown error" }');
       }
@@ -149,14 +154,23 @@ externals.SlackBot = function () {
   }, {
     key: 'initializeBots',
     value: function initializeBots(server) {
-      var _this6 = this;
+      var _this5 = this;
 
-      return this.bots.reduce(function (promiseItem, bot) {
-        botLogger.logger.debug('Index: Creating promise for', bot);
+      var botList = [];
+      return this.bots.reduce(function (promiseItem, bot, index) {
+        botLogger.logger.debug('Index: Creating promise for %j', bot);
         if (bot.config.webHook) {
           bot.server = server;
         }
-        return _this6.connectToSlack(promiseItem, bot);
+
+        return _this5.connectToSlack(promiseItem, bot).then(function (botInterface) {
+          botList.push(botInterface);
+          if (index === _this5.bots.length - 1) {
+            return botList;
+          }
+        }).catch(function (err) {
+          botLogger.logger.debug('Index: Connection to slack failed %j', err);
+        });
       }, Promise.resolve());
     }
   }, {
@@ -165,37 +179,19 @@ externals.SlackBot = function () {
       return promiseItem.then(function () {
         botLogger.logger.info('Index: closing socket connection');
         socket.closeConnection(bot);
-      }).catch(function (err, reason) {
+      }).catch(function (err) {
         botLogger.logger.info('Index: socket close failed', err);
-        botLogger.logger.info('Index: socket close failed reason', reason);
       });
     }
   }, {
     key: 'connectToSlack',
     value: function connectToSlack(promiseItem, bot) {
-      var _this7 = this;
-
       return promiseItem.then(function () {
         botLogger.logger.info('Index: calling startRTM');
-        return _this7.startRTM(bot);
-      }).then(function (slackResponse) {
-        botLogger.logger.debug('Index: calling create socket', slackResponse);
-        return socket.createSocket(slackResponse);
-      }).then(function (botInfo) {
-        return botInfo.setupBotEvents(_.get(bot, 'config.mock'));
-      }).catch(function (err, reason) {
-        botLogger.logger.info('Index: error', err);
-        botLogger.logger.info('Index: failed reason', reason);
+        return bot.init();
+      }).catch(function (err) {
+        botLogger.logger.info('Index: connectToSlack failed', err.stack);
       });
-    }
-  }, {
-    key: 'startRTM',
-    value: function startRTM(bot) {
-      if (_.get(bot, 'config.mock')) {
-        return socketServer.connect(bot);
-      }
-      botLogger.logger.debug('Index: Connecting for bot %j', bot);
-      return connector.connect(bot);
     }
   }, {
     key: 'assertInputData',

@@ -22,18 +22,21 @@ var internals = {
   defaultHost: '0.0.0.0'
 };
 
-externals.setupServer = function (config, handler, callback) {
+externals.setupServer = function (config, handler) {
   var server = http.createServer(handler);
   var port = config.port || internals.defaultPort;
   var hostname = config.hostname || internals.defaultHost;
-  server.listen(port, hostname, function () {
-    botLogger.logger.info('Server listening on ', port, config.hostname);
-    callback(null, server);
-  }).on('error', function (err) {
-    if (err) {
-      throw new Error(err);
+
+  return Promise.resolve({
+    then: function then(success, failure) {
+      server.listen(port, hostname, function () {
+        botLogger.logger.info('Server listening on ', port, config.hostname);
+        success(server);
+      }).on('error', function (err) {
+        botLogger.logger.log('Server setup error %j', err);
+        failure(err);
+      });
     }
-    callback(true);
   });
 };
 

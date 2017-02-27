@@ -43,20 +43,20 @@ externals.StreamFile = function () {
 internals.handleGraphResponse = function (channel, data, config) {
   return Promise.resolve({
     then: function then(onFulfill, onReject) {
-      var _config$style = config.style;
-      var style = _config$style === undefined ? 'lines' : _config$style;
-      var _config$type = config.type;
-      var type = _config$type === undefined ? 'png' : _config$type;
-      var _config$logscale = config.logscale;
-      var logscale = _config$logscale === undefined ? false : _config$logscale;
-      var _config$ylabel = config.ylabel;
-      var ylabel = _config$ylabel === undefined ? 'y-axis' : _config$ylabel;
-      var _config$xlabel = config.xlabel;
-      var xlabel = _config$xlabel === undefined ? 'x-axis' : _config$xlabel;
-      var _config$exec = config.exec;
-      var exec = _config$exec === undefined ? '' : _config$exec;
-      var _config$time = config.time;
-      var time = _config$time === undefined ? '' : _config$time;
+      var _config$style = config.style,
+          style = _config$style === undefined ? 'lines' : _config$style,
+          _config$type = config.type,
+          type = _config$type === undefined ? 'png' : _config$type,
+          _config$logscale = config.logscale,
+          logscale = _config$logscale === undefined ? false : _config$logscale,
+          _config$ylabel = config.ylabel,
+          ylabel = _config$ylabel === undefined ? 'y-axis' : _config$ylabel,
+          _config$xlabel = config.xlabel,
+          xlabel = _config$xlabel === undefined ? 'x-axis' : _config$xlabel,
+          _config$exec = config.exec,
+          exec = _config$exec === undefined ? '' : _config$exec,
+          _config$time = config.time,
+          time = _config$time === undefined ? '' : _config$time;
 
 
       internals.generateGraph({

@@ -1,11 +1,8 @@
 'use strict';
 
-const sinon = require('sinon');
 const chai = require('chai'),
   expect = chai.expect;
 const sinonChai = require('sinon-chai');
-const _ = require('lodash');
-const config = require('../../mock/config');
 const message = require('./../../../lib/command/message');
 
 chai.use(sinonChai);

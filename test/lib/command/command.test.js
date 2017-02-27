@@ -1,22 +1,20 @@
 'use strict';
 
-const _ = require('lodash');
 const botLogger = require('../../../lib/utils/logger');
-const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
+const sinon = require('sinon');
+const chai = require('chai'),
+  expect = chai.expect;
 
 const uuid = require('uuid');
 const root = '../../../';
 
 const SlackBot = require(root + 'lib/index');
+const socketServer = require(root + '/lib/bot/socket-server');
 const config = require(root + 'test/mock/config');
 const responseHandler = require(root + 'lib/bot/response-handler');
 const messageParser = require(root + 'lib/command/message');
 
 botLogger.setLogger();
-
-chai.use(chaiAsPromised);
-chai.should();
 
 describe('/command', function () {
 
@@ -45,27 +43,60 @@ describe('/command', function () {
       });
 
       afterEach(function () {
-        testBots.shutdown();
+        socketServer.closeClient();
       });
 
       it('Should pass command vaidation with default value', function (done) {
-        Promise.resolve(testBots.start().then(function () {
-          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-        })).should.eventually.equal('Hello 1').and.notify(done);
+        var onMessageSpy = sinon.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal('Hello 1');
+            done();
+          }, 1);
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
       });
 
       it('Should pass command vaidation with value 1', function (done) {
         slackMessage.text = 'ping 1';
-        Promise.resolve(testBots.start().then(function () {
-          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-        })).should.eventually.equal('Hello 1').and.notify(done);
+        var onMessageSpy = sinon.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal('Hello 1');
+            done();
+          }, 1);
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
       });
 
       it('Should pass command vaidation with value 2', function (done) {
         slackMessage.text = 'ping 2';
-        Promise.resolve(testBots.start().then(function () {
-          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-        })).should.eventually.equal('Hello 2').and.notify(done);
+        var onMessageSpy = sinon.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal('Hello 2');
+            done();
+          }, 1);
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
       });
 
       it('Should fail command vaidation with value 3', function (done) {
@@ -75,9 +106,21 @@ describe('/command', function () {
         errorContext.parsedMessage = messageParser.parse(slackMessage, true);
         var errorMessage = responseHandler
           .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
-        Promise.resolve(testBots.start().then(function () {
-          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-        })).should.eventually.equal(errorMessage).and.notify(done);
+
+        var onMessageSpy = sinon.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal(errorMessage);
+            done();
+          }, 1);
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
       });
     });
 
@@ -104,27 +147,62 @@ describe('/command', function () {
       });
 
       afterEach(function () {
-        testBots.shutdown();
+        socketServer.closeClient();
       });
 
       it('Should pass command vaidation with default value', function (done) {
-        Promise.resolve(testBots.start().then(function () {
-          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-        })).should.eventually.equal('Hello 1').and.notify(done);
+        var onMessageSpy = sinon.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal('Hello 1');
+            done();
+          }, 1);
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
       });
 
       it('Should pass command vaidation with value 1', function (done) {
         slackMessage.text = 'pingLimit 1';
-        Promise.resolve(testBots.start().then(function () {
-          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-        })).should.eventually.equal('Hello 1').and.notify(done);
+
+        var onMessageSpy = sinon.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal('Hello 1');
+            done();
+          }, 1);
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
       });
 
       it('Should pass command vaidation with value 2', function (done) {
         slackMessage.text = 'pingLimit 2';
-        Promise.resolve(testBots.start().then(function () {
-          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-        })).should.eventually.equal('Hello 2').and.notify(done);
+
+        var onMessageSpy = sinon.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal('Hello 2');
+            done();
+          }, 1);
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
       });
 
       it('Should fail command vaidation with value 30', function (done) {
@@ -134,9 +212,21 @@ describe('/command', function () {
         errorContext.parsedMessage = messageParser.parse(slackMessage, true);
         var errorMessage = responseHandler
           .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
-        Promise.resolve(testBots.start().then(function () {
-          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-        })).should.eventually.equal(errorMessage).and.notify(done);
+
+        var onMessageSpy = sinon.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal(errorMessage);
+            done();
+          }, 1);
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
       });
     });
 
@@ -163,27 +253,62 @@ describe('/command', function () {
       });
 
       afterEach(function () {
-        testBots.shutdown();
+        socketServer.closeClient();
       });
 
       it('Should pass command vaidation with default value', function (done) {
-        Promise.resolve(testBots.start().then(function () {
-          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-        })).should.eventually.equal('Hello 1').and.notify(done);
+        var onMessageSpy = sinon.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal('Hello 1');
+            done();
+          }, 1);
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
       });
 
       it('Should pass command vaidation with value 1', function (done) {
         slackMessage.text = 'hybrid 1';
-        Promise.resolve(testBots.start().then(function () {
-          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-        })).should.eventually.equal('Hello 1').and.notify(done);
+
+        var onMessageSpy = sinon.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal('Hello 1');
+            done();
+          }, 1);
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
       });
 
       it('Should pass command vaidation with value 2', function (done) {
         slackMessage.text = 'hybrid 2';
-        Promise.resolve(testBots.start().then(function () {
-          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-        })).should.eventually.equal('Hello 2').and.notify(done);
+
+        var onMessageSpy = sinon.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal('Hello 2');
+            done();
+          }, 1);
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
       });
 
       it('Should fail command vaidation with value 30', function (done) {
@@ -193,9 +318,21 @@ describe('/command', function () {
         errorContext.parsedMessage = messageParser.parse(slackMessage, true);
         var errorMessage = responseHandler
           .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
-        Promise.resolve(testBots.start().then(function () {
-          return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-        })).should.eventually.equal(errorMessage).and.notify(done);
+
+        var onMessageSpy = sinon.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal(errorMessage);
+            done();
+          }, 1);
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
       });
     });
   });
@@ -223,7 +360,7 @@ describe('/command', function () {
     });
 
     afterEach(function () {
-      testBots.shutdown();
+      socketServer.closeClient();
     });
 
     it('Should block user and respond error', function (done) {
@@ -233,23 +370,59 @@ describe('/command', function () {
       errorContext.users = testBots.bots[0].config.allowedUsers;
       var errorMessage = responseHandler
         .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
-      Promise.resolve(testBots.start().then(function () {
-        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-      })).should.eventually.equal(errorMessage).and.notify(done);
+
+      var onMessageSpy = sinon.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal(errorMessage);
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
     });
 
     it('Should respond to messages for allowed user', function (done) {
       slackMessage.user = 'U0GG92T45';
-      Promise.resolve(testBots.start().then(function () {
-        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-      })).should.eventually.equal('Hello 1').and.notify(done);
+
+      var onMessageSpy = sinon.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal('Hello 1');
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
     });
 
     it('Should not error out if the user is not found', function (done) {
       slackMessage.user = 'U0GG92T47';
-      Promise.resolve(testBots.start().then(function () {
-        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-      })).should.eventually.equal('Hello 1').and.notify(done);
+
+      var onMessageSpy = sinon.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal('Hello 1');
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
     });
 
   });
@@ -277,7 +450,7 @@ describe('/command', function () {
     });
 
     afterEach(function () {
-      testBots.shutdown();
+      socketServer.closeClient();
     });
 
     it('Should respond with blocked message on direct message', function (done) {
@@ -285,9 +458,21 @@ describe('/command', function () {
       errorContext.bot_direct_message_error = true;
       var errorMessage = responseHandler
         .generateBotResponseTemplate(errorContext);
-      Promise.resolve(testBots.start().then(function () {
-        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-      })).should.eventually.equal(errorMessage).and.notify(done);
+
+      var onMessageSpy = sinon.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal(errorMessage);
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
     });
 
     it('Should respond with blocked message on private group', function (done) {
@@ -296,17 +481,41 @@ describe('/command', function () {
       errorContext.bot_direct_message_error = true;
       var errorMessage = responseHandler
         .generateBotResponseTemplate(errorContext);
-      Promise.resolve(testBots.start().then(function () {
-        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-      })).should.eventually.equal(errorMessage).and.notify(done);
+
+      var onMessageSpy = sinon.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal(errorMessage);
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
     });
 
     it('Should respond to messages in public channel', function (done) {
       slackMessage.channel = 'C0GL06JD7';
       slackMessage.text = 'testbot1 ping 1';
-      Promise.resolve(testBots.start().then(function () {
-        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-      })).should.eventually.equal('Hello 1').and.notify(done);
+
+      var onMessageSpy = sinon.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal('Hello 1');
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
     });
   });
 
@@ -333,21 +542,48 @@ describe('/command', function () {
     });
 
     afterEach(function () {
-      testBots.shutdown();
+      socketServer.closeClient();
     });
 
     it('Should call getData for data command', function (done) {
       slackMessage.text = 'ping';
-      Promise.resolve(testBots.start().then(function () {
-        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-      })).should.eventually.equal('Hello 1').and.notify(done);
+
+      var onMessageSpy = sinon.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal('Hello 1');
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
     });
 
     it('Should call setUpRecursiveTask for recursive command', function (done) {
       slackMessage.text = 'auto';
-      Promise.resolve(testBots.start().then(function () {
-        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-      })).should.eventually.equal(undefined).and.notify(done);
+
+      var botMessage = responseHandler
+        .generateBotResponseTemplate({ recursive_success: true });
+
+      var onMessageSpy = sinon.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal(botMessage);
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
     });
 
     it('Should call killTask for kill command', function (done) {
@@ -357,9 +593,21 @@ describe('/command', function () {
       errorContext.parsedMessage = messageParser.parse(slackMessage, true);
       var errorMessage = responseHandler
         .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
-      Promise.resolve(testBots.start().then(function () {
-        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-      })).should.eventually.equal(errorMessage).and.notify(done);
+
+      var onMessageSpy = sinon.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal(errorMessage);
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
     });
 
     it('Should call alertTask for alert command', function (done) {
@@ -369,9 +617,21 @@ describe('/command', function () {
       errorContext.parsedMessage = messageParser.parse(slackMessage, true);
       var errorMessage = responseHandler
         .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
-      Promise.resolve(testBots.start().then(function () {
-        return testBots.bots[0].events.input(JSON.stringify(slackMessage));
-      })).should.eventually.equal(errorMessage).and.notify(done);
+
+      var onMessageSpy = sinon.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal(errorMessage);
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
     });
 
   });
