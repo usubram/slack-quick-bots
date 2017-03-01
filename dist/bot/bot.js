@@ -209,7 +209,7 @@ externals.Bot = function () {
       _.forEach(options.channels, function (channel) {
 
         var message = {
-          'id': '',
+          'id': new Date().getTime().toString(),
           'type': options.type || 'message',
           'channel': channel,
           'text': '' + options.message
