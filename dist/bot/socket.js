@@ -50,14 +50,17 @@ var Socket = function () {
       return Promise.resolve({
         then: function then(onFulfill) {
           _this.ws.on('message', function (data) {
+
             var slackMessage = '';
+
             try {
               slackMessage = JSON.parse(data);
             } catch (err) {
               botLogger.logger.error('Socket: slack message is not good', data);
             }
+
             /* jshint ignore:start */
-            if (slackMessage && slackMessage.type === 'message' && slackMessage.reply_to !== '' && !slackMessage.subtype) {
+            if (slackMessage && slackMessage.type === 'message' && _.isEmpty(slackMessage.reply_to) && !slackMessage.subtype) {
               _this.emitEvent('message', slackMessage);
             }
             /* jshint ignore:end */
