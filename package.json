@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "babel ./lib --out-dir dist --copy-files",
-    "start": "node ./lib/index.js",
+    "start": "node ./dist/index.js",
     "test": "NODE_ENV=test mocha --require babel-core/register ./test/lib/*",
     "lint": "eslint lib/**"
   },
