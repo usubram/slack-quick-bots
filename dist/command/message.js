@@ -24,7 +24,7 @@ externals.parse = function (message, isDirectMessage) {
   var parsedCommand = Object.assign({}, message);
   var channelNameRegex = new RegExp(/(?:^<\@)(?:.*)(?:(?:\>$)|(?:\>\:$))/);
   var messageArr = _.map(_.compact(message.text.split(' ')), function (item) {
-    if (!_.isNaN(parseInt(item, 10))) {
+    if (_.isNumber(item)) {
       return parseInt(item, 10);
     } else if (_.isString(item) && channelNameRegex.test(item)) {
       return item;
