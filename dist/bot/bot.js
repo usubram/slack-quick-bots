@@ -135,7 +135,7 @@ externals.Bot = function () {
       var parsedMessage = messageParser.parse(message, responseHandler.isDirectMessage(message));
 
       if (this.getId() === parsedMessage.message.commandPrefix) {
-        parsedMessage.message.commandPrefix = this.getBotName();
+        parsedMessage.message.commandPrefix = _.camelCase(this.getBotName());
       }
 
       if (this.config.blockDirectMessage && !responseHandler.isPublicMessage(message)) {
