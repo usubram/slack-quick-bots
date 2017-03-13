@@ -24,21 +24,26 @@ externals.parse = function (message, isDirectMessage) {
   var parsedCommand = Object.assign({}, message);
   var channelNameRegex = new RegExp(/(?:^<\@)(?:.*)(?:(?:\>$)|(?:\>\:$))/);
   var messageArr = _.map(_.compact(message.text.split(' ')), function (item) {
-    if (_.isNumber(item)) {
-      return parseInt(item, 10);
+    var ifNumber = Number(item);
+
+    if (ifNumber) {
+      return ifNumber;
     } else if (_.isString(item) && channelNameRegex.test(item)) {
       return item;
     } else {
       return item;
     }
   });
+
   var keys = isDirectMessage ? internals.directCommandKey : internals.channelCommandKey;
   parsedCommand.message = internals.mapCommand(messageArr, keys);
 
   if (parsedCommand.message.command) {
-    parsedCommand.message.command = _.camelCase(parsedCommand.message.command);
+    parsedCommand.message.command = _.camelCase(_.lowerCase(parsedCommand.message.command));
   }
+
   botLogger.logger.debug('message:', parsedCommand);
+
   return parsedCommand;
 };
 
@@ -52,9 +57,11 @@ internals.mapCommand = function (messageArr, keys) {
     }
     return result;
   }, {});
+
   if (messageMap && _.isString(messageMap.commandPrefix)) {
     messageMap.commandPrefix = messageMap.commandPrefix.replace(/^<\@|\>|\:$|\>$/g, '');
   }
+
   return messageMap;
 };
 

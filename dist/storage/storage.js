@@ -24,7 +24,7 @@ var internals = {
 internals.EVENT_FILE_PATH = path.join(internals.STORAGE_DIRECTORY, 'events.json');
 internals.SCHEDULE_FILE_PATH = path.join(internals.STORAGE_DIRECTORY, 'schedule.json');
 
-exports = module.exports.createEventDirectory = function () {
+exports.createEventDirectory = function () {
   fs.mkdir(internals.STORAGE_DIRECTORY, function (e) {
     if (!e || e && e.code === 'EEXIST') {
       botLogger.logger.debug('storage: directory already exist');
@@ -34,12 +34,12 @@ exports = module.exports.createEventDirectory = function () {
   });
 };
 
-exports = module.exports.updateEvents = function (botName, eventType, data) {
-  return Promise.resolve(internals.readFile(eventType)).then(function (eventsData) {
+exports.updateEvents = function (botName, eventType, data) {
+  return Promise.resolve(exports.readFile(eventType)).then(function (eventsData) {
     if (data && data.parsedMessage && data.channels) {
       var result = eventsData || {};
       _.set(result, botName, internals.pickEvents(eventType, _.get(eventsData, botName, {}), data));
-      return internals.writeFile(eventType, result);
+      return exports.writeFile(eventType, result);
     }
   }).then(function (responseData) {
     botLogger.logger.info('storage: events updates successfully');
@@ -52,13 +52,14 @@ exports = module.exports.updateEvents = function (botName, eventType, data) {
   });
 };
 
-exports = module.exports.removeEvents = function (botName, eventType, data) {
+exports.removeEvents = function (botName, eventType, data) {
   return Promise.resolve({
     then: function then(onFulfill, onReject) {
-      internals.readFile(eventType).then(function (eventsData) {
+      exports.readFile(eventType).then(function (eventsData) {
         if (_.get(data, 'channels', []).length) {
           _.forEach(data.channels, function (channel) {
             var eventPath = [botName, channel + '_' + _.get(data, 'commandToKill')];
+
             if (_.unset(eventsData, eventPath)) {
               botLogger.logger.info('storage: events updates successfully');
             }
@@ -66,7 +67,7 @@ exports = module.exports.removeEvents = function (botName, eventType, data) {
         }
         return eventsData;
       }).then(function (rData) {
-        return internals.writeFile(eventType, rData);
+        return exports.writeFile(eventType, rData);
       }).then(function (responseData) {
         botLogger.logger.info('storage: events updates successfully');
         botLogger.logger.debug('storage: events updated successfully for ', responseData);
@@ -80,13 +81,13 @@ exports = module.exports.removeEvents = function (botName, eventType, data) {
   });
 };
 
-exports = module.exports.getEvents = function (eventTypes) {
-  return Promise.all([internals.readFile(eventTypes[0]), internals.readFile(eventTypes[1])]).then(function (eventData) {
+exports.getEvents = function (eventTypes) {
+  return Promise.all([exports.readFile(eventTypes[0]), exports.readFile(eventTypes[1])]).then(function (eventData) {
     return _.merge({}, eventData[0], eventData[1]);
   });
 };
 
-internals.readFile = function (fileType) {
+exports.readFile = function (fileType) {
   var path = '';
   var fileData = '';
   if (fileType === 'events') {
@@ -115,9 +116,10 @@ internals.readFile = function (fileType) {
   });
 };
 
-internals.writeFile = function (fileType, data) {
+exports.writeFile = function (fileType, data) {
   var path = '';
   var fileData = JSON.stringify(data, null, 2);
+
   if (fileType === 'events') {
     path = internals.EVENT_FILE_PATH;
   } else if (fileType === 'schedule') {

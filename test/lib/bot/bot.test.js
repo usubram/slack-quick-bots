@@ -13,6 +13,7 @@ const socketServer = require(root + '/lib/bot/socket-server');
 const config = require(root + 'test/mock/config');
 const responseHandler = require(root + 'lib/bot/response-handler');
 const messageParser = require(root + 'lib/command/message');
+const storage = require(root + 'lib/storage/storage');
 
 botLogger.setLogger();
 
@@ -22,9 +23,13 @@ describe('/bot', function () {
     var testBots;
     var errorContext;
     var slackMessage;
+    var updateEventsStub;
 
     beforeEach(function () {
       testBots = new SlackBot(config.singleBot, { isMock: true });
+      updateEventsStub = sinon.stub(storage, 'updateEvents', () => {
+        return Promise.resolve({});
+      });
       errorContext = {
         error: true
       };
@@ -39,10 +44,11 @@ describe('/bot', function () {
     });
 
     afterEach(function () {
+      updateEventsStub.restore();
       socketServer.closeClient();
     });
 
-    it('Should with the expected response', function (done) {
+    it('Should response with the expected response', function (done) {
       var onMessageSpy = sinon.spy((response) => {
         setTimeout(() => {
           expect(response.message).to.equal('Hello 1');

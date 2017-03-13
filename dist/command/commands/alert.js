@@ -55,7 +55,7 @@ externals.Alert = function (_Command) {
           if (_this2.getParams(parsedMessage, 0) === internals.alertParams[0]) {
             var sentivity = _this2.getParams(parsedMessage, 1) || 75;
             var time = _this2.getParams(parsedMessage, 0);
-            var alertTaskPath = ['eventStore', parsedMessage.message.command];
+            var alertTaskPath = ['eventStore', parsedMessage.channel + '_' + parsedMessage.message.command];
             var alertTaskChannelPath = _.concat(alertTaskPath, 'channel');
             var alertTaskCurrentChannelPath = _.concat(alertTaskChannelPath, parsedMessage.channel);
             var alertCurrentSentivity = _.concat(alertTaskCurrentChannelPath, 'sentivity');
@@ -142,7 +142,7 @@ externals.Alert = function (_Command) {
     value: function message(parsedMessage, data) {
       var _this5 = this;
 
-      var alertTaskPath = ['eventStore', parsedMessage.message.command];
+      var alertTaskPath = ['eventStore', parsedMessage.channel + '_' + parsedMessage.message.command];
       var alertTaskChannelPath = _.concat(alertTaskPath, 'channel');
       var dataSamplePathVale = _.concat(alertTaskPath, 'dataSample', 'value');
       var dataSamplePathTime = _.concat(alertTaskPath, 'dataSample', 'time');
@@ -200,6 +200,23 @@ externals.Alert = function (_Command) {
       this.preprocess(parsedMessage).catch(function (err) {
         botLogger.logger.info('Error processing command ', err);
       });
+    }
+  }, {
+    key: 'setTimer',
+    value: function setTimer(parsedMessage, job) {
+      var alertCommand = internals.getCommandArguments(parsedMessage);
+      if (this.getTimer(parsedMessage)) {
+        this.getTimer(parsedMessage).stop();
+      }
+
+      _.set(this.eventStore, [_.get(alertCommand, 'message.command'), 'timer'], job);
+    }
+  }, {
+    key: 'getTimer',
+    value: function getTimer(parsedMessage) {
+      var alertCommand = internals.getCommandArguments(parsedMessage);
+
+      return _.get(this.eventStore, [_.get(alertCommand, 'message.command'), 'timer']);
     }
   }]);
 
