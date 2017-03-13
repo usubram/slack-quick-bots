@@ -1,9 +1,10 @@
 'use strict';
 
+const _ = require('lodash');
+
 const chai = require('chai'),
   expect = chai.expect;
 const sinonChai = require('sinon-chai');
-const _ = require('lodash');
 const Bots = require('./../../../lib/bot/bots');
 const config = require('../../mock/config');
 

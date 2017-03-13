@@ -64,7 +64,10 @@ externals.Bot = function () {
         });
       }
 
-      this.connectionManager.connect();
+      this.connectionManager.connect().catch(function (err) {
+        botLogger.logger.error('Bot: Could not establish connection %j', err);
+      });
+
       this.commandFactory = this.loadCommands();
 
       return this.botInterface;
@@ -139,7 +142,7 @@ externals.Bot = function () {
         return this.handleBotMessages(parsedMessage);
       }
 
-      if (responseHandler.isDirectMessage(message) || this.getBotName() === parsedMessage.message.commandPrefix) {
+      if (responseHandler.isDirectMessage(message) || _.camelCase(this.getBotName()) === parsedMessage.message.commandPrefix) {
 
         return this.commandFactory.handleMessage(parsedMessage).catch(function (err) {
           return _this3.handleErrorMessage(_this3.getBotName(), err);
@@ -179,7 +182,7 @@ externals.Bot = function () {
         _this5.commandFactory.loadCommands();
         _this5.botInterface.emit('connect');
       }).catch(function (err) {
-        botLogger.logger.log('Bot: Error loading event %j', err);
+        botLogger.logger.error('Bot: Error loading event %j', err);
         _this5.commandFactory.loadCommands();
         _this5.botInterface.emit('connect');
       });
@@ -217,7 +220,6 @@ externals.Bot = function () {
 
         try {
           var messageStr = JSON.stringify(message, internals.jsonReplacer).replace(/\n/g, '\n');
-
           _this7.connectionManager.socket.sendMessage(messageStr, callback);
         } catch (err) {
           botLogger.logger.error('Bot: socket connection error', err);
@@ -240,14 +242,18 @@ externals.Bot = function () {
   }, {
     key: 'handleBotMessages',
     value: function handleBotMessages(parsedMessage) {
+      var renderedData = responseHandler.generateBotResponseTemplate({
+        /* jshint ignore:start */
+        bot_direct_message_error: true
+        /* jshint ignore:end */
+      });
+
       this.dispatchMessage({
         channels: parsedMessage.channel,
-        message: responseHandler.generateBotResponseTemplate({
-          /* jshint ignore:start */
-          bot_direct_message_error: true
-          /* jshint ignore:end */
-        })
+        message: renderedData
       });
+
+      return Promise.resolve(renderedData);
     }
   }, {
     key: 'close',

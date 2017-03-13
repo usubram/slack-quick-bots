@@ -30,6 +30,8 @@ var Socket = function () {
     this.id = _.get(this.slackData, 'self.id');
     this.socketEventEmitter = options.socketEventEmitter;
 
+    this.ignoreStartupMessage = false;
+
     return this.registerSocketEvents(options);
   }
 
@@ -60,7 +62,7 @@ var Socket = function () {
             }
 
             /* jshint ignore:start */
-            if (slackMessage && slackMessage.type === 'message' && _.isEmpty(slackMessage.reply_to) && !slackMessage.subtype) {
+            if (slackMessage && slackMessage.type === 'message' && _.isEmpty(slackMessage.reply_to) && !slackMessage.subtype && _this.ignoreStartupMessage) {
               _this.emitEvent('message', slackMessage);
             }
             /* jshint ignore:end */
@@ -99,6 +101,10 @@ var Socket = function () {
       return Promise.resolve({
         then: function then(onFulfill) {
           _this3.ws.on('open', function () {
+
+            setTimeout(function () {
+              _this3.ignoreStartupMessage = true;
+            }, 1000);
 
             _this3.wsPingPongTimmer = setInterval(function () {
               try {
@@ -149,7 +155,7 @@ var Socket = function () {
   }, {
     key: 'getBotName',
     value: function getBotName() {
-      return _.camelCase(this.botName);
+      return this.botName;
     }
   }, {
     key: 'getSlackData',

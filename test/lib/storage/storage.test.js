@@ -1,11 +1,12 @@
 'use strict';
 
+const root = '../../../';
+
 const sinon = require('sinon');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const sinonChai = require('sinon-chai');
-const rewire = require('rewire');
-const storageRewire = rewire('./../../../lib/storage/storage');
+const storage = require(root + 'lib/storage/storage');
 
 chai.use(sinonChai);
 
@@ -21,36 +22,34 @@ describe('/storage', function () {
       writeFileStub;
 
     beforeEach(function () {
-      updateEventsSpy = sinon.spy(storageRewire, 'updateEvents');
-      removeEventsSpy = sinon.spy(storageRewire, 'removeEvents');
-      readFileStub = sinon.spy(function () {
+      updateEventsSpy = sinon.spy(storage, 'updateEvents');
+      removeEventsSpy = sinon.spy(storage, 'removeEvents');
+
+      readFileStub = sinon.stub(storage, 'readFile', function () {
         return Promise.resolve({});
       });
-      writeFileStub = sinon.spy(function (fileType, data) {
+      writeFileStub = sinon.stub(storage, 'writeFile', function (fileType, data) {
         return Promise.resolve(data);
       });
-      storageRewire.__set__('internals.readFile', readFileStub);
-      storageRewire.__set__('internals.writeFile', writeFileStub);
     });
 
     afterEach(function () {
       updateEventsSpy.restore();
       removeEventsSpy.restore();
+      readFileStub.restore();
+      writeFileStub.restore();
     });
 
-    it('Should update events correctly', function (done) {
-      storageRewire.updateEvents('newBot', 'events', {}).then(() => {
+    it('Should update events correctly', function () {
+      return storage.updateEvents('newBot', 'events', {}).then(() => {
         readFileStub.should.have.been.calledOnce;
-        done();
       });
     });
 
-    it('Should remove events correctly', function (done) {
-      storageRewire.removeEvents('newBot', 'events', {}).then(() => {
+    it('Should remove events correctly', function () {
+      return storage.removeEvents('newBot', 'events', {}).then(() => {
         readFileStub.should.have.been.calledOnce;
-        done();
       });
     });
   });
-
 });

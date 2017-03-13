@@ -15,7 +15,7 @@
 		{{else}}
 			A little help, try command(s)\n
 			{{#each command}}
-				> {{#if ../prefix}} <@{{../prefix}}>{{/if}} *{{@key}}* 
+				> {{#if ../prefix}} <@{{../prefix}}>{{/if}} *{{@key}}*
 				{{#if inContext}}
 					{{#if upperLimit}}
 						{{lowerLimit}} to {{{upperLimit}}}
@@ -24,7 +24,7 @@
 						{{#each allowedParam}}
 							 {{.}}{{#if @last}} {{else}} | {{/if}}
 						{{/each}}\n
-					{{/if}}	
+					{{/if}}
 				{{/if}}
 				{{#if aLimit }}
 				 _`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{{aLimit}}}`_{{/if}}

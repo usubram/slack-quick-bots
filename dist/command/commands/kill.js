@@ -22,6 +22,7 @@ var _ = require('lodash');
 var path = require('path');
 var root = '..';
 
+var botLogger = require(path.join(root, '../utils/logger'));
 var Command = require(path.join(root, 'command'));
 var responseHandler = require(path.join(root, '../bot/response-handler'));
 var storage = require(path.join(root, '../storage/storage'));
@@ -47,12 +48,12 @@ externals.Kill = function (_Command) {
       var killTask = this.getParams(parsedMessage, 0);
 
       var recursiveTaskTimer = ['eventStore', parsedMessage.channel + '_' + killTask, 'timer'];
-      var alertTaskPath = ['eventStore', killTask, 'channel', parsedMessage.channel];
+      var alertTaskPath = ['eventStore', parsedMessage.channel + '_' + killTask];
       var scheduleTaskPath = ['eventStore', parsedMessage.channel + '_schedule_' + this.getParams(parsedMessage, 1), 'timer'];
 
       var recursiveTimer = _.get(this.context[killTask], recursiveTaskTimer);
       var scheduleTimer = _.get(this.context[killTask], scheduleTaskPath);
-      var alertTimer = _.get(this.context[killTask], alertTaskPath);
+      var alertTimer = _.get(this.context[killTask], _.concat(alertTaskPath, 'timer'));
 
       if (recursiveTimer) {
         clearInterval(recursiveTimer);
@@ -67,10 +68,13 @@ externals.Kill = function (_Command) {
             recursive_stop: true
           })
         });
+
         storage.removeEvents(this.getSlackData().self.name, 'events', {
           parsedMessage: parsedMessage,
           channels: [parsedMessage.channel],
           commandToKill: killTask
+        }).catch(function (err) {
+          botLogger.logger.error('Kill: Error killing recursive task', err);
         });
       } else if (alertTimer) {
         delete this.eventStore[killTask].channel[parsedMessage.channel];
@@ -83,14 +87,18 @@ externals.Kill = function (_Command) {
             recursive_stop: true
           })
         });
+
         if (_.isEmpty(this.eventStore[killTask].channel)) {
           clearInterval(this.eventStore[killTask].timer);
           this.eventStore[killTask].timer = undefined;
         }
+
         storage.removeEvents(this.getSlackData().self.name, 'events', {
           parsedMessage: parsedMessage,
           channels: [parsedMessage.channel],
           commandToKill: killTask
+        }).catch(function (err) {
+          botLogger.logger.error('Kill: Error killing alert task', err);
         });
       } else if (scheduleTimer || killTask === 'schedule') {
         if (!scheduleTimer) {
@@ -107,7 +115,7 @@ externals.Kill = function (_Command) {
         }
 
         scheduleTimer.stop();
-        _.set(this, scheduleTaskPath, undefined);
+        _.set(this.context[killTask], scheduleTaskPath, undefined);
 
         this.messageHandler({
           channels: parsedMessage.channel,
@@ -118,10 +126,13 @@ externals.Kill = function (_Command) {
             recursive_stop: true
           })
         });
+
         storage.removeEvents(this.getSlackData().self.name, 'schedule', {
           parsedMessage: parsedMessage,
           channels: [parsedMessage.channel],
           commandToKill: killTask + '_' + this.getParams(parsedMessage, 1)
+        }).catch(function (err) {
+          botLogger.logger.error('Kill: Error killing schedule task', err);
         });
       } else {
         this.messageHandler({
