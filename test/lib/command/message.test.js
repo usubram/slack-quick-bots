@@ -125,5 +125,15 @@ describe('/message', function () {
       expect(parsedMessage).to.deep.equal(slackMessage);
     });
 
+    it('Should correctly convert uppercase command to lowercase', function () {
+      slackMessage.text = 'Command 39e5394a-36f8-49ca-9fed-b48019ee1845';
+      var parsedMessage = message.parse(slackMessage, true);
+      slackMessage.message = {
+        command: 'command',
+        params: ['39e5394a-36f8-49ca-9fed-b48019ee1845']
+      };
+      expect(parsedMessage).to.deep.equal(slackMessage);
+    });
+
   });
 });
