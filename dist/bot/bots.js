@@ -67,7 +67,7 @@ internals.normalizeCommand = function (bot) {
   var stopTasks = [];
   var dataTasks = [];
   _.forEach(bot.botCommand, function (value, key) {
-    var commandKey = _.camelCase(key);
+    var commandKey = _.camelCase(_.lowerCase(key));
     if (value) {
       normalizedCommand[commandKey] = value;
       _.forEach(value, function (commandAttr, commandAttrkey) {
