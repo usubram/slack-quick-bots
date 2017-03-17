@@ -41,7 +41,7 @@
     "chatbots"
   ],
   "dependencies": {
-    "cron": "https://github.com/usubram/node-cron/tarball/master",
+    "cron": "1.2.1",
     "form-data": "2.1.2",
     "handlebars": "4.0.6",
     "lodash": "4.17.4",
