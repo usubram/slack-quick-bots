@@ -142,9 +142,11 @@ externals.Bot = function () {
         return this.handleBotMessages(parsedMessage);
       }
 
-      return this.commandFactory.handleMessage(parsedMessage).catch(function (err) {
-        return _this3.handleErrorMessage(_this3.getBotName(), err);
-      });
+      if (responseHandler.isDirectMessage(message) || _.toUpper(this.getBotName()) === parsedMessage.message.commandPrefix || _.toUpper(this.getId()) === parsedMessage.message.commandPrefix) {
+        return this.commandFactory.handleMessage(parsedMessage).catch(function (err) {
+          return _this3.handleErrorMessage(_this3.getBotName(), err);
+        });
+      }
     }
   }, {
     key: 'loadCommands',
