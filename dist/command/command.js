@@ -111,7 +111,8 @@ externals.Commands = function () {
       var savedEvents = _.values(this.getEventStore());
       if (savedEvents) {
         savedEvents.reduce(function (evPromise, savedEvent) {
-          if (_.get(savedEvent, 'parsedMessage.message.command') === _this3.getCommandName()) {
+          var savedCommand = _.toUpper(_.get(savedEvent, 'parsedMessage.message.command'));
+          if (savedCommand === _this3.getCommandName()) {
             _this3.reloadCommand(savedEvent.parsedMessage);
           }
         }, Promise.resolve());
