@@ -39,15 +39,18 @@ exports.updateEvents = function (botName, eventType, data) {
     if (data && data.parsedMessage && data.channels) {
       var result = eventsData || {};
       _.set(result, botName, internals.pickEvents(eventType, _.get(eventsData, botName, {}), data));
+
       return exports.writeFile(eventType, result);
     }
   }).then(function (responseData) {
     botLogger.logger.info('storage: events updates successfully');
     botLogger.logger.debug('storage: events updated successfully for ', responseData);
+
     return Promise.resolve(responseData);
   }).catch(function (err) {
     botLogger.logger.info('storage: events update failed');
     botLogger.logger.debug('storage: error updating events for ', err);
+
     return Promise.reject(err);
   });
 };
@@ -59,8 +62,10 @@ exports.removeEvents = function (botName, eventType, data) {
         if (_.get(data, 'channels', []).length) {
           _.forEach(data.channels, function (channel) {
             var eventPath = [botName, channel + '_' + _.get(data, 'commandToKill')];
+            var compatibleEventPath = [botName, channel + '_' + _.toLower(_.get(data, 'commandToKill'))];
 
             if (_.unset(eventsData, eventPath)) {
+              _.unset(eventsData, compatibleEventPath);
               botLogger.logger.info('storage: events updates successfully');
             }
           });
@@ -141,12 +146,15 @@ exports.writeFile = function (fileType, data) {
 };
 
 internals.pickEvents = function (eventType, storeData, newdData) {
+  var scheduleTask = _.toUpper(_.get(newdData, 'parsedMessage.message.params[0]'));
+  var eventTask = _.toUpper(_.get(newdData, 'parsedMessage.message.command'));
   _.forEach(newdData.channels, function (channel) {
     if (eventType === 'events') {
-      _.set(storeData, channel + '_' + _.get(newdData, 'parsedMessage.message.command'), newdData);
+      _.set(storeData, channel + '_' + eventTask, newdData);
     } else if (eventType === 'schedule') {
-      _.set(storeData, channel + '_' + 'schedule' + '_' + _.get(newdData, 'parsedMessage.message.params[0]'), newdData);
+      _.set(storeData, channel + '_' + 'SCHEDULE' + '_' + scheduleTask, newdData);
     }
   });
+
   return storeData;
 };

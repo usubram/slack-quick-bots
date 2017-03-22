@@ -33,8 +33,8 @@ describe('/bots', function () {
       it('Should contain normalized bots', function () {
         expect(slackBots).to.be.ok;
         _.forEach(slackBots, function (botInfo) {
-          expect(botInfo.config.botCommand['pingMe']).to.be.ok;
-          expect(botInfo.config.botCommand['stop']).to.be.undefined;
+          expect(botInfo.config.botCommand['PING-ME']).to.be.ok;
+          expect(botInfo.config.botCommand['STOP']).to.be.undefined;
         });
       });
 
@@ -63,10 +63,10 @@ describe('/bots', function () {
       it('Should contain normalized bots', function () {
         expect(slackBots).to.be.ok;
         _.forEach(slackBots, function (botInfo) {
-          expect(botInfo.config.botCommand['pingMe']).to.be.ok;
-          expect(botInfo.config.botCommand['autoData']).to.be.ok;
-          expect(botInfo.config.botCommand['stop']).to.be.ok;
-          expect(botInfo.config.botCommand['stop'].allowedParam).to.deep.equal(['autoData']);
+          expect(botInfo.config.botCommand['PING-ME']).to.be.ok;
+          expect(botInfo.config.botCommand['AUTODATA']).to.be.ok;
+          expect(botInfo.config.botCommand['STOP']).to.be.ok;
+          expect(botInfo.config.botCommand['STOP'].allowedParam).to.deep.equal(['AUTODATA']);
         });
       });
 

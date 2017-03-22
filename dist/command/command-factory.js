@@ -58,19 +58,19 @@ externals.CommandFactory = function () {
     value: function getCommand(options, commandType) {
       var command = void 0;
       switch (commandType) {
-        case 'alert':
+        case 'ALERT':
           command = new Alert(options);
           break;
-        case 'data':
+        case 'DATA':
           command = new Data(options);
           break;
-        case 'kill':
+        case 'KILL':
           command = new Kill(options);
           break;
-        case 'recursive':
+        case 'RECURSIVE':
           command = new Recursive(options);
           break;
-        case 'schedule':
+        case 'SCHEDULE':
           command = new Schedule(options);
           break;
       }

@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('lodash');
 const botLogger = require('../../../lib/utils/logger');
 const sinon = require('sinon');
 const chai = require('chai'),
@@ -12,7 +13,7 @@ const SlackBot = require(root + 'lib/index');
 const socketServer = require(root + '/lib/bot/socket-server');
 const config = require(root + 'test/mock/config');
 const responseHandler = require(root + 'lib/bot/response-handler');
-const messageParser = require(root + 'lib/command/message');
+const message = require(root + 'lib/command/message');
 const storage = require(root + 'lib/storage/storage');
 
 botLogger.setLogger();
@@ -27,6 +28,8 @@ describe('/command', function () {
       var errorContext;
       var slackMessage;
       var updateEventsStub;
+      var messageParser;
+      var messageOptions;
 
       beforeEach(function () {
         testBots = new SlackBot(config.singleBotForAllowedParam, { isMock: true });
@@ -45,6 +48,14 @@ describe('/command', function () {
           ts: '1453007224.000007',
           team: 'T0GGDKVDE'
         };
+        messageOptions = {
+          name: 'testbot1',
+          id: 'U1234567',
+          isDirectMessage: true
+        };
+        messageParser = message.parse(
+          _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')),
+            _.toUpper), messageOptions);
       });
 
       afterEach(function () {
@@ -109,7 +120,7 @@ describe('/command', function () {
         slackMessage.text = 'ping 3';
         delete errorContext.error;
         errorContext.param = true;
-        errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+        errorContext.parsedMessage = messageParser(slackMessage);
         var errorMessage = responseHandler
           .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
 
@@ -136,6 +147,8 @@ describe('/command', function () {
       var errorContext;
       var slackMessage;
       var updateEventsStub;
+      var messageParser;
+      var messageOptions;
 
       beforeEach(function () {
         testBots = new SlackBot(config.singleBotForAllowedParam, { isMock: true });
@@ -154,6 +167,14 @@ describe('/command', function () {
           ts: '1453007224.000007',
           team: 'T0GGDKVDE'
         };
+        messageOptions = {
+          name: 'testbot1',
+          id: 'U1234567',
+          isDirectMessage: true
+        };
+        messageParser = message.parse(
+          _.map(_.keys(_.get(config, 'singleBotForAllowedParam.bots.0.botCommand')),
+            _.toUpper), messageOptions);
       });
 
       afterEach(function () {
@@ -217,10 +238,11 @@ describe('/command', function () {
       });
 
       it('Should fail command vaidation with value 30', function (done) {
-        slackMessage.text = 'pingLimit 30';
+        slackMessage.text = 'pinglimit 30';
         delete errorContext.error;
         errorContext.limit = true;
-        errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+        errorContext.parsedMessage = messageParser(slackMessage);
+
         var errorMessage = responseHandler
           .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
 
@@ -247,6 +269,8 @@ describe('/command', function () {
       var errorContext;
       var slackMessage;
       var updateEventsStub;
+      var messageParser;
+      var messageOptions;
 
       beforeEach(function () {
         testBots = new SlackBot(config.singleBotForAllowedParam, { isMock: true });
@@ -265,6 +289,14 @@ describe('/command', function () {
           ts: '1453007224.000007',
           team: 'T0GGDKVDE'
         };
+        messageOptions = {
+          name: 'testbot1',
+          id: 'U1234567',
+          isDirectMessage: true
+        };
+        messageParser = message.parse(
+          _.map(_.keys(_.get(config, 'singleBotForAllowedParam.bots.0.botCommand')),
+            _.toUpper), messageOptions);
       });
 
       afterEach(function () {
@@ -331,7 +363,7 @@ describe('/command', function () {
         slackMessage.text = 'hybrid 30';
         delete errorContext.error;
         errorContext.limit = true;
-        errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+        errorContext.parsedMessage = messageParser(slackMessage);
         var errorMessage = responseHandler
           .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
 
@@ -359,6 +391,8 @@ describe('/command', function () {
     var errorContext;
     var slackMessage;
     var updateEventsStub;
+    var messageParser;
+    var messageOptions;
 
     beforeEach(function () {
       testBots = new SlackBot(config.isCommandAllowed, { isMock: true });
@@ -377,6 +411,14 @@ describe('/command', function () {
         ts: '1453007224.000007',
         team: 'T0GGDKVDE'
       };
+      messageOptions = {
+        name: 'testbot1',
+        id: 'U1234567',
+        isDirectMessage: true
+      };
+      messageParser = message.parse(
+        _.map(_.keys(_.get(config, 'isCommandAllowed.bots.0.botCommand')),
+          _.toUpper), messageOptions);
     });
 
     afterEach(function () {
@@ -387,7 +429,7 @@ describe('/command', function () {
     it('Should block user and respond error', function (done) {
       delete errorContext.error;
       errorContext.restricted_user = true;
-      errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+      errorContext.parsedMessage = messageParser(slackMessage);
       errorContext.users = testBots.bots[0].config.allowedUsers;
       var errorMessage = responseHandler
         .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
@@ -552,6 +594,8 @@ describe('/command', function () {
     var errorContext;
     var slackMessage;
     var updateEventsStub;
+    var messageParser;
+    var messageOptions;
 
     beforeEach(function () {
       testBots = new SlackBot(config.commandTypeBots, { isMock: true });
@@ -570,6 +614,14 @@ describe('/command', function () {
         ts: '1453007224.000007',
         team: 'T0GGDKVDE'
       };
+      messageOptions = {
+        name: 'testbot1',
+        id: 'U1234567',
+        isDirectMessage: true
+      };
+      messageParser = message.parse(
+        _.map(_.keys(_.get(config, 'commandTypeBots.bots.0.botCommand')),
+          _.toUpper), messageOptions);
     });
 
     afterEach(function () {
@@ -604,7 +656,6 @@ describe('/command', function () {
 
       var onMessageSpy = sinon.spy((response) => {
         setTimeout(() => {
-          // expect(response.message).to.equal(botMessage);
           if (response.message === 'Hello 1') {
             done();
           }
@@ -624,7 +675,7 @@ describe('/command', function () {
       slackMessage.text = 'stop';
       delete errorContext.error;
       errorContext.param = true;
-      errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+      errorContext.parsedMessage = messageParser(slackMessage);
       var errorMessage = responseHandler
         .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
 
@@ -648,7 +699,7 @@ describe('/command', function () {
       slackMessage.text = 'alert';
       delete errorContext.error;
       errorContext.param = true;
-      errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+      errorContext.parsedMessage = messageParser(slackMessage);
       var errorMessage = responseHandler
         .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
 

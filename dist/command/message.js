@@ -20,49 +20,55 @@ var internals = {
   directCommandKey: ['command', 'params']
 };
 
-externals.parse = function (message, isDirectMessage) {
+externals.parse = _.curry(function (commandList, options, message) {
   var parsedCommand = Object.assign({}, message);
-  var channelNameRegex = new RegExp(/(?:^<\@)(?:.*)(?:(?:\>$)|(?:\>\:$))/);
-  var messageArr = _.map(_.compact(message.text.split(' ')), function (item) {
-    var ifNumber = Number(item);
+  var messageArr = _.compact(_.get(message, 'text', '').split(' '));
 
-    if (ifNumber) {
-      return ifNumber;
-    } else if (_.isString(item) && channelNameRegex.test(item)) {
-      return item;
-    } else {
-      return item;
-    }
-  });
-
-  var keys = isDirectMessage ? internals.directCommandKey : internals.channelCommandKey;
-  parsedCommand.message = internals.mapCommand(messageArr, keys);
-
-  if (parsedCommand.message.command) {
-    parsedCommand.message.command = _.camelCase(_.lowerCase(parsedCommand.message.command));
-  }
+  parsedCommand.message = internals.mapCommand(commandList, messageArr, options);
 
   botLogger.logger.debug('message:', parsedCommand);
 
   return parsedCommand;
-};
+});
 
-internals.mapCommand = function (messageArr, keys) {
-  var messageMap = _.reduce(messageArr, function (result, value, key) {
-    var maxLength = keys.length - 1;
-    if (key < maxLength) {
-      result[keys[key]] = value;
-    } else {
-      (result[keys[maxLength]] || (result[keys[maxLength]] = [])).push(value);
-    }
-    return result;
-  }, {});
+internals.mapCommand = function (commandList, messageArr, options) {
+  var firstArg = messageArr[0];
+  var secondArg = messageArr[1];
+  var upperCaseFirstArg = _.toUpper(firstArg);
+  var upperCaseSecondArg = _.toUpper(secondArg);
+  var botMentionNameRegex = new RegExp(/^<\@(.*?)>\:?$/);
+  var botId = _.nth(botMentionNameRegex.exec(firstArg), 1);
+  var botName = _.toUpper(options.name);
+  var messageMap = {};
 
-  if (messageMap && _.isString(messageMap.commandPrefix)) {
-    messageMap.commandPrefix = messageMap.commandPrefix.replace(/^<\@|\>|\:$|\>$/g, '');
+  if (options.id === botId || botName === upperCaseFirstArg) {
+    messageMap.commandPrefix = botId || upperCaseFirstArg;
   }
 
+  _.forEach(commandList, function (command) {
+    if (messageMap.commandPrefix) {
+      if (command === upperCaseSecondArg) {
+        messageMap.command = upperCaseSecondArg;
+        messageMap.params = internals.mapParams(messageArr, 2);
+      }
+    } else if (command === upperCaseFirstArg) {
+      messageMap.command = upperCaseFirstArg;
+      messageMap.params = internals.mapParams(messageArr, 1);
+    }
+  });
+
   return messageMap;
+};
+
+internals.mapParams = function (messageArr, position) {
+  return _.map(_.slice(messageArr, position, messageArr.length), function (item) {
+    var paramNumber = Number(item);
+    if (paramNumber) {
+      return paramNumber;
+    }
+
+    return item;
+  });
 };
 
 module.exports = externals;

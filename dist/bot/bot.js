@@ -43,6 +43,7 @@ externals.Bot = function () {
     this.hook = {};
     this.eventEmitter = new EventEmitter();
     this.interfaceEventEmitter = new EventEmitter();
+    this.botMessageParser = messageParser.parse(_.map(_.keys(_.get(this.config, 'botCommand')), _.toUpper));
 
     this.setupEvents();
     this.setupIntefaceEvents();
@@ -132,22 +133,18 @@ externals.Bot = function () {
     value: function handleMessage(message) {
       var _this3 = this;
 
-      var parsedMessage = messageParser.parse(message, responseHandler.isDirectMessage(message));
-
-      if (this.getId() === parsedMessage.message.commandPrefix) {
-        parsedMessage.message.commandPrefix = _.camelCase(this.getBotName());
-      }
+      var parsedMessage = this.botMessageParser({
+        id: this.getId(),
+        name: this.getBotName()
+      }, message);
 
       if (this.config.blockDirectMessage && !responseHandler.isPublicMessage(message)) {
         return this.handleBotMessages(parsedMessage);
       }
 
-      if (responseHandler.isDirectMessage(message) || _.camelCase(this.getBotName()) === parsedMessage.message.commandPrefix) {
-
-        return this.commandFactory.handleMessage(parsedMessage).catch(function (err) {
-          return _this3.handleErrorMessage(_this3.getBotName(), err);
-        });
-      }
+      return this.commandFactory.handleMessage(parsedMessage).catch(function (err) {
+        return _this3.handleErrorMessage(_this3.getBotName(), err);
+      });
     }
   }, {
     key: 'loadCommands',

@@ -45,11 +45,12 @@ externals.Kill = function (_Command) {
   _createClass(_class, [{
     key: 'respond',
     value: function respond(parsedMessage) {
-      var killTask = this.getParams(parsedMessage, 0);
+      var killTask = _.upperCase(this.getParams(parsedMessage, 0));
+      var scheduleTask = _.upperCase(this.getParams(parsedMessage, 1));
 
       var recursiveTaskTimer = ['eventStore', parsedMessage.channel + '_' + killTask, 'timer'];
       var alertTaskPath = ['eventStore', parsedMessage.channel + '_' + killTask];
-      var scheduleTaskPath = ['eventStore', parsedMessage.channel + '_schedule_' + this.getParams(parsedMessage, 1), 'timer'];
+      var scheduleTaskPath = ['eventStore', parsedMessage.channel + '_schedule_' + scheduleTask, 'timer'];
 
       var recursiveTimer = _.get(this.context[killTask], recursiveTaskTimer);
       var scheduleTimer = _.get(this.context[killTask], scheduleTaskPath);
@@ -57,7 +58,7 @@ externals.Kill = function (_Command) {
 
       if (recursiveTimer) {
         clearInterval(recursiveTimer);
-        _.set(this, recursiveTaskTimer, undefined);
+        _.set(this.context[killTask], recursiveTaskTimer, undefined);
 
         this.messageHandler({
           channels: parsedMessage.channel,
@@ -100,7 +101,7 @@ externals.Kill = function (_Command) {
         }).catch(function (err) {
           botLogger.logger.error('Kill: Error killing alert task', err);
         });
-      } else if (scheduleTimer || killTask === 'schedule') {
+      } else if (scheduleTimer || killTask === 'SCHEDULE') {
         if (!scheduleTimer) {
           this.messageHandler({
             channels: parsedMessage.channel,
@@ -130,7 +131,7 @@ externals.Kill = function (_Command) {
         storage.removeEvents(this.getSlackData().self.name, 'schedule', {
           parsedMessage: parsedMessage,
           channels: [parsedMessage.channel],
-          commandToKill: killTask + '_' + this.getParams(parsedMessage, 1)
+          commandToKill: killTask + '_' + scheduleTask
         }).catch(function (err) {
           botLogger.logger.error('Kill: Error killing schedule task', err);
         });
