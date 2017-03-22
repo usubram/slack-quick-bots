@@ -37,7 +37,7 @@ var Logger = function () {
           args[_key - 1] = arguments[_key];
         }
 
-        (_logger = this.logger).info.apply(_logger, [message].concat(args));
+        (_logger = this.logger).info.apply(_logger, [prefixTime(message)].concat(args));
       }
     }
   }, {
@@ -50,7 +50,7 @@ var Logger = function () {
           args[_key2 - 1] = arguments[_key2];
         }
 
-        (_logger2 = this.logger).info.apply(_logger2, [message].concat(args));
+        (_logger2 = this.logger).info.apply(_logger2, [prefixTime(message)].concat(args));
       }
     }
   }, {
@@ -63,7 +63,7 @@ var Logger = function () {
           args[_key3 - 1] = arguments[_key3];
         }
 
-        (_logger3 = this.logger).info.apply(_logger3, [message].concat(args));
+        (_logger3 = this.logger).info.apply(_logger3, [prefixTime(message)].concat(args));
       }
     }
   }]);
@@ -74,5 +74,9 @@ var Logger = function () {
 externals.setLogger = function (logger) {
   externals.logger = logger ? new Logger(logger) : new Logger();
 };
+
+function prefixTime(message) {
+  return '[ ' + new Date() + ' ] ' + message;
+}
 
 module.exports = externals;
