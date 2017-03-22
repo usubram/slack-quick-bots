@@ -111,7 +111,7 @@ externals.Commands = function () {
       var savedEvents = _.values(this.getEventStore());
       if (savedEvents) {
         savedEvents.reduce(function (evPromise, savedEvent) {
-          if (_.get(savedEvent, 'parsedMessage.message.command') === _this3.commandName) {
+          if (_.get(savedEvent, 'parsedMessage.message.command') === _this3.getCommandName()) {
             _this3.reloadCommand(savedEvent.parsedMessage);
           }
         }, Promise.resolve());
@@ -181,13 +181,17 @@ externals.Commands = function () {
   }, {
     key: 'getCommand',
     value: function getCommand(commandName) {
-      commandName = commandName || this.commandName;
-      return this.getBotConfig().botCommand[commandName];
+      return this.getBotConfig().botCommand[this.getCommandName(commandName)];
+    }
+  }, {
+    key: 'getCommandName',
+    value: function getCommandName(commandName) {
+      return _.toUpper(commandName || this.commandName);
     }
   }, {
     key: 'getTemplate',
     value: function getTemplate() {
-      var template = this.getBotConfig().botCommand[this.commandName].template;
+      var template = this.getBotConfig().botCommand[this.getCommandName()].template;
       try {
         template = template ? template() : undefined;
       } catch (err) {
@@ -198,7 +202,7 @@ externals.Commands = function () {
   }, {
     key: 'getTimer',
     value: function getTimer(parsedMessage) {
-      return _.get(this.eventStore, parsedMessage.channel + '_' + this.commandName + '.timer');
+      return _.get(this.eventStore, parsedMessage.channel + '_' + this.getCommandName() + '.timer');
     }
   }, {
     key: 'setTimer',
@@ -207,7 +211,7 @@ externals.Commands = function () {
         clearInterval(this.getTimer(parsedMessage));
       }
 
-      _.set(this.eventStore, parsedMessage.channel + '_' + this.commandName + '.timer', callback);
+      _.set(this.eventStore, parsedMessage.channel + '_' + this.getCommandName() + '.timer', callback);
     }
   }]);
 
@@ -219,6 +223,7 @@ internals.getParams = function (slackResponse, level) {
     if (!_.isNaN(parseInt(slackResponse.message.params[level], 10))) {
       return parseInt(slackResponse.message.params[level], 10);
     }
+
     return _.get(slackResponse, 'message.params[' + level + ']');
   }
 };
@@ -227,7 +232,11 @@ internals.isAllowedParamValid = function (command, slackResponse) {
   if (_.isEmpty(command.allowedParam)) {
     return false;
   }
-  if (_.nth(command.allowedParam, 0) === '*' || _.includes(command.allowedParam, internals.getParams(slackResponse, 0))) {
+
+  var param = internals.getParams(slackResponse, 0);
+  param = Number(param) ? Number(param) : _.toUpper(param);
+
+  if (_.nth(command.allowedParam, 0) === '*' || _.includes(command.allowedParam, param)) {
     return true;
   }
   // assuming that limit is not defined.

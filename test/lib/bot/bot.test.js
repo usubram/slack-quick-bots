@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('lodash');
 const sinon = require('sinon');
 const chai = require('chai'),
   expect = chai.expect;
@@ -12,7 +13,7 @@ const SlackBot = require(root + 'lib/index');
 const socketServer = require(root + '/lib/bot/socket-server');
 const config = require(root + 'test/mock/config');
 const responseHandler = require(root + 'lib/bot/response-handler');
-const messageParser = require(root + 'lib/command/message');
+const message = require(root + 'lib/command/message');
 const storage = require(root + 'lib/storage/storage');
 
 botLogger.setLogger();
@@ -24,6 +25,8 @@ describe('/bot', function () {
     var errorContext;
     var slackMessage;
     var updateEventsStub;
+    var messageParser;
+    var messageOptions;
 
     beforeEach(function () {
       testBots = new SlackBot(config.singleBot, { isMock: true });
@@ -42,6 +45,14 @@ describe('/bot', function () {
         team: 'T0GGDKVDE'
       };
     });
+    messageOptions = {
+      name: 'testbot1',
+      id: 'U1234567',
+      isDirectMessage: true
+    };
+    messageParser = message.parse(
+      _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')),
+        _.toUpper), messageOptions);
 
     afterEach(function () {
       updateEventsStub.restore();
@@ -67,7 +78,7 @@ describe('/bot', function () {
 
     it('Should respond with empty message', function (done) {
       slackMessage.text = '';
-      errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+      errorContext.parsedMessage = messageParser(slackMessage);
       var errorMessage = responseHandler
         .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
 
@@ -87,9 +98,27 @@ describe('/bot', function () {
       });
     });
 
+    it('Should respond with uppercase command', function (done) {
+      slackMessage.text = 'PING';
+      var onMessageSpy = sinon.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal('Hello 1');
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
+    });
+
     it('Should respond with error message', function (done) {
       slackMessage.text = 'wrong command';
-      errorContext.parsedMessage = messageParser.parse(slackMessage, true);
+      errorContext.parsedMessage = messageParser(slackMessage);
       var errorMessage = responseHandler
         .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
 
@@ -116,6 +145,8 @@ describe('/bot', function () {
     var testBots;
     var errorContext;
     var slackMessage;
+    var messageParser;
+    var messageOptions;
 
     beforeEach(function () {
       testBots = new SlackBot(config.singleBot, { isMock: true });
@@ -130,6 +161,14 @@ describe('/bot', function () {
         text: 'testbot1 ping 1',
         team: 'T0GGDKVDE'
       };
+      messageOptions = {
+        name: 'testbot1',
+        id: 'U1234567',
+        isDirectMessage: true
+      };
+      messageParser = message.parse(
+        _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')),
+          _.toUpper), messageOptions);
     });
 
     afterEach(function () {
@@ -207,7 +246,7 @@ describe('/bot', function () {
 
     it('Should show help message for message starting with botname and wrong command', function (done) {
       slackMessage.text = 'testbot1 wrong command';
-      errorContext.parsedMessage = messageParser.parse(slackMessage);
+      errorContext.parsedMessage = messageParser(slackMessage);
       var errorMessage = responseHandler
         .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
 

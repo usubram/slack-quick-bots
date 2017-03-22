@@ -213,9 +213,9 @@ externals.SlackBot = function () {
 
           assert.ok(!_.isEmpty(botCommand.commandType), 'Each bot should have command type. Bot: ' + bot.name + ' Key: ' + key + ' Refer github docs.');
 
-          assert.ok(_.includes(['data', 'recursive', 'kill', 'alert'], _.camelCase(botCommand.commandType)), 'Unrecognized bot command type. Only "data", "recursive", "alert", "kill" are supported');
+          assert.ok(_.includes(['DATA', 'RECURSIVE', 'KILL', 'ALERT'], _.toUpper(botCommand.commandType)), 'Unrecognized bot command type. Only "data", "recursive", "alert", "kill" are supported');
 
-          if (_.includes(['alert'], _.camelCase(botCommand.commandType))) {
+          if (_.includes(['alert'], _.toUpper(botCommand.commandType))) {
             assert.ok(!_.isUndefined(botCommand.timeInterval), 'Bot command of type "alert" should have timeInterval');
           }
         });

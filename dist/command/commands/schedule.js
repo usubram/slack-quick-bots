@@ -58,7 +58,8 @@ externals.Schedule = function (_Command) {
               cronTime: internals.getCronExpresion(parsedMessage),
               onTick: function onTick() {
                 var scheduleCommand = internals.getCommandArguments(parsedMessage);
-                var command = _this2.context[_.get(scheduleCommand, 'message.command')];
+                var scheduleTask = _.toUpper(_.get(scheduleCommand, 'message.command'));
+                var command = _this2.context[scheduleTask];
                 command.quietRespond(scheduleCommand);
               },
               start: false,
@@ -112,9 +113,11 @@ externals.Schedule = function (_Command) {
 
       var timeleft = cronTimeout(internals.getCronExpresion(parsedMessage));
       var nextEvent = void 0;
+
       if (timeleft && timeleft > 0) {
         nextEvent = new Date(Date.now() + timeleft);
       }
+
       return Promise.resolve({
         then: function then(onFulfill) {
           _this4.messageHandler({
@@ -137,7 +140,8 @@ externals.Schedule = function (_Command) {
       var _this5 = this;
 
       var scheduleCommand = internals.getCommandArguments(parsedMessage);
-      var command = this.context[_.get(scheduleCommand, 'message.command')];
+      var scheduleTask = _.toUpper(_.get(scheduleCommand, 'message.command'));
+      var command = this.context[scheduleTask];
 
       if (!command) {
         return Promise.reject({ invalidCommand: true, parsedMessage: parsedMessage });
@@ -176,16 +180,21 @@ externals.Schedule = function (_Command) {
     key: 'setTimer',
     value: function setTimer(parsedMessage, job) {
       var scheduleCommand = internals.getCommandArguments(parsedMessage);
+      var scheduleTask = _.toUpper(_.get(scheduleCommand, 'message.command'));
+
       if (this.getTimer(parsedMessage)) {
         this.getTimer(parsedMessage).stop();
       }
-      _.set(this.eventStore, scheduleCommand.channel + '_schedule_' + _.get(scheduleCommand, 'message.command') + '.timer', job);
+
+      _.set(this.eventStore, scheduleCommand.channel + '_schedule_' + scheduleTask + '.timer', job);
     }
   }, {
     key: 'getTimer',
     value: function getTimer(parsedMessage) {
       var scheduleCommand = internals.getCommandArguments(parsedMessage);
-      return _.get(this.eventStore, scheduleCommand.channel + '_schedule_' + _.get(scheduleCommand, 'message.command') + '.timer');
+      var scheduleTask = _.toUpper(_.get(scheduleCommand, 'message.command'));
+
+      return _.get(this.eventStore, scheduleCommand.channel + '_schedule_' + scheduleTask + '.timer');
     }
   }]);
 
@@ -206,9 +215,11 @@ internals.getCommandArguments = function (parsedMessage) {
     }
     result.push(value);
   });
+
   return {
     type: 'message',
     channel: parsedMessage.channel,
+    user: parsedMessage.user,
     message: {
       command: _.nth(parsedMessage.message.params),
       params: result

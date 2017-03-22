@@ -13,31 +13,31 @@
 				<@{{this}}>\n
 			{{/each}}
 		{{else}}
-			A little help, try command(s)\n
+			Howdy! try the below the commands. \n
 			{{#each command}}
-				> {{#if ../prefix}} <@{{../prefix}}>{{/if}} *{{@key}}*
+				   • {{#if ../prefix}} <@{{../prefix}}>{{/if}} *{{toLowerCase @key}}* 
 				{{#if inContext}}
 					{{#if upperLimit}}
-						{{lowerLimit}} to {{{upperLimit}}}
+						{{lowerLimit}} to {{{upperLimit}}} 
 					{{/if}}
 					{{#if allowedParam}}
 						{{#each allowedParam}}
-							 {{.}}{{#if @last}} {{else}} | {{/if}}
+							{{toLowerCase .}}{{#if @last}} {{else}} | {{/if}} 
 						{{/each}}\n
 					{{/if}}
 				{{/if}}
 				{{#if aLimit }}
-				 _`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{{aLimit}}}`_{{/if}}
+				 - _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{toLowerCase name}} {{{toLowerCase aLimit}}}_{{/if}}
 				{{#if alertContext}}
-					`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup 90` - here *90* is the threshold percentage. \n
-					`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} sample` - to get an idea on the current threshold\n
+				 Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup 90 - *90* is alert threshold percentage. \n
+				 Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} sample - to know the current threshold level.\n
 				{{else}}
 					{{#if aParam}}
-					 _`tip: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} {{aParam}}`_
+					 - _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{toLowerCase name}} {{toLowerCase aParam}}_
 					{{/if}}\n
 				{{/if}}
 				{{#if helpText}}
-					{{{helpText}}}
+					{{{helpText}}} \n
 				{{/if}}
 			{{/each}}\n
 		{{/if}}
