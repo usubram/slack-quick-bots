@@ -1,0 +1,10 @@
+#tests
+test
+
+#build tools
+.travis.yml
+
+#linters
+.eslintrc.json
+
+!lib/*
