@@ -104,7 +104,7 @@ describe('/connector', function () {
     });
   });
 
-  it.only('Should close bot successfully', function (done) {
+  it('Should close bot successfully', function (done) {
 
     slackBot = new SlackBot(botConfig, { isMock: true });
     connectSpy = sinon.spy(Connector.prototype, 'connect');
@@ -114,7 +114,6 @@ describe('/connector', function () {
     slackBot.start().then((botEvt) => {
 
       botEvt[0].on('connect', () => {
-        console.log('connected..', botEvt, count);
         --count;
         botEvt[0].close();
 
