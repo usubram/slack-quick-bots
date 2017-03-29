@@ -124,42 +124,10 @@ var config = {
       }
     },
     botToken: args[0]
-  }, {
-    botCommand: {
-      traffic: {
-        commandType: 'DATA',
-        allowedParam: ['what', 'there'],
-        timeUnit: 'm',
-        defaultParamValue: 'what',
-        template: function() {
-          return handlebars.compile(sampleTemplate);
-        },
-        data: function(input, options, callback) {
-          callback({
-            param: input.params
-          });
-        }
-      },
-      start: {
-        commandType: 'RECURSIVE',
-        lowerLimit: 0,
-        upperLimit: 100,
-        defaultParamValue: 1,
-        template: function() {
-          return handlebars.compile(sampleTemplate);
-        },
-        data: function(input, options, callback) {
-          callback({
-            param: input.params
-          });
-        }
-      }
-    },
-    botToken: args[1],
-    webHook: true,
-    allowedUsers: ['john'],
-    blockDirectMessage: true
   }],
+  proxy: {
+    url: 'http://proxy.socketproxy.com:8080/'
+  },
   logger: console, // you could pass a winston logger.
   server: {
     port: 9090,
