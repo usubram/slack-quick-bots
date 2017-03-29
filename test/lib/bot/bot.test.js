@@ -44,15 +44,15 @@ describe('/bot', function () {
         text: 'ping 1',
         team: 'T0GGDKVDE'
       };
+      messageOptions = {
+        name: 'testbot1',
+        id: 'U1234567',
+        isDirectMessage: true
+      };
+      messageParser = message.parse(
+        _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')),
+          _.toUpper), messageOptions);
     });
-    messageOptions = {
-      name: 'testbot1',
-      id: 'U1234567',
-      isDirectMessage: true
-    };
-    messageParser = message.parse(
-      _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')),
-        _.toUpper), messageOptions);
 
     afterEach(function () {
       updateEventsStub.restore();
@@ -156,7 +156,7 @@ describe('/bot', function () {
       slackMessage = {
         id: uuid.v4(),
         type: 'message',
-        channel: 'C0GL06JD7',
+        channel: 'C0GL06JD8',
         user: 'U0GG92T45',
         text: 'testbot1 ping 1',
         team: 'T0GGDKVDE'
