@@ -20,7 +20,7 @@ Clone and get started!!
 
 ## Config schema
 
-slack-quick-bots uses handlebars template as a view layer for all bot messages. When `callback` with called with `data` it is rendered against the template. [Templates](https://github.com/usubram/slack-quick-bots-reference/blob/master/template/sample_tmpl.hbs) are live html and the data is inject into the template before it is sent to slack.
+slack-quick-bots uses handlebars template as a view layer for all bot messages. When `callback` with called with `data` it is rendered against the template. [Templates](https://github.com/usubram/slack-quick-bots-reference/blob/master/template/sample_tmpl.hbs) are like html and the data is inject into the template before it is sent to slack.
 
 ```javascript
 {
