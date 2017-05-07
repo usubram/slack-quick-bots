@@ -9,6 +9,7 @@ const botLogger = require(root + 'lib/utils/logger');
 const SlackBot = require(root + 'lib/index');
 const config = require(root + 'test/mock/config');
 const socketServer = require('./../../lib/bot/socket-server');
+const apiRequest = require('./../../lib/slack-api/api-request');
 
 botLogger.setLogger();
 
@@ -16,12 +17,20 @@ describe('SlackBot test', function () {
   describe('single bot', function () {
 
     var testBots;
+    var apiRequestFetchStub;
 
     beforeEach(function () {
       testBots = new SlackBot(config.singleBot, { isMock: true });
+      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch', () => {
+        return Promise.resolve({
+          members: [],
+          channels: []
+        });
+      });
     });
 
     afterEach(function () {
+      apiRequestFetchStub.restore();
       socketServer.closeClient();
     });
 
@@ -61,12 +70,20 @@ describe('SlackBot test', function () {
   describe('multiple bot', function () {
 
     var testBots;
+    var apiRequestFetchStub;
 
     beforeEach(function () {
       testBots = new SlackBot(config.multipleBot, { isMock: true });
+      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch', () => {
+        return Promise.resolve({
+          members: [],
+          channels: []
+        });
+      });
     });
 
     afterEach(function () {
+      apiRequestFetchStub.restore();
       socketServer.closeClient();
     });
 

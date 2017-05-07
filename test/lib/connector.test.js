@@ -8,20 +8,29 @@ const config = require('../mock/config');
 const Connector = require('./../../lib/bot/connector');
 const SlackBot = require('./../../lib/index');
 const socketServer = require('./../../lib/bot/socket-server');
+const apiRequest = require('./../../lib/slack-api/api-request');
 
 describe('/connector', function () {
     var slackBot;
     var clock;
     var connectSpy;
     var botConfig;
+    var apiRequestFetchStub;
 
   beforeEach(function () {
     botConfig = _.cloneDeep(config.singleBot);
+    apiRequestFetchStub = sinon.stub(apiRequest, 'fetch', () => {
+      return Promise.resolve({
+        members: [],
+        channels: []
+      });
+    });
   });
 
   afterEach(function () {
     slackBot = undefined;
     socketServer.closeClient();
+    apiRequestFetchStub.restore();
     connectSpy.restore();
     if (clock) {
       clock.restore();

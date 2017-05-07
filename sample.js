@@ -125,9 +125,9 @@ var config = {
     },
     botToken: args[0]
   }],
-  proxy: {
-    url: 'http://proxy.socketproxy.com:8080/'
-  },
+  // proxy: {
+  //   url: 'http://proxy.socketproxy.com:8080/'
+  // },
   logger: console, // you could pass a winston logger.
   server: {
     port: 9090,
