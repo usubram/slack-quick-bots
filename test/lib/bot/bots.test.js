@@ -13,6 +13,7 @@ chai.use(sinonChai);
 describe('/bots', function () {
   describe('Should instantiate bots correctly', function () {
     var slackBots;
+
     beforeEach(function () {
       slackBots = new Bots(config.BotsTest.bots).getBots();
     });

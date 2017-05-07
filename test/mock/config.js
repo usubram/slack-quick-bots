@@ -43,7 +43,7 @@ exports = module.exports = {
           name: 'testbot1',
           id: 'U1234567'
         },
-        users: [{
+        members: [{
           id: 'U0GG92T45', name: 'user1'
         }, {
           id: 'U0GG92T46', name: 'user2'
@@ -330,7 +330,7 @@ exports = module.exports = {
           name: 'testbot1',
           id: 'U1234567'
         },
-        users: [{
+        members: [{
           id: 'U0GG92T45', name: 'user1'
         }, {
           id: 'U0GG92T46', name: 'user2'
@@ -362,7 +362,7 @@ exports = module.exports = {
           name: 'testbot2',
           id: 'U1234567'
         },
-        users: [{
+        members: [{
           id: 'U0GG92T45', name: 'user1'
         }, {
           id: 'U0GG92T46', name: 'user2'
@@ -393,7 +393,7 @@ exports = module.exports = {
           name: 'testbot1',
           id: 'U1234567'
         },
-        users: [{
+        members: [{
           id: 'U0GG92T45', name: 'user1'
         }, {
           id: 'U0GG92T46', name: 'user2'

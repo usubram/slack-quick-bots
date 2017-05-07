@@ -15,6 +15,7 @@ const config = require(root + 'test/mock/config');
 const responseHandler = require(root + 'lib/bot/response-handler');
 const message = require(root + 'lib/command/message');
 const storage = require(root + 'lib/storage/storage');
+const apiRequest = require(root + 'lib/slack-api/api-request');
 
 botLogger.setLogger();
 
@@ -27,11 +28,18 @@ describe('/bot', function () {
     var updateEventsStub;
     var messageParser;
     var messageOptions;
+    var apiRequestFetchStub;
 
     beforeEach(function () {
       testBots = new SlackBot(config.singleBot, { isMock: true });
       updateEventsStub = sinon.stub(storage, 'updateEvents', () => {
         return Promise.resolve({});
+      });
+      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch', () => {
+        return Promise.resolve({
+          members: [],
+          channels: []
+        });
       });
       errorContext = {
         error: true
@@ -56,6 +64,7 @@ describe('/bot', function () {
 
     afterEach(function () {
       updateEventsStub.restore();
+      apiRequestFetchStub.restore();
       socketServer.closeClient();
     });
 
@@ -147,9 +156,16 @@ describe('/bot', function () {
     var slackMessage;
     var messageParser;
     var messageOptions;
+    var apiRequestFetchStub;
 
     beforeEach(function () {
       testBots = new SlackBot(config.singleBot, { isMock: true });
+      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch', () => {
+        return Promise.resolve({
+          members: [],
+          channels: []
+        });
+      });
       errorContext = {
         error: true
       };
@@ -172,6 +188,7 @@ describe('/bot', function () {
     });
 
     afterEach(function () {
+      apiRequestFetchStub.restore();
       socketServer.closeClient();
     });
 

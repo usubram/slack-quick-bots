@@ -15,6 +15,7 @@ const config = require(root + 'test/mock/config');
 const responseHandler = require(root + 'lib/bot/response-handler');
 const message = require(root + 'lib/command/message');
 const storage = require(root + 'lib/storage/storage');
+const apiRequest = require(root + 'lib/slack-api/api-request');
 
 botLogger.setLogger();
 
@@ -30,11 +31,18 @@ describe('/command', function () {
       var updateEventsStub;
       var messageParser;
       var messageOptions;
+      var apiRequestFetchStub;
 
       beforeEach(function () {
         testBots = new SlackBot(config.singleBotForAllowedParam, { isMock: true });
         updateEventsStub = sinon.stub(storage, 'updateEvents', () => {
           return Promise.resolve({});
+        });
+        apiRequestFetchStub = sinon.stub(apiRequest, 'fetch', () => {
+          return Promise.resolve({
+            members: [],
+            channels: []
+          });
         });
         errorContext = {
           error: true
@@ -60,6 +68,7 @@ describe('/command', function () {
 
       afterEach(function () {
         updateEventsStub.restore();
+        apiRequestFetchStub.restore();
         socketServer.closeClient();
       });
 
@@ -149,11 +158,18 @@ describe('/command', function () {
       var updateEventsStub;
       var messageParser;
       var messageOptions;
+      var apiRequestFetchStub;
 
       beforeEach(function () {
         testBots = new SlackBot(config.singleBotForAllowedParam, { isMock: true });
         updateEventsStub = sinon.stub(storage, 'updateEvents', () => {
           return Promise.resolve({});
+        });
+        apiRequestFetchStub = sinon.stub(apiRequest, 'fetch', () => {
+          return Promise.resolve({
+            members: [],
+            channels: []
+          });
         });
         errorContext = {
           error: true
@@ -179,6 +195,7 @@ describe('/command', function () {
 
       afterEach(function () {
         updateEventsStub.restore();
+        apiRequestFetchStub.restore();
         socketServer.closeClient();
       });
 
@@ -271,11 +288,18 @@ describe('/command', function () {
       var updateEventsStub;
       var messageParser;
       var messageOptions;
+      var apiRequestFetchStub;
 
       beforeEach(function () {
         testBots = new SlackBot(config.singleBotForAllowedParam, { isMock: true });
         updateEventsStub = sinon.stub(storage, 'updateEvents', () => {
           return Promise.resolve({});
+        });
+        apiRequestFetchStub = sinon.stub(apiRequest, 'fetch', () => {
+          return Promise.resolve({
+            members: [],
+            channels: []
+          });
         });
         errorContext = {
           error: true
@@ -301,6 +325,7 @@ describe('/command', function () {
 
       afterEach(function () {
         updateEventsStub.restore();
+        apiRequestFetchStub.restore();
         socketServer.closeClient();
       });
 
@@ -393,11 +418,18 @@ describe('/command', function () {
     var updateEventsStub;
     var messageParser;
     var messageOptions;
+    var apiRequestFetchStub;
 
     beforeEach(function () {
       testBots = new SlackBot(config.isCommandAllowed, { isMock: true });
       updateEventsStub = sinon.stub(storage, 'updateEvents', () => {
         return Promise.resolve({});
+      });
+      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch', () => {
+        return Promise.resolve({
+          members: [],
+          channels: []
+        });
       });
       errorContext = {
         error: true
@@ -423,6 +455,7 @@ describe('/command', function () {
 
     afterEach(function () {
       updateEventsStub.restore();
+      apiRequestFetchStub.restore();
       socketServer.closeClient();
     });
 
@@ -496,11 +529,18 @@ describe('/command', function () {
     var errorContext;
     var slackMessage;
     var updateEventsStub;
+    var apiRequestFetchStub;
 
     beforeEach(function () {
       testBots = new SlackBot(config.blockDirectMessage, { isMock: true });
       updateEventsStub = sinon.stub(storage, 'updateEvents', () => {
         return Promise.resolve({});
+      });
+      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch', () => {
+        return Promise.resolve({
+          members: [],
+          channels: []
+        });
       });
       errorContext = {
         error: true
@@ -518,6 +558,7 @@ describe('/command', function () {
 
     afterEach(function () {
       updateEventsStub.restore();
+      apiRequestFetchStub.restore();
       socketServer.closeClient();
     });
 
@@ -596,11 +637,18 @@ describe('/command', function () {
     var updateEventsStub;
     var messageParser;
     var messageOptions;
+    var apiRequestFetchStub;
 
     beforeEach(function () {
       testBots = new SlackBot(config.commandTypeBots, { isMock: true });
       updateEventsStub = sinon.stub(storage, 'updateEvents', () => {
         return Promise.resolve({});
+      });
+      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch', () => {
+        return Promise.resolve({
+          members: [],
+          channels: []
+        });
       });
       errorContext = {
         error: true
@@ -626,6 +674,7 @@ describe('/command', function () {
 
     afterEach(function () {
       updateEventsStub.restore();
+      apiRequestFetchStub.restore();
       socketServer.closeClient();
     });
 
