@@ -1,4 +1,5 @@
-const handlebars = require('handlebars');
+'use strict';
+
 const fs = require('fs');
 const sampleTemplate = fs.readFileSync('./test/mock/template/sample-template.hbs', 'utf8');
 
@@ -10,9 +11,7 @@ exports = module.exports = {
           commandType: 'DATA',
           allowedParam: [1, 2],
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -24,9 +23,7 @@ exports = module.exports = {
           lowerLimit: 0,
           upperLimit: 100,
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -59,9 +56,7 @@ exports = module.exports = {
           commandType: 'DATA',
           allowedParam: [1, 2],
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -73,9 +68,7 @@ exports = module.exports = {
           lowerLimit: 0,
           upperLimit: 100,
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -100,9 +93,7 @@ exports = module.exports = {
           commandType: 'DATA',
           allowedParam: [1, 2],
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -114,9 +105,7 @@ exports = module.exports = {
           lowerLimit: 0,
           upperLimit: 100,
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -144,9 +133,7 @@ exports = module.exports = {
           commandType: 'DATA',
           allowedParam: [1, 2],
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -164,9 +151,7 @@ exports = module.exports = {
           commandType: 'DATA',
           allowedParam: [1, 2],
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -178,9 +163,7 @@ exports = module.exports = {
           lowerLimit: 0,
           upperLimit: 100,
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -202,9 +185,7 @@ exports = module.exports = {
           commandType: 'DATA',
           allowedParam: [1, 2],
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -216,9 +197,7 @@ exports = module.exports = {
           lowerLimit: 1,
           upperLimit: 10,
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -231,9 +210,7 @@ exports = module.exports = {
           lowerLimit: 1,
           upperLimit: 10,
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -245,9 +222,7 @@ exports = module.exports = {
           lowerLimit: 0,
           upperLimit: 100,
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -275,9 +250,7 @@ exports = module.exports = {
           commandType: 'DATA',
           allowedParam: [1, 2],
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -289,9 +262,7 @@ exports = module.exports = {
           lowerLimit: 1,
           upperLimit: 10,
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -303,9 +274,7 @@ exports = module.exports = {
           lowerLimit: 0,
           upperLimit: 100,
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -315,9 +284,7 @@ exports = module.exports = {
         alert: {
           commandType: 'ALERT',
           timeInterval: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -346,9 +313,7 @@ exports = module.exports = {
           commandType: 'DATA',
           allowedParam: [1, 2],
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params
@@ -378,9 +343,7 @@ exports = module.exports = {
           commandType: 'DATA',
           allowedParam: [1, 2],
           defaultParamValue: 1,
-          template: function () {
-            return handlebars.compile(sampleTemplate);
-          },
+          template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
               'param': input.params

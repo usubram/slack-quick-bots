@@ -61,6 +61,7 @@ describe('/command', function () {
           id: 'U1234567',
           isDirectMessage: true
         };
+
         messageParser = message.parse(
           _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')),
             _.toUpper), messageOptions);
@@ -700,9 +701,6 @@ describe('/command', function () {
     it('Should call setUpRecursiveTask for recursive command', function (done) {
       slackMessage.text = 'auto';
 
-      var botMessage = responseHandler
-        .generateBotResponseTemplate({ recursive_success: true });
-
       var onMessageSpy = sinon.spy((response) => {
         setTimeout(() => {
           if (response.message === 'Hello 1') {
@@ -725,6 +723,7 @@ describe('/command', function () {
       delete errorContext.error;
       errorContext.param = true;
       errorContext.parsedMessage = messageParser(slackMessage);
+
       var errorMessage = responseHandler
         .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
 
