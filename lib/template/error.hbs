@@ -6,12 +6,22 @@
 		*Invalid schedule command*.\n Make sure to send something like `schedule commandName (*/15 * * * *).`\n
 		The above example schedules _commandName_ every 15 minutes.
 	{{else}}
+
+		{{#if allowed_channels}}
+			*Attention!!* \n
+			Sorry , I'm configured to respond only to below channels \n
+			{{#each channels}}
+				<#{{this}}>\n
+			{{/each}}
+	{{else}}
+
 		{{#if restricted_user}}
 			*Attention!!* \n
 			I'm configured to only respond to\n
 			{{#each users}}
 				<@{{this}}>\n
 			{{/each}}
+			
 		{{else}}
 			Howdy! try the below the commands. \n
 			{{#each command}}
@@ -43,3 +53,4 @@
 		{{/if}}
 	{{/if}}
 	{{/if}}
+{{/if}}

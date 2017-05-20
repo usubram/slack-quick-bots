@@ -22,6 +22,8 @@ const config = {
         allowedParam: ['hello'], // allow any argument to a command
         helpText: '    → this is log command \\n',
         template: sampleTemplate,
+         allowedUsers: ['usubram'],
+         allowedChannels: ['random'],
         data: function(input, options, callback) {
           // input.command - for command name.
           // input.params - for params in array.
@@ -45,6 +47,7 @@ const config = {
           exec: { encoding: 'utf16' }
         },
         allowedParam: [1, 2],
+      
         defaultParamValue: 1,
         helpText: '    → this is trend command \\n',
         data: function(input, options, callback) {
