@@ -3,7 +3,7 @@
 [![Build Status][travis-badge]][travis-url]
 [![Dependency Status][daviddm-image]][daviddm-url]
 
-Command driven slack bot library focused to quickly rolled out api/data driven bots abstracting most common bot needs for the enterprise.
+Command driven slack bot library focused to quickly rolled out api/data driven bots abstracting most common bot needs.
 
 ```javascript
 const SlackBot = require('slack-quick-bots');
