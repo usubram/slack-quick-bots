@@ -29,9 +29,7 @@ slack-quick-bots uses handlebars template as a view layer for all bot messages. 
     botCommand: {
       firstCommand: {
         commandType: 'DATA',
-        template: function() {
-          return handlebars.compile(sampleTmpl);
-        },
+        template: sampleTmpl,
         data: function(input, options, callback) {
           // input.command - for command name.
           // input.params - for params in array.
