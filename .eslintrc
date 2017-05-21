@@ -1,0 +1,17 @@
+{
+  "env": {
+    "es6": true,
+    "node": true,
+    "mocha": true,
+  },
+  "extends": [
+    "eslint:recommended",
+    "google",
+  ],
+  "rules": {
+    "space-before-function-paren": ["error", "always"],
+    "quotes": ["error", "single"],
+    "indent": ["error", 2],
+    "no-console": 1
+  }
+}

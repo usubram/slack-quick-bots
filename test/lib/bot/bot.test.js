@@ -2,8 +2,8 @@
 
 const _ = require('lodash');
 const sinon = require('sinon');
-const chai = require('chai'),
-  expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 
 const uuid = require('uuid');
 const root = '../../../';
@@ -21,28 +21,29 @@ botLogger.setLogger();
 
 describe('/bot', function () {
   describe('direct message', function () {
-
-    var testBots;
-    var errorContext;
-    var slackMessage;
-    var updateEventsStub;
-    var messageParser;
-    var messageOptions;
-    var apiRequestFetchStub;
+    let testBots;
+    let errorContext;
+    let slackMessage;
+    let updateEventsStub;
+    let messageParser;
+    let messageOptions;
+    let apiRequestFetchStub;
 
     beforeEach(function () {
-      testBots = new SlackBot(config.singleBot, { isMock: true });
-      updateEventsStub = sinon.stub(storage, 'updateEvents', () => {
+      testBots = new SlackBot(config.singleBot, {
+        isMock: true,
+      });
+      updateEventsStub = sinon.stub(storage, 'updateEvents').callsFake(() => {
         return Promise.resolve({});
       });
-      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch', () => {
+      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch').callsFake(() => {
         return Promise.resolve({
           members: [],
-          channels: []
+          channels: [],
         });
       });
       errorContext = {
-        error: true
+        error: true,
       };
       slackMessage = {
         id: uuid.v4(),
@@ -50,12 +51,12 @@ describe('/bot', function () {
         channel: 'D0GL06JD7',
         user: 'U0GG92T45',
         text: 'ping 1',
-        team: 'T0GGDKVDE'
+        team: 'T0GGDKVDE',
       };
       messageOptions = {
         name: 'testbot1',
         id: 'U1234567',
-        isDirectMessage: true
+        isDirectMessage: true,
       };
       messageParser = message.parse(
         _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')),
@@ -69,7 +70,7 @@ describe('/bot', function () {
     });
 
     it('Should response with the expected response', function (done) {
-      var onMessageSpy = sinon.spy((response) => {
+      const onMessageSpy = sinon.spy((response) => {
         setTimeout(() => {
           expect(response.message).to.equal('Hello 1');
           done();
@@ -88,10 +89,10 @@ describe('/bot', function () {
     it('Should respond with empty message', function (done) {
       slackMessage.text = '';
       errorContext.parsedMessage = messageParser(slackMessage);
-      var errorMessage = responseHandler
-        .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
+      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
+        testBots.bots[0].config.botCommand, errorContext);
 
-      var onMessageSpy = sinon.spy((response) => {
+      const onMessageSpy = sinon.spy((response) => {
         setTimeout(() => {
           expect(response.message).to.equal(errorMessage);
           done();
@@ -109,7 +110,7 @@ describe('/bot', function () {
 
     it('Should respond with uppercase command', function (done) {
       slackMessage.text = 'PING';
-      var onMessageSpy = sinon.spy((response) => {
+      const onMessageSpy = sinon.spy((response) => {
         setTimeout(() => {
           expect(response.message).to.equal('Hello 1');
           done();
@@ -128,10 +129,10 @@ describe('/bot', function () {
     it('Should respond with error message', function (done) {
       slackMessage.text = 'wrong command';
       errorContext.parsedMessage = messageParser(slackMessage);
-      var errorMessage = responseHandler
-        .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
+      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
+        testBots.bots[0].config.botCommand, errorContext);
 
-      var onMessageSpy = sinon.spy((response) => {
+      const onMessageSpy = sinon.spy((response) => {
         setTimeout(() => {
           expect(response.message).to.equal(errorMessage);
           done();
@@ -146,28 +147,28 @@ describe('/bot', function () {
         });
       });
     });
-
   });
 
   describe('channel message', function () {
-
-    var testBots;
-    var errorContext;
-    var slackMessage;
-    var messageParser;
-    var messageOptions;
-    var apiRequestFetchStub;
+    let testBots;
+    let errorContext;
+    let slackMessage;
+    let messageParser;
+    let messageOptions;
+    let apiRequestFetchStub;
 
     beforeEach(function () {
-      testBots = new SlackBot(config.singleBot, { isMock: true });
-      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch', () => {
+      testBots = new SlackBot(config.singleBot, {
+        isMock: true,
+      });
+      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch').callsFake(() => {
         return Promise.resolve({
           members: [],
-          channels: []
+          channels: [],
         });
       });
       errorContext = {
-        error: true
+        error: true,
       };
       slackMessage = {
         id: uuid.v4(),
@@ -175,12 +176,12 @@ describe('/bot', function () {
         channel: 'C0GL06JD8',
         user: 'U0GG92T45',
         text: 'testbot1 ping 1',
-        team: 'T0GGDKVDE'
+        team: 'T0GGDKVDE',
       };
       messageOptions = {
         name: 'testbot1',
         id: 'U1234567',
-        isDirectMessage: true
+        isDirectMessage: true,
       };
       messageParser = message.parse(
         _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')),
@@ -193,7 +194,7 @@ describe('/bot', function () {
     });
 
     it('Should call dispatchMessage with correct arguments', function (done) {
-      var onMessageSpy = sinon.spy((response) => {
+      const onMessageSpy = sinon.spy((response) => {
         setTimeout(() => {
           expect(response.message).to.equal('Hello 1');
           done();
@@ -209,28 +210,29 @@ describe('/bot', function () {
       });
     });
 
-    it('Should call dispatchMessage with botname and command without param', function (done) {
-      slackMessage.text = 'testbot1 ping';
-      var onMessageSpy = sinon.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal('Hello 1');
-          done();
-        }, 1);
-      });
+    it('Should call dispatchMessage with botname and command without param',
+      function (done) {
+        slackMessage.text = 'testbot1 ping';
+        const onMessageSpy = sinon.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal('Hello 1');
+            done();
+          }, 1);
+        });
 
-      testBots.start().then((botEvt) => {
-        botEvt[0].on('message', onMessageSpy);
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
 
-        botEvt[0].on('connect', () => {
-          botEvt[0].injectMessage(slackMessage);
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
         });
       });
-    });
 
     it('Should not call dispatchMessage', function (done) {
       slackMessage.text = 'hello';
-      var onMessageSpy = sinon.spy();
-      var onConnectSpy = sinon.spy();
+      const onMessageSpy = sinon.spy();
+      const onConnectSpy = sinon.spy();
 
       testBots.start().then((botEvt) => {
         botEvt[0].on('connect', onConnectSpy);
@@ -246,8 +248,8 @@ describe('/bot', function () {
 
     it('Should not call dispatchMessage without botname', function (done) {
       slackMessage.text = 'ping 1';
-      var onMessageSpy = sinon.spy();
-      var onConnectSpy = sinon.spy();
+      const onMessageSpy = sinon.spy();
+      const onConnectSpy = sinon.spy();
 
       testBots.start().then((botEvt) => {
         botEvt[0].on('connect', onConnectSpy);
@@ -261,13 +263,15 @@ describe('/bot', function () {
       }, 50);
     });
 
-    it('Should show help message for message starting with botname and wrong command', function (done) {
+    it('Should show help message for message starting with' +
+      'botname and wrong command', function (done) {
       slackMessage.text = 'testbot1 wrong command';
       errorContext.parsedMessage = messageParser(slackMessage);
-      var errorMessage = responseHandler
-        .generateErrorTemplate('testbot1', testBots.bots[0].config.botCommand, errorContext);
 
-      var onMessageSpy = sinon.spy((response) => {
+      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
+        testBots.bots[0].config.botCommand, errorContext);
+
+      const onMessageSpy = sinon.spy((response) => {
         setTimeout(() => {
           expect(response.message).to.equal(errorMessage);
           done();
