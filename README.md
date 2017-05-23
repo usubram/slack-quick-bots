@@ -1,8 +1,9 @@
 # slack-quick-bots
 [![npm version][npm-badge]][npm-url]
 [![Build Status][travis-badge]][travis-url]
+[![Dependency Status][daviddm-image]][daviddm-url]
 
-Command driven slack bot library focused to quickly rolled out api/data driven bots abstracting most common bot needs for the enterprise.
+Command driven slack bot library focused to quickly rolled out api/data driven bots abstracting most common bot needs.
 
 ```javascript
 const SlackBot = require('slack-quick-bots');
@@ -175,3 +176,5 @@ Licensed under the MIT license.
 [npm-url]: https://badge.fury.io/js/slack-quick-bots
 [travis-badge]: https://api.travis-ci.org/usubram/slack-quick-bots.svg
 [travis-url]: https://travis-ci.org/usubram/slack-quick-bots
+[daviddm-image]: https://david-dm.org/usubram/slack-quick-bots.svg
+[daviddm-url]: https://david-dm.org/usubram/slack-quick-bots

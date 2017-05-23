@@ -1,7 +1,8 @@
 'use strict';
 
 const fs = require('fs');
-const sampleTemplate = fs.readFileSync('./test/mock/template/sample-template.hbs', 'utf8');
+const sampleTemplate = fs.readFileSync('./test/mock/template/' +
+  'sample-template.hbs', 'utf8');
 
 exports = module.exports = {
   singleBot: {
@@ -14,9 +15,9 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
         AUTO: {
           commandType: 'RECURSIVE',
@@ -26,28 +27,28 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
         STOP: {
           commandType: 'KILL',
-          parentTask: 'AUTO'
-        }
+          parentTask: 'AUTO',
+        },
       },
       mock: {
         self: {
           name: 'testbot1',
-          id: 'U1234567'
+          id: 'U1234567',
         },
         members: [{
-          id: 'U0GG92T45', name: 'user1'
+          id: 'U0GG92T45', name: 'user1',
         }, {
-          id: 'U0GG92T46', name: 'user2'
-        }]
+          id: 'U0GG92T46', name: 'user2',
+        }],
       },
-      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
-    }]
+      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
+    }],
   },
   multipleBot: {
     bots: [{
@@ -59,9 +60,9 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
         AUTO: {
           commandType: 'RECURSIVE',
@@ -71,22 +72,22 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
         STOP: {
           commandType: 'KILL',
-          parentTask: 'AUTO'
-        }
+          parentTask: 'AUTO',
+        },
       },
       mock: {
         self: {
           name: 'testbot1',
-          id: 'U1234567'
-        }
+          id: 'U1234567',
+        },
       },
-      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
+      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
     }, {
       botCommand: {
         PING: {
@@ -96,9 +97,9 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
         AUTO: {
           commandType: 'RECURSIVE',
@@ -108,23 +109,23 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
         STOP: {
           commandType: 'KILL',
-          parentTask: 'AUTO'
-        }
+          parentTask: 'AUTO',
+        },
       },
       mock: {
         self: {
           name: 'testbot2',
-          id: 'U1234567'
-        }
+          id: 'U1234567',
+        },
       },
-      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwKrtm'
-    }]
+      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwKrtm',
+    }],
   },
   BotsTest: {
     bots: [{
@@ -136,13 +137,13 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
-        }
+          },
+        },
       },
-      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
-    }]
+      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
+    }],
   },
   BotsTestWithRecursiveTasks: {
     bots: [{
@@ -154,9 +155,9 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
         'auto data': {
           commandType: 'RECURSIVE',
@@ -166,17 +167,17 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
-        STOP: {
+        STOP: { // eslint-disable-line
           commandType: 'KILL',
-          parentTask: 'auto data'
-        }
+          parentTask: 'auto data',
+        },
       },
-      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
-    }]
+      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
+    }],
   },
   singleBotForAllowedParam: {
     bots: [{
@@ -188,9 +189,9 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
         pingLimit: {
           commandType: 'DATA',
@@ -200,9 +201,9 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
         hybrid: {
           commandType: 'DATA',
@@ -213,9 +214,9 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
         AUTO: {
           commandType: 'RECURSIVE',
@@ -225,23 +226,23 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
         STOP: {
           commandType: 'KILL',
-          parentTask: 'AUTO'
-        }
+          parentTask: 'AUTO',
+        },
       },
       mock: {
         self: {
           name: 'testbot2',
-          id: 'U1234567'
-        }
+          id: 'U1234567',
+        },
       },
-      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
-    }]
+      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
+    }],
   },
   commandTypeBots: {
     bots: [{
@@ -253,9 +254,9 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
         pingLimit: {
           commandType: 'DATA',
@@ -265,9 +266,9 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
         AUTO: {
           commandType: 'RECURSIVE',
@@ -277,9 +278,9 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
+          },
         },
         alert: {
           commandType: 'ALERT',
@@ -287,24 +288,24 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
-        }
+          },
+        },
       },
       mock: {
         self: {
           name: 'testbot1',
-          id: 'U1234567'
+          id: 'U1234567',
         },
         members: [{
-          id: 'U0GG92T45', name: 'user1'
+          id: 'U0GG92T45', name: 'user1',
         }, {
-          id: 'U0GG92T46', name: 'user2'
-        }]
+          id: 'U0GG92T46', name: 'user2',
+        }],
       },
-      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
-    }]
+      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
+    }],
   },
   isCommandAllowed: {
     bots: [{
@@ -316,25 +317,25 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
-        }
+          },
+        },
       },
       allowedUsers: ['U0GG92T45'],
       mock: {
         self: {
           name: 'testbot2',
-          id: 'U1234567'
+          id: 'U1234567',
         },
         members: [{
-          id: 'U0GG92T45', name: 'user1'
+          id: 'U0GG92T45', name: 'user1',
         }, {
-          id: 'U0GG92T46', name: 'user2'
-        }]
+          id: 'U0GG92T46', name: 'user2',
+        }],
       },
-      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS'
-    }]
+      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
+    }],
   },
   blockDirectMessage: {
     bots: [{
@@ -346,45 +347,45 @@ exports = module.exports = {
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
-              'param': input.params
+              'param': input.params,
             });
-          }
-        }
+          },
+        },
       },
       mock: {
         self: {
           name: 'testbot1',
-          id: 'U1234567'
+          id: 'U1234567',
         },
         members: [{
-          id: 'U0GG92T45', name: 'user1'
+          id: 'U0GG92T45', name: 'user1',
         }, {
-          id: 'U0GG92T46', name: 'user2'
-        }]
+          id: 'U0GG92T46', name: 'user2',
+        }],
       },
       botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
-      blockDirectMessage: true
-    }]
+      blockDirectMessage: true,
+    }],
   },
   events: {
-    "testbot1": {
-      "D2U7WA3PD_auto": {
-        "parsedMessage": {
-          "type": "message",
-          "channel": "D2U7WA3PD",
-          "user": "U0VM3V6G3",
-          "text": "auto",
-          "ts": "1488154681.000008",
-          "team": "T0GGDKVDE",
-          "message": {
-            "command": "auto",
-            "params": []
-          }
+    testbot1: {
+      D2U7WA3PD_auto: {
+        parsedMessage: {
+          type: 'message',
+          channel: 'D2U7WA3PD',
+          user: 'U0VM3V6G3',
+          text: 'auto',
+          ts: '1488154681.000008',
+          team: 'T0GGDKVDE',
+          message: {
+            command: 'auto',
+            params: [],
+          },
         },
-        "channels": [
-          "D2U7WA3PD"
-        ]
-      }
-    }
-  }
+        channels: [
+          'D2U7WA3PD',
+        ],
+      },
+    },
+  },
 };

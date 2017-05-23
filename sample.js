@@ -2,7 +2,7 @@
  * slack-bot
  * https://github.com/usubram/slack-bot
  *
- * Copyright (c) 2016 Umashankar Subramanian
+ * Copyright (c) 2017 Umashankar Subramanian
  * Licensed under the MIT license.
  */
 
@@ -31,9 +31,9 @@ const config = {
           // options.hookUrl - custom webhook url.
           // options.channel - channel from which the command was fired.
           callback({
-            param: input.params
+            param: input.params,
           });
-        }
+        },
       },
       trend: {
         commandType: 'DATA',
@@ -44,14 +44,16 @@ const config = {
           title: 'Log data',
           logscale: false,
           style: 'lines',
-          exec: { encoding: 'utf16' }
+          exec: {
+            encoding: 'utf16',
+          },
         },
         allowedParam: [1, 2],
       
         defaultParamValue: 1,
         helpText: '    → this is trend command \\n',
-        data: function(input, options, callback) {
-          var dataArr = [ // Sample data
+        data: function (input, options, callback) {
+          const dataArr = [ // Sample data
             [100, 120, 130, 110, 123, 90],
             [1, 120, 130, 110, 90, 85],
             [1, 120, 130, 1010, 140, 145],
@@ -59,11 +61,11 @@ const config = {
             [100, 120, 130, 300, 140, 145],
             [100, 400, 130, 300, 140, 145],
             [100, 90, 130, 300, 140, 145],
-            [100, 120, 130, 1010, 150, 90]
+            [100, 120, 130, 1010, 150, 90],
           ];
-          var rand = dataArr[Math.floor(Math.random() * dataArr.length)];
+          const rand = dataArr[Math.floor(Math.random() * dataArr.length)];
           callback(rand);
-        }
+        },
       },
       error: {
         commandType: 'RECURSIVE',
@@ -72,18 +74,19 @@ const config = {
         defaultParamValue: 1,
         helpText: '    → this is error command \\n',
         template: sampleTemplate,
-        data: function(input, options, callback) {
+        data: function (input, options, callback) {
           callback({
-            param: input.params
+            param: input.params,
           });
-        }
+        },
       },
       alert: {
         commandType: 'ALERT',
         timeInterval: 1, // time due which call to the back is made.
         helpText: '    → this a alert command \\n',
-        data: function(input, options, callback) {
-          var dataArr = [ // Sample data
+        algo: 'CUMULATIVE_DIFFERENCE',
+        data: function (input, options, callback) {
+          const dataArr = [ // Sample data
             [100, 120, 130, 110, 123, 90],
             [1, 120, 130, 110, 90, 85],
             [1, 120, 130, 1010, 140, 145],
@@ -91,26 +94,26 @@ const config = {
             [100, 120, 130, 300, 140, 145],
             [100, 400, 130, 300, 140, 145],
             [100, 90, 130, 300, 140, 145],
-            [100, 120, 130, 1010, 150, 90]
+            [100, 120, 130, 1010, 150, 90],
           ];
-          var rand = dataArr[Math.floor(Math.random() * dataArr.length)];
+          const rand = dataArr[Math.floor(Math.random() * dataArr.length)];
           callback(rand);
-        }
+        },
       },
       file: {
         commandType: 'DATA',
         allowedParam: ['*'],
         helpText: '    → this a alert command \\n',
-        data: function(input, options, callback) {
+        data: function (input, options, callback) {
           callback({
             responseType: {
               type: 'xml',
-              name: 'hello'
+              name: 'hello',
             },
-            response: '<xml></xml>'
+            response: '<xml></xml>',
           });
-        }
-      }
+        },
+      },
     },
     schedule: true,
     blockDirectMessage: false,
@@ -118,10 +121,10 @@ const config = {
     mock: {
       self: {
         name: 'testbot1',
-        id: 'U1234567'
-      }
+        id: 'U1234567',
+      },
     },
-    botToken: args[0]
+    botToken: args[0],
   }],
   // proxy: {
   //   url: 'http://proxy.socketproxy.com:8080/'
@@ -129,11 +132,11 @@ const config = {
   logger: console, // you could pass a winston logger.
   server: {
     port: 9090,
-    webHook: true
-  }
+    webHook: true,
+  },
 };
 
-//var slackBot = new SlackBot(config, { isMock: true });
+// const slackBot = new SlackBot(config, { isMock: true });
 const slackBot = new SlackBot(config);
 slackBot.start().then((botEvt) => {
   botEvt[0].on('message', (message) => {

@@ -14,23 +14,23 @@ chai.use(chaiAsPromised);
 chai.should();
 
 describe('/storage', function () {
-
   describe('validate if read event is called on bootstrap', function () {
-    var updateEventsSpy,
-      removeEventsSpy,
-      readFileStub,
-      writeFileStub;
+    let updateEventsSpy;
+    let removeEventsSpy;
+    let readFileStub;
+    let writeFileStub;
 
     beforeEach(function () {
       updateEventsSpy = sinon.spy(storage, 'updateEvents');
       removeEventsSpy = sinon.spy(storage, 'removeEvents');
 
-      readFileStub = sinon.stub(storage, 'readFile', function () {
+      readFileStub = sinon.stub(storage, 'readFile').callsFake(() => {
         return Promise.resolve({});
       });
-      writeFileStub = sinon.stub(storage, 'writeFile', function (fileType, data) {
-        return Promise.resolve(data);
-      });
+      writeFileStub = sinon.stub(storage, 'writeFile')
+        .callsFake((fileType, data) => {
+          return Promise.resolve(data);
+        });
     });
 
     afterEach(function () {
