@@ -7,3 +7,7 @@ before_script:
   - npm install babel-register
   - npm install -g mocha
   - npm install -g eslint
+script:
+  - npm lint
+  - npm test
+  - npm build
