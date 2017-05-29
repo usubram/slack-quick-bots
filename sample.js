@@ -87,11 +87,11 @@ const config = {
           const dataArr = [ // Sample data
             {
               time: moment().unix() - 1000,
-              value: 120,
+              value: 400,
             },
             {
               time: moment().unix(),
-              value: 400,
+              value: 120,
             },
           ];
           callback(dataArr);
