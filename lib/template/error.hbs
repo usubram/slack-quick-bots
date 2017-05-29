@@ -29,8 +29,7 @@
 				{{#if aLimit }}
 				 - _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{toLowerCase name}} {{{toLowerCase aLimit}}}_{{/if}}
 				{{#if alertContext}}
-				 Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup 90 - *90* is alert threshold percentage. \n
-				 Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} sample - to know the current threshold level.\n
+				 Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup <threshold> \n
 				{{else}}
 					{{#if aParam}}
 					 - _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{toLowerCase name}} {{toLowerCase aParam}}_
