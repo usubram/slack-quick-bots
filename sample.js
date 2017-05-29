@@ -11,6 +11,7 @@
 const SlackBot = require('./lib/index');
 const fs = require('fs');
 const sampleTemplate = fs.readFileSync('./sample.hbs', 'utf8');
+const moment = require('moment');
 
 const args = process.argv.slice(2);
 
@@ -79,22 +80,21 @@ const config = {
       },
       alert: {
         commandType: 'ALERT',
-        timeInterval: 1, // time due which call to the back is made.
+        timeInterval: 1,
         helpText: '    → this a alert command \\n',
         algo: 'CUMULATIVE_DIFFERENCE',
         data: function (input, options, callback) {
           const dataArr = [ // Sample data
-            [100, 120, 130, 110, 123, 90],
-            [1, 120, 130, 110, 90, 85],
-            [1, 120, 130, 1010, 140, 145],
-            [100, 120, 130, 250, 140, 145],
-            [100, 120, 130, 300, 140, 145],
-            [100, 400, 130, 300, 140, 145],
-            [100, 90, 130, 300, 140, 145],
-            [100, 120, 130, 1010, 150, 90],
+            {
+              time: moment().unix() - 3000,
+              value: 120,
+            },
+            {
+              time: moment().unix(),
+              value: 400,
+            },
           ];
-          const rand = dataArr[Math.floor(Math.random() * dataArr.length)];
-          callback(rand);
+          callback(dataArr);
         },
       },
       file: {

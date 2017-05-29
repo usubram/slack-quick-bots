@@ -1,33 +1,34 @@
-{{#if alert}}
-```
-Alert:\n
-Threshold % is, how far the data is spread between them.\n
-Threshold: {{perct}}%\n
-Time: {{time}}\n
-
-{{#each dataset}}
-	{{this}}
-	{{#if @last}}
-	{{else}}, 
-	{{/if}}
-{{/each}}
-```
-{{/if}}
-{{#if sample}}
-	{{#if dataset}}
-		Most recent threshold percentages are below and last updated at *{{time}}* \n
-
-		> 
+{{#if cumulative_difference_alert}}
+	```
+	{{#if isHigher}}
+		Attention!! Spike in metrics. \n
 		{{#each dataset}}
-			{{this}}%
-			{{#if @last}}
-				{{else}}, 
-			{{/if}}
-		{{/each}}\n \n
-		> _tip_: threshold percentage is how far the data is spread between them. `100, 120, 110, 130, 140` - will have low percentage compared to `20, 100, 120, 130, 50`. So choose a threshold percentage based on the above values
-	{{else}}
-		```
-		No data available yet. Please try after sometime.
-		```
+			{{formatUnixTime value=time offset="-480" format="YYYY-MM-DD HH:mm"}}
+			- {{value}}\n
+		{{/each}}\n
+		Difference: {{difference}}
 	{{/if}}
+	{{#if isLower}}
+		Attention!! Dip in metrics. \n
+		{{#each dataset}}
+			{{formatUnixTime value=time offset="-480" format="YYYY-MM-DD HH:mm"}}
+			- {{value}}\n
+		{{/each}}\n
+		Difference: {{difference}}
+	{{/if}}
+	```
+{{/if}}
+{{#if variation_difference_alert}}
+	```
+	{{#if isLower}}
+		Attention!! variation in metrics around {{time}} \n
+		{{#each dataset}}
+			{{this}}
+			{{#if @last}}
+			{{else}}, 
+			{{/if}}
+		{{/each}}
+		Variation %: {{perct}}
+	{{/if}}
+	```
 {{/if}}
