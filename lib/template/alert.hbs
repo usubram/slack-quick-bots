@@ -3,7 +3,7 @@
 	{{#if isHigher}}
 		Attention!! Spike in metrics. \n
 		{{#each dataset}}
-			{{formatUnixTime value=time offset="-480" format="YYYY-MM-DD HH:mm"}}
+			{{formatUnixTime value=time offset="-420" format="YYYY-MM-DD HH:mm"}}
 			- {{value}}\n
 		{{/each}}\n
 		Difference: {{difference}}
@@ -11,7 +11,7 @@
 	{{#if isLower}}
 		Attention!! Dip in metrics. \n
 		{{#each dataset}}
-			{{formatUnixTime value=time offset="-480" format="YYYY-MM-DD HH:mm"}}
+			{{formatUnixTime value=time offset="-420" format="YYYY-MM-DD HH:mm"}}
 			- {{value}}\n
 		{{/each}}\n
 		Difference: {{difference}}

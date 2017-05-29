@@ -86,7 +86,7 @@ const config = {
         data: function (input, options, callback) {
           const dataArr = [ // Sample data
             {
-              time: moment().unix() - 3000,
+              time: moment().unix() - 1000,
               value: 120,
             },
             {
