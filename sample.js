@@ -115,6 +115,15 @@ const config = {
     schedule: true,
     blockDirectMessage: false,
     webHook: true,
+    slackApi: {
+      user: {
+        exclude: true,
+        presence: false,
+      },
+      channel: {
+        exclude: false,
+      },
+    },
     mock: {
       self: {
         name: 'testbot1',
