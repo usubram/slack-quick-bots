@@ -119,6 +119,7 @@ const config = {
       user: {
         exclude: false,
         presence: false,
+        limit: 1000,
       },
       channel: {
         exclude: false,
