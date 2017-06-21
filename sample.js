@@ -117,7 +117,7 @@ const config = {
     webHook: true,
     slackApi: {
       user: {
-        exclude: false,
+        exclude: true,
         presence: false,
         limit: 1000,
       },
