@@ -1,6 +1,7 @@
 {{#if invalid_command}}
 	*Invalid schedule command*.\n Make sure to send something like `schedule commandName (*/15 * * * *).`\n
-	The above example schedules _commandName_ every 15 minutes.
+	The above example schedules _commandName_ every 15 minutes. 
+	`schedule list` lists all the schedule commands.
 {{else}}
 	{{#if invalid_cron}}
 		*Invalid schedule command*.\n Make sure to send something like `schedule commandName (*/15 * * * *).`\n
@@ -13,7 +14,7 @@
 				<@{{this}}>\n
 			{{/each}}
 		{{else}}
-			Howdy! try the below the commands. \n
+			Howdy! try the below commands. \n
 			{{#each command}}
 				   • {{#if ../prefix}} <@{{../prefix}}>{{/if}} *{{toLowerCase @key}}* 
 				{{#if inContext}}

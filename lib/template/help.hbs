@@ -1,4 +1,21 @@
-  ```
+
+```
+{{#if no_scheduled_events}}
+	I'm not running any scheduled commands here. Go to your private channel or DM if you are looking for a command scheduled in your DM or private channel.
+{{/if}}
+{{#if scheduled_events}}
+	List of scheduled commands\n
+	{{#each scheduled_events}}
+		• Scheduled by <@{{user}}>\n
+		  Command: {{command}}\n
+		{{#if private}}
+		  Where: In this channel\n
+		{{else}}
+		  Where: <#{{channel}}>\n
+		{{/if}}
+	{{/each}}\n
+	To stop any scheduled command run "stop schedule command".
+{{/if}}
 {{#if recursive_success}}
 	Ok. I will start sending you messages as commanded.
 {{/if}}
