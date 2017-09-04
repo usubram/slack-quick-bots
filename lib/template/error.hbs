@@ -1,7 +1,7 @@
 {{#if invalid_command}}
-	*Invalid schedule command*.\n Make sure to send something like `schedule commandName (*/15 * * * *).`\n
-	The above example schedules _commandName_ every 15 minutes. 
-	`schedule list` lists all the schedule commands.
+	```Make sure to send something like `<@{{bot_name}}> schedule <commandName> (*/15 * * * *)`\n
+	Above example schedules <commandName> every 15 minutes. \n
+	`<@{{bot_name}}> schedule list` lists all scheduled commands.```
 {{else}}
 	{{#if invalid_cron}}
 		*Invalid schedule command*.\n Make sure to send something like `schedule commandName (*/15 * * * *).`\n
