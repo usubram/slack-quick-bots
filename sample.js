@@ -67,7 +67,7 @@ const config = {
       },
       error: {
         commandType: 'RECURSIVE',
-        lowerLimit: 0,
+        lowerLimit: 1,
         upperLimit: 100,
         defaultParamValue: 1,
         helpText: '    → this is error command \\n',
