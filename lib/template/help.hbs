@@ -15,7 +15,8 @@
 		  Command: <@{{bot_name}}> {{command}}\n
 		  Stop command: <@{{bot_name}}> stop schedule {{schedule_id}}\n\n
 	{{/each}}\n
-	To stop any scheduled command run the stop command shown above.
+	To stop any scheduled command run the stop command shown above. If you don't see the schedule you are looking for try \n
+	<@{{bot_name}}> schedule list all
 {{/if}}
 {{#if recursive_success}}
 	Ok. I will start sending you messages as commanded.
@@ -47,6 +48,7 @@
 	    <@{{bot_name}}> stop schedule <schedule_id> \n
 	Use the correct schedule id. To look at all scheduled commands and its schedule id try\n
 	    <@{{bot_name}}> schedule list
+	    <@{{bot_name}}> schedule list all
 {{/if}}
 {{#if alert_notification}}
 	Ok. I will alert you if the data variation exceed the threshold of *{{threshold}}*. Increase your threshold if you see too many alerts.\n
