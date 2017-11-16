@@ -42,7 +42,7 @@
     "chatbots"
   ],
   "dependencies": {
-    "@umashankar/plotter": "0.5.1",
+    "@umashankar/plotter": "0.5.2",
     "cron": "1.3.0",
     "form-data": "2.1.4",
     "handlebars": "4.0.10",
