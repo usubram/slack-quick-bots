@@ -1,9 +1,11 @@
 
-```
 {{#if no_scheduled_events}}
+```
 	I'm not running any scheduled commands here. Go to your private channel or DM if you are looking for a command scheduled in your DM or private channel.
+```
 {{/if}}
 {{#if scheduled_events}}
+```
 	List of scheduled commands\n
 	{{#each scheduled_events}}
 		• Scheduled by <@{{user}}> in 
@@ -17,20 +19,28 @@
 	{{/each}}\n
 	To stop any scheduled command run the stop command shown above. If you don't see the schedule you are looking for try \n
 	<@{{bot_name}}> schedule list all
+```
 {{/if}}
 {{#if recursive_success}}
+```
 	Ok. I will start sending you messages as commanded.
+```
 {{/if}}
 {{#if recursive_stop}}
+```
 	I got it. I won't be sending you messages any more. 
 	{{#if is_not_same_user}}
 		You stopped a schedule run by <@{{owner}}>
 	{{/if}}
+```
 {{/if}}
 {{#if recursive_fail}}
+```
 	Something wrong? If you are still getting messages from me, report it to bot owner.
+```
 {{/if}}
 {{#if schedule_success}}
+```
 	Ok. I will start sending you messages as commanded. 
 	{{#if next_event}}
 		I will send the next message around {{next_event}} \n
@@ -39,21 +49,33 @@
 	    <@{{bot_name}}> stop schedule {{schedule_id}} \n
 	To look at all scheduled command use\n
 	    <@{{bot_name}}> schedule list \n
+```
 {{/if}}
 {{#if schedule_previlage}}
+```
 	That did not work. You can only stop this scheduled command in <#{{target_channel}}>.
+```
 {{/if}}
 {{#if schedule_fail}}
+```
 	Something wrong? If you are trying to stop a scheduled command try \n
 	    <@{{bot_name}}> stop schedule <schedule_id> \n
 	Use the correct schedule id. To look at all scheduled commands and its schedule id try\n
 	    <@{{bot_name}}> schedule list
 	    <@{{bot_name}}> schedule list all
+```
 {{/if}}
 {{#if alert_notification}}
+```
 	Ok. I will alert you if the data variation exceed the threshold of *{{threshold}}*. Increase your threshold if you see too many alerts.\n
+```
 {{/if}}
 {{#if bot_direct_message_error}}
+	{{#if message}}
+		{{{message}}}
+	{{else}}
+	```
 	Hello user! I'm asked not to have 1:1 conversation. Add me to a public channel, I can answer you there.
+	```
+	{{/if}}
 {{/if}}
-```
