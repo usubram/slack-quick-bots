@@ -1,7 +1,7 @@
 {
   "name": "slack-quick-bots",
   "description": "A slack bot solution for enterprise.",
-  "version": "6.0.8",
+  "version": "6.0.9",
   "homepage": "https://github.com/usubram/slack-quick-bots",
   "author": {
     "name": "Umashankar Subramanian",
