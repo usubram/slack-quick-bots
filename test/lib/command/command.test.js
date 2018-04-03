@@ -561,12 +561,18 @@ describe('/command', function () {
       });
     });
 
-    it('Should not error out if the user is not found', function (done) {
+    it('Should error out if the user is not found', function (done) {
       slackMessage.user = 'U0GG92T47';
+      delete errorContext.error;
+      errorContext.restricted_user = true;
+      errorContext.parsedMessage = messageParser(slackMessage);
+      errorContext.users = testBots.bots[0].config.allowedUsers;
+      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
+        testBots.bots[0].config.botCommand, errorContext);
 
       const onMessageSpy = sandbox.spy((response) => {
         setTimeout(() => {
-          expect(response.message).to.equal('Hello 1');
+          expect(response.message).to.equal(errorMessage);
           done();
         }, 1);
       });
@@ -618,6 +624,32 @@ describe('/command', function () {
 
     it('Should respond with blocked message on private group', function (done) {
       slackMessage.channel = 'G0GL06JD7';
+      slackMessage.text = 'testbot1 ping 1';
+      delete errorContext.error;
+      errorContext.bot_direct_message_error = true;
+      const errorMessage = responseHandler
+        .generateBotResponseTemplate(errorContext);
+
+      const onMessageSpy = sinon.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal(errorMessage);
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
+    });
+
+    it('Should respond with blocked message on' +
+      'private group with custom message', function (done) {
+      slackMessage.channel = 'G0GL06JD7';
+      slackMessage.text = 'testbot1 ping 1';
       delete errorContext.error;
       errorContext.botDirectMessageError = true;
       const errorMessage = responseHandler
@@ -639,6 +671,26 @@ describe('/command', function () {
       });
     });
 
+    it('Should not respond for non-bot message' +
+      'in private group', function (done) {
+      slackMessage.channel = 'G0GL06JD7';
+      slackMessage.text = 'ping 1';
+      const onMessageSpy = sinon.spy();
+
+      setTimeout(() => {
+        expect(onMessageSpy).to.not.called;
+        done();
+      }, 100);
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
+    });
+
     it('Should respond to messages in public channel', function (done) {
       slackMessage.channel = 'C0GL06JD7';
       slackMessage.text = 'testbot1 ping 1';
@@ -646,6 +698,73 @@ describe('/command', function () {
       const onMessageSpy = sandbox.spy((response) => {
         setTimeout(() => {
           expect(response.message).to.equal('Hello 1');
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
+    });
+  });
+
+  describe('blockDirectMessage', function () {
+    let testBots;
+    let errorContext;
+    let slackMessage;
+    let updateEventsStub;
+    let apiRequestFetchStub;
+
+    beforeEach(function () {
+      testBots = new SlackBot(config.blockDirectCustomMessage, {
+        isMock: true,
+      });
+      updateEventsStub = sinon.stub(storage, 'updateEvents').callsFake(() => {
+        return Promise.resolve({});
+      });
+      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch').callsFake(() => {
+        return Promise.resolve({
+          members: [],
+          channels: [],
+        });
+      });
+      errorContext = {
+        error: true,
+      };
+      slackMessage = {
+        id: uuid.v4(),
+        type: 'message',
+        channel: 'D0GL06JD7',
+        user: 'U0GG92T46',
+        text: 'ping 1',
+        ts: '1453007224.000007',
+        team: 'T0GGDKVDE',
+      };
+    });
+
+    afterEach(function () {
+      updateEventsStub.restore();
+      apiRequestFetchStub.restore();
+      socketServer.closeClient();
+    });
+
+    it('Should respond with blocked message on' +
+      'private group with custom message', function (done) {
+      slackMessage.channel = 'G0GL06JD7';
+      slackMessage.text = 'testbot1 ping 1';
+      delete errorContext.error;
+      errorContext.bot_direct_message_error = true;
+      errorContext.message = 'Hi <@U0GG92T46> custom message';
+      const errorMessage = responseHandler
+        .generateBotResponseTemplate(errorContext);
+
+      const onMessageSpy = sinon.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal(errorMessage);
           done();
         }, 1);
       });
