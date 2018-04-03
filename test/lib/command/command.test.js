@@ -716,8 +716,6 @@ describe('/command', function () {
     let testBots;
     let errorContext;
     let slackMessage;
-    let updateEventsStub;
-    let apiRequestFetchStub;
 
     beforeEach(function () {
       testBots = new SlackBot(config.blockDirectCustomMessage, {
