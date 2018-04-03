@@ -1,20 +1,9 @@
-
-<<<<<<< HEAD
 ```
 {{#if noScheduledEvents}}
-=======
-{{#if no_scheduled_events}}
-```
->>>>>>> f2aaca46ec908b5a29fb7238278853e3da8e4a9d
 	I'm not running any scheduled commands here. Go to your private channel or DM if you are looking for a command scheduled in your DM or private channel.
 ```
 {{/if}}
-<<<<<<< HEAD
 {{#if scheduledEvents}}
-=======
-{{#if scheduled_events}}
-```
->>>>>>> f2aaca46ec908b5a29fb7238278853e3da8e4a9d
 	List of scheduled commands\n
 	{{#each scheduledEvents}}
 		• Scheduled by <@{{user}}> in 
@@ -27,7 +16,6 @@
 		  Stop command: <@{{botName}}> stop schedule {{scheduleId}}\n\n
 	{{/each}}\n
 	To stop any scheduled command run the stop command shown above. If you don't see the schedule you are looking for try \n
-<<<<<<< HEAD
 	<@{{botName}}> schedule list all
 {{/if}}
 {{#if noAlertEvents}}
@@ -52,43 +40,25 @@
 	<@{{botName}}> {{toLowerCase commandName}} list all
 {{/if}}
 {{#if recursiveSuccess}}
-=======
-	<@{{bot_name}}> schedule list all
 ```
-{{/if}}
-{{#if recursive_success}}
-```
->>>>>>> f2aaca46ec908b5a29fb7238278853e3da8e4a9d
 	Ok. I will start sending you messages as commanded.
 ```
 {{/if}}
-<<<<<<< HEAD
 {{#if recursiveStop}}
-=======
-{{#if recursive_stop}}
 ```
->>>>>>> f2aaca46ec908b5a29fb7238278853e3da8e4a9d
 	I got it. I won't be sending you messages any more. 
 	{{#if isNotSameUser}}
 		You stopped a schedule run by <@{{owner}}>
 	{{/if}}
 ```
 {{/if}}
-<<<<<<< HEAD
 {{#if recursiveFail}}
-=======
-{{#if recursive_fail}}
 ```
->>>>>>> f2aaca46ec908b5a29fb7238278853e3da8e4a9d
 	Something wrong? If you are still getting messages from me, report it to bot owner.
 ```
 {{/if}}
-<<<<<<< HEAD
 {{#if scheduleSuccess}}
-=======
-{{#if schedule_success}}
 ```
->>>>>>> f2aaca46ec908b5a29fb7238278853e3da8e4a9d
 	Ok. I will start sending you messages as commanded. 
 	{{#if nextEvent}}
 		I will send the next message around {{nextEvent}} \n
@@ -96,29 +66,15 @@
 	To stop this schedule use schedule \n
 	    <@{{botName}}> stop schedule {{scheduleId}} \n
 	To look at all scheduled command use\n
-<<<<<<< HEAD
 	    <@{{botName}}> schedule list \n
 {{/if}}
 {{#if schedulePrevilage}}
 	That did not work. You can only stop this scheduled command in <#{{targetChannel}}>.
 {{/if}}
 {{#if scheduleFail}}
-=======
-	    <@{{bot_name}}> schedule list \n
-```
-{{/if}}
-{{#if schedule_previlage}}
-```
-	That did not work. You can only stop this scheduled command in <#{{target_channel}}>.
-```
-{{/if}}
-{{#if schedule_fail}}
-```
->>>>>>> f2aaca46ec908b5a29fb7238278853e3da8e4a9d
 	Something wrong? If you are trying to stop a scheduled command try \n
 	    <@{{botName}}> stop schedule <scheduleId> \n
 	Use the correct schedule id. To look at all scheduled commands and its schedule id try\n
-<<<<<<< HEAD
 	    <@{{botName}}> schedule list
 	    <@{{botName}}> schedule list all
 {{/if}}
@@ -137,22 +93,15 @@
 	    <@{{botName}}> {{toLowerCase commandName}} list \n
 {{/if}}
 {{#if botDirectMessageError}}
-=======
 	    <@{{bot_name}}> schedule list
 	    <@{{bot_name}}> schedule list all
 ```
 {{/if}}
-{{#if alert_notification}}
-```
-	Ok. I will alert you if the data variation exceed the threshold of *{{threshold}}*. Increase your threshold if you see too many alerts.\n
-```
-{{/if}}
-{{#if bot_direct_message_error}}
+{{#if botDirectMessageError}}
 	{{#if message}}
 		{{{message}}}
 	{{else}}
 	```
->>>>>>> f2aaca46ec908b5a29fb7238278853e3da8e4a9d
 	Hello user! I'm asked not to have 1:1 conversation. Add me to a public channel, I can answer you there.
 	```
 	{{/if}}

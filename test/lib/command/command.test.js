@@ -564,7 +564,7 @@ describe('/command', function () {
     it('Should error out if the user is not found', function (done) {
       slackMessage.user = 'U0GG92T47';
       delete errorContext.error;
-      errorContext.restricted_user = true;
+      errorContext.restrictedUser = true;
       errorContext.parsedMessage = messageParser(slackMessage);
       errorContext.users = testBots.bots[0].config.allowedUsers;
       const errorMessage = responseHandler.generateErrorTemplate('testbot1',
@@ -626,7 +626,7 @@ describe('/command', function () {
       slackMessage.channel = 'G0GL06JD7';
       slackMessage.text = 'testbot1 ping 1';
       delete errorContext.error;
-      errorContext.bot_direct_message_error = true;
+      errorContext.botDirectMessageError = true;
       const errorMessage = responseHandler
         .generateBotResponseTemplate(errorContext);
 
@@ -646,7 +646,7 @@ describe('/command', function () {
       });
     });
 
-    it('Should respond with blocked message on' +
+    it('Should respond with blocked message on ' +
       'private group with custom message', function (done) {
       slackMessage.channel = 'G0GL06JD7';
       slackMessage.text = 'testbot1 ping 1';
@@ -723,15 +723,6 @@ describe('/command', function () {
       testBots = new SlackBot(config.blockDirectCustomMessage, {
         isMock: true,
       });
-      updateEventsStub = sinon.stub(storage, 'updateEvents').callsFake(() => {
-        return Promise.resolve({});
-      });
-      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch').callsFake(() => {
-        return Promise.resolve({
-          members: [],
-          channels: [],
-        });
-      });
       errorContext = {
         error: true,
       };
@@ -747,8 +738,6 @@ describe('/command', function () {
     });
 
     afterEach(function () {
-      updateEventsStub.restore();
-      apiRequestFetchStub.restore();
       socketServer.closeClient();
     });
 
@@ -757,7 +746,7 @@ describe('/command', function () {
       slackMessage.channel = 'G0GL06JD7';
       slackMessage.text = 'testbot1 ping 1';
       delete errorContext.error;
-      errorContext.bot_direct_message_error = true;
+      errorContext.botDirectMessageError = true;
       errorContext.message = 'Hi <@U0GG92T46> custom message';
       const errorMessage = responseHandler
         .generateBotResponseTemplate(errorContext);

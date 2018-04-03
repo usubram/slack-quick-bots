@@ -472,6 +472,36 @@ exports = module.exports = {
       botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
     }],
   },
+  blockDirectCustomMessage: {
+    bots: [{
+      botCommand: {
+        PING: {
+          commandType: 'DATA',
+          allowedParam: [1, 2],
+          defaultParamValue: 1,
+          template: sampleTemplate,
+          data: function (input, options, callback) {
+            callback({
+              'param': input.params,
+            });
+          },
+        },
+      },
+      mock: {
+        self: {
+          name: 'testbot1',
+          id: 'U1234567',
+        },
+        members: [{
+          id: 'U0GG92T45', name: 'user1',
+        }, {
+          id: 'U0GG92T46', name: 'user2',
+        }],
+      },
+      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
+      blockDirectMessage: 'Hi {{{user}}} custom message',
+    }],
+  },
   events: {
     testbot1: {
       D2U7WA3PD_auto: {
