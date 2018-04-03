@@ -45,7 +45,7 @@ describe('/message', function () {
 
       slackMessage.message = {
         command: 'PING',
-        params: [1],
+        params: ['1'],
       };
       expect(parsedMessage).to.deep.equal(slackMessage);
     });
@@ -55,7 +55,7 @@ describe('/message', function () {
       const parsedMessage = messageParser(slackMessage);
       slackMessage.message = {
         command: 'PING',
-        params: [1, 2, 3],
+        params: ['1', '2', '3'],
       };
 
       expect(parsedMessage).to.deep.equal(slackMessage);
@@ -92,7 +92,7 @@ describe('/message', function () {
       slackMessage.message = {
         command: 'PING',
         commandPrefix: 'U1234567',
-        params: [123, 456],
+        params: ['123', '456'],
       };
 
       expect(parsedMessage).to.deep.equal(slackMessage);
@@ -108,7 +108,21 @@ describe('/message', function () {
       slackMessage.message = {
         commandPrefix: 'U1234567',
         command: 'PING',
-        params: [1],
+        params: ['1'],
+      };
+
+      expect(parsedMessage).to.deep.equal(slackMessage);
+    });
+
+    it('Should correctly parse channel message for just @botname', function () {
+      slackMessage.text = '@testbot1 ping 1';
+
+      const parsedMessage = messageParser(slackMessage, false);
+
+      slackMessage.message = {
+        commandPrefix: 'TESTBOT1',
+        command: 'PING',
+        params: ['1'],
       };
 
       expect(parsedMessage).to.deep.equal(slackMessage);
@@ -123,7 +137,7 @@ describe('/message', function () {
         slackMessage.message = {
           commandPrefix: 'TESTBOT1',
           command: 'PING',
-          params: [1, 2, 3],
+          params: ['1', '2', '3'],
         };
 
         expect(parsedMessage).to.deep.equal(slackMessage);
@@ -137,7 +151,7 @@ describe('/message', function () {
       slackMessage.message = {
         commandPrefix: 'U1234567',
         command: 'PING',
-        params: [1, 2, 3],
+        params: ['1', '2', '3'],
       };
 
       expect(parsedMessage).to.deep.equal(slackMessage);
@@ -152,7 +166,7 @@ describe('/message', function () {
         slackMessage.message = {
           commandPrefix: 'U1234567',
           command: 'PING',
-          params: [1, 2, 3],
+          params: ['1', '2', '3'],
         };
 
         expect(parsedMessage).to.deep.equal(slackMessage);

@@ -1,59 +1,91 @@
 
 ```
-{{#if no_scheduled_events}}
+{{#if noScheduledEvents}}
 	I'm not running any scheduled commands here. Go to your private channel or DM if you are looking for a command scheduled in your DM or private channel.
 {{/if}}
-{{#if scheduled_events}}
+{{#if scheduledEvents}}
 	List of scheduled commands\n
-	{{#each scheduled_events}}
+	{{#each scheduledEvents}}
 		• Scheduled by <@{{user}}> in 
 			{{#if private}}
 				this channel\n
 			{{else}}
 				<#{{channel}}>\n
 			{{/if}}
-		  Command: <@{{bot_name}}> {{command}}\n
-		  Stop command: <@{{bot_name}}> stop schedule {{schedule_id}}\n\n
+		  Command: <@{{botName}}> schedule {{command}}\n
+		  Stop command: <@{{botName}}> stop schedule {{scheduleId}}\n\n
 	{{/each}}\n
 	To stop any scheduled command run the stop command shown above. If you don't see the schedule you are looking for try \n
-	<@{{bot_name}}> schedule list all
+	<@{{botName}}> schedule list all
 {{/if}}
-{{#if recursive_success}}
+{{#if noAlertEvents}}
+	I'm not running any {{toLowerCase commandName}} command here. Go to your private channel or DM if you are looking for a command scheduled in your DM or private channel.
+{{/if}}
+{{#if alertExist}}
+	That did not work. I see you have a similar alert running in this channel. Try stopping that before you create a new one.
+{{/if}}
+{{#if alertEvents}}
+	List of {{commandName}} commands\n
+	{{#each alertEvents}}
+		• Run by <@{{user}}> in 
+			{{#if private}}
+				this channel\n
+			{{else}}
+				<#{{channel}}>\n
+			{{/if}}
+		  Command: <@{{botName}}> {{toLowerCase ../commandName}} {{command}}\n
+		  Stop command: <@{{botName}}> stop {{toLowerCase ../commandName}} {{scheduleId}}\n\n
+	{{/each}}\n
+	To stop any {{toLowerCase commandName}} command run the stop command shown above. If you don't see the {{toLowerCase commandName}} schedule you are looking for try \n
+	<@{{botName}}> {{toLowerCase commandName}} list all
+{{/if}}
+{{#if recursiveSuccess}}
 	Ok. I will start sending you messages as commanded.
 {{/if}}
-{{#if recursive_stop}}
+{{#if recursiveStop}}
 	I got it. I won't be sending you messages any more. 
-	{{#if is_not_same_user}}
+	{{#if isNotSameUser}}
 		You stopped a schedule run by <@{{owner}}>
 	{{/if}}
 {{/if}}
-{{#if recursive_fail}}
+{{#if recursiveFail}}
 	Something wrong? If you are still getting messages from me, report it to bot owner.
 {{/if}}
-{{#if schedule_success}}
+{{#if scheduleSuccess}}
 	Ok. I will start sending you messages as commanded. 
-	{{#if next_event}}
-		I will send the next message around {{next_event}} \n
+	{{#if nextEvent}}
+		I will send the next message around {{nextEvent}} \n
 	{{/if}}
 	To stop this schedule use schedule \n
-	    <@{{bot_name}}> stop schedule {{schedule_id}} \n
+	    <@{{botName}}> stop schedule {{scheduleId}} \n
 	To look at all scheduled command use\n
-	    <@{{bot_name}}> schedule list \n
+	    <@{{botName}}> schedule list \n
 {{/if}}
-{{#if schedule_previlage}}
-	That did not work. You can only stop this scheduled command in <#{{target_channel}}>.
+{{#if schedulePrevilage}}
+	That did not work. You can only stop this scheduled command in <#{{targetChannel}}>.
 {{/if}}
-{{#if schedule_fail}}
+{{#if scheduleFail}}
 	Something wrong? If you are trying to stop a scheduled command try \n
-	    <@{{bot_name}}> stop schedule <schedule_id> \n
+	    <@{{botName}}> stop schedule <scheduleId> \n
 	Use the correct schedule id. To look at all scheduled commands and its schedule id try\n
-	    <@{{bot_name}}> schedule list
-	    <@{{bot_name}}> schedule list all
+	    <@{{botName}}> schedule list
+	    <@{{botName}}> schedule list all
 {{/if}}
-{{#if alert_notification}}
+{{#if alertFail}}
+	Something wrong? If you are trying to stop a alert command try \n
+	    <@{{botName}}> stop {{toLowerCase command}} <scheduleId> \n
+	Use the correct schedule id. To look at all scheduled {{toLowerCase command}} commands and its schedule id try\n
+	    <@{{botName}}> {{toLowerCase command}} list
+	    <@{{botName}}> {{toLowerCase command}} list all
+{{/if}}
+{{#if alertNotification}}
 	Ok. I will alert you if the data variation exceed the threshold of *{{threshold}}*. Increase your threshold if you see too many alerts.\n
+	To stop this alert use \n
+	    <@{{botName}}> stop {{toLowerCase commandName}} {{scheduleId}} \n
+	To look at all scheduled {{toLowerCase commandName}} command use\n
+	    <@{{botName}}> {{toLowerCase commandName}} list \n
 {{/if}}
-{{#if bot_direct_message_error}}
+{{#if botDirectMessageError}}
 	Hello user! I'm asked not to have 1:1 conversation. Add me to a public channel, I can answer you there.
 {{/if}}
 ```

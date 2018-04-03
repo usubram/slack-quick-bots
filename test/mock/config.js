@@ -14,7 +14,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -26,7 +26,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -59,7 +59,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -71,7 +71,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -96,7 +96,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -108,7 +108,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -136,7 +136,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -154,7 +154,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -166,7 +166,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -188,7 +188,54 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
+              'param': input.params,
+            });
+          },
+        },
+        PINGSIM: {
+          commandType: 'DATA',
+          allowedParam: [[1, 2], [3, 4]],
+          defaultParamValue: 1,
+          template: sampleTemplate,
+          data: function (input, options, callback) {
+            callback(null, {
+              'param': input.params,
+            });
+          },
+        },
+        PINGARG: {
+          commandType: 'DATA',
+          allowedParam: [[1, 2], [3, 4]],
+          paramsHelpMessage: [{
+            recommend: '1',
+            error: '{{arg}} is incorrect',
+          }, {
+            recommend: '3',
+            error: '{{arg}} is incorrect',
+          }],
+          defaultParamValue: 1,
+          template: sampleTemplate,
+          data: function (input, options, callback) {
+            callback(null, {
+              'param': input.params,
+            });
+          },
+        },
+        PINGREGEX: {
+          commandType: 'DATA',
+          allowedParam: [/([1-5])/, /([6-9])/],
+          paramsHelpMessage: [{
+            recommend: '1',
+            error: '{{arg}} is incorrect',
+          }, {
+            recommend: '3',
+            error: '{{arg}} is incorrect',
+          }],
+          defaultParamValue: 1,
+          template: sampleTemplate,
+          data: function (input, options, callback) {
+            callback(null, {
               'param': input.params,
             });
           },
@@ -200,7 +247,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -213,7 +260,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -225,7 +272,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -253,7 +300,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -265,7 +312,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -277,7 +324,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -285,9 +332,35 @@ exports = module.exports = {
         alert: {
           commandType: 'ALERT',
           timeInterval: 1,
+          algo: 'CUMULATIVE_DIFFERENCE',
+          data: function (input, options, callback) {
+            const dataArr = [ // Sample data
+              {
+                time: +new Date() - 1000,
+                value: 400,
+              },
+              {
+                time: +new Date(),
+                value: 120,
+              },
+            ];
+            callback(null, dataArr);
+          },
+        },
+        trend: {
+          commandType: 'DATA',
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
+              'param': input.params,
+            });
+          },
+        },
+        stats: {
+          commandType: 'DATA',
+          template: sampleTemplate,
+          data: function (input, options, callback) {
+            callback(null, {
               'param': input.params,
             });
           },
@@ -304,6 +377,7 @@ exports = module.exports = {
           id: 'U0GG92T46', name: 'user2',
         }],
       },
+      schedule: true,
       botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
     }],
   },
@@ -316,7 +390,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -346,7 +420,7 @@ exports = module.exports = {
           defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
-            callback({
+            callback(null, {
               'param': input.params,
             });
           },
@@ -367,6 +441,37 @@ exports = module.exports = {
       blockDirectMessage: true,
     }],
   },
+  alertCommandBots: {
+    bots: [{
+      botCommand: {
+        ALERT: {
+          commandType: 'ALERT',
+          allowedParam: [1, 2],
+          timeInterval: 1,
+          template: sampleTemplate,
+          algo: 'CUMULATIVE_DIFFERENCE',
+          data: function (input, options, callback) {
+            callback(null, [
+              {time: 1511149547, value: 80},
+              {time: 1511149581, value: 1},
+            ]);
+          },
+        },
+      },
+      mock: {
+        self: {
+          name: 'testbot1',
+          id: 'U1234567',
+        },
+        members: [{
+          id: 'U0GG92T45', name: 'user1',
+        }, {
+          id: 'U0GG92T46', name: 'user2',
+        }],
+      },
+      botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
+    }],
+  },
   events: {
     testbot1: {
       D2U7WA3PD_auto: {
@@ -384,6 +489,37 @@ exports = module.exports = {
         },
         channels: [
           'D2U7WA3PD',
+        ],
+      },
+    },
+  },
+  schedule: {
+    testbot1: {
+      byuvavsyz: {
+        parsedMessage: {
+          type: 'message',
+          channel: 'D4BSZUSN8',
+          user: 'U024L29TS',
+          text: '<@U0Y0KFJ90> schedule ping 1 (* * * * *)',
+          ts: '1481052561.004683',
+          team: 'T024GHP2K',
+          message: {
+            commandPrefix: 'opmbot',
+            command: 'SCHEDULE',
+            params: [
+              'ping',
+              '1',
+              '(*',
+              '*',
+              '*',
+              '*',
+              '*)',
+            ],
+          },
+          scheduleId: 'byuvavsyz',
+        },
+        channels: [
+          'D4BSZUSN8',
         ],
       },
     },

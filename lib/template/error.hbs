@@ -1,13 +1,13 @@
-{{#if invalid_command}}
-	```Make sure to send something like \n `<@{{bot_name}}> schedule <commandName> (*/15 * * * *)`\n
+{{#if invalidCommand}}
+	```Make sure to send something like \n `<@{{botName}}> schedule <commandName> (*/15 * * * *)`\n
 	Above example schedules <commandName> every 15 minutes. \n
-	`<@{{bot_name}}> schedule list` lists all scheduled commands.```
+	`<@{{botName}}> schedule list` lists all scheduled commands.```
 {{else}}
-	{{#if invalid_cron}}
+	{{#if invalidCron}}
 		*Invalid schedule command*.\n Make sure to send something like `schedule commandName (*/15 * * * *).`\n
 		The above example schedules _commandName_ every 15 minutes.
 	{{else}}
-		{{#if restricted_user}}
+		{{#if restrictedUser}}
 			*Attention!!* \n
 			I'm configured to only respond to\n
 			{{#each users}}
@@ -16,26 +16,56 @@
 		{{else}}
 			Howdy! try the below commands. \n
 			{{#each command}}
+				{{#if failedParams}}
+					I found {{noOfErrors}} issue in your request. Try the below sample \n
+				{{/if}}
 				   • {{#if ../prefix}} <@{{../prefix}}>{{/if}} *{{toLowerCase @key}}* 
 				{{#if inContext}}
 					{{#if upperLimit}}
 						{{lowerLimit}} to {{{upperLimit}}} 
 					{{/if}}
-					{{#if allowedParam}}
-						{{#each allowedParam}}
-							{{toLowerCase .}}{{#if @last}} {{else}} | {{/if}} 
-						{{/each}}\n
+					{{#if sampleParams}}
+						{{joinArray sampleParams seperator=" "}} \n
+					{{/if}}
+					{{#if failedParams}}
+						{{#each failedParams}}
+							 - {{toLowerCase error}} \n
+						{{/each}}
+					{{else}}
+						{{#if recommend}}
+							{{#each recommend}}
+									{{toLowerCase .}}{{#if @last}} {{else}} {{/if}} 
+							{{/each}}\n
+						{{else}}
+							{{#if allowedParam}}
+								{{#each allowedParam}}
+									{{#if ../mParams}}
+										[ {{joinArray this seperator=" | "}} ] {{#if @last}} {{else}}  {{/if}}
+									{{else}}
+										{{toLowerCase .}}{{#if @last}} {{else}} | {{/if}} 
+									{{/if}}
+								{{/each}}\n
+							{{/if}}
+						{{/if}}
 					{{/if}}
 				{{/if}}
 				{{#if aLimit }}
-				 - _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{toLowerCase name}} {{{toLowerCase aLimit}}}_{{/if}}
+				 - _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{toLowerCase name}} {{{toLowerCase aLimit}}}_
+				{{/if}}
 				{{#if alertContext}}
 				 Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup <threshold> \n
-				{{else}}
-					{{#if aParam}}
-					 - _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{toLowerCase name}} {{toLowerCase aParam}}_
-					{{/if}}\n
 				{{/if}}
+				{{#if aParams}}
+					- _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{toLowerCase name}} 
+					{{#if mParams}}
+							{{#each aParams}}
+								{{toLowerCase .}} 
+							{{/each}}
+							_
+					{{else}}
+						{{toLowerCase aParams}}_
+					{{/if}}
+				{{/if}}\n
 				{{#if helpText}}
 					{{{helpText}}} \n
 				{{/if}}
