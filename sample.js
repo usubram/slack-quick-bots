@@ -20,7 +20,16 @@ const config = {
     botCommand: {
       log: {
         commandType: 'DATA',
-        allowedParam: ['hello'], // allow any argument to a command
+        allowedParam: [[1, 2], ['hello', 'dear']],     // array of array
+        // allowedParam: [/(\d{8,11})/, /(\d{8,11})/], // regex
+        defaultParamValue: [1, 'hello'],
+        paramsHelpMessage: [{
+          recommend: '2',
+          error: '{{arg}} is incorrect',
+        }, {
+          recommend: 'hello',
+          error: '{{arg}} is incorrect',
+        }],
         helpText: '    → this is log command \\n',
         template: sampleTemplate,
         data: function (input, options, callback) {
@@ -29,8 +38,8 @@ const config = {
           // options.user.profile.email - email in slack.
           // options.hookUrl - custom webhook url.
           // options.channel - channel from which the command was fired.
-          callback({
-            param: input.params,
+          callback(null, {
+            param: input.params + ' log',
           });
         },
       },
@@ -62,7 +71,7 @@ const config = {
             [100, 120, 130, 1010, 150, 90],
           ];
           const rand = dataArr[Math.floor(Math.random() * dataArr.length)];
-          callback(rand);
+          callback(null, rand);
         },
       },
       error: {
@@ -73,7 +82,7 @@ const config = {
         helpText: '    → this is error command \\n',
         template: sampleTemplate,
         data: function (input, options, callback) {
-          callback({
+          callback(null, {
             param: input.params,
           });
         },
@@ -94,7 +103,7 @@ const config = {
               value: 120,
             },
           ];
-          callback(dataArr);
+          callback(null, dataArr);
         },
       },
       file: {
@@ -102,7 +111,7 @@ const config = {
         allowedParam: ['*'],
         helpText: '    → this a alert command \\n',
         data: function (input, options, callback) {
-          callback({
+          callback(null, {
             responseType: {
               type: 'xml',
               name: 'hello',

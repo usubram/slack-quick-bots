@@ -27,7 +27,7 @@
       "url": "https://github.com/usubram/slack-quick-bots/blob/master/LICENSE-MIT"
     }
   ],
-  "main": "./dist/index.js",
+  "main": "./lib/index.js",
   "engines": {
     "node": ">=4.5.0"
   },
@@ -67,8 +67,8 @@
     "eslint-config-google": "0.7.1",
     "eslint-plugin-filenames": "1.2.0",
     "mocha": "3.4.1",
-    "sinon": "2.2.0",
-    "sinon-chai": "2.10.0",
+    "sinon": "4.4.2",
+    "sinon-chai": "3.0.0",
     "webpack": "2.5.1"
   }
 }
