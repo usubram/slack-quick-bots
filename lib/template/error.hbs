@@ -14,62 +14,97 @@
 				<@{{this}}>\n
 			{{/each}}
 		{{else}}
-			Howdy! try the below commands. \n
+			Howdy! here is some help:- \n\n
 			{{#each command}}
 				{{#if failedParams}}
-					I found {{noOfErrors}} issue in your request. Try the below sample \n
+					I found {{noOfErrors}} {{toPlural len=noOfErrors word="issue"}} in your request. \n
 				{{/if}}
-				   • {{#if ../prefix}} <@{{../prefix}}>{{/if}} *{{toLowerCase @key}}* 
 				{{#if inContext}}
+					{{#if ../prefix}} <@{{../prefix}}> {{/if}}*{{toLowerCase @key}}* 
 					{{#if upperLimit}}
 						{{lowerLimit}} to {{{upperLimit}}} 
 					{{/if}}
-					{{#if sampleParams}}
-						{{joinArray sampleParams seperator=" "}} \n
+					{{#if paramsHelpMessage}}
+						{{#each paramsHelpMessage}}
+							{{toLowerCase sample}} 
+						{{/each}}\n
+						Usage: {{toLowerCase @key}} 
+						{{#each paramsHelpMessage}}
+							{{toLowerCase recommend}} 
+						{{/each}}\n
+					{{else}}
+						{{#if allowedParam}}
+							{{#each allowedParam}}
+								{{#if ../mParams}}
+									[ {{joinArray this seperator=" | "}} ] {{#if @last}} {{else}}  {{/if}}
+								{{else}}
+									{{toLowerCase .}}{{#if @last}} {{else}} | {{/if}} 
+								{{/if}}
+							{{/each}}\n
+						{{/if}}
 					{{/if}}
 					{{#if failedParams}}
 						{{#each failedParams}}
 							 - {{toLowerCase error}} \n
 						{{/each}}
-					{{else}}
 						{{#if recommend}}
-							{{#each recommend}}
-									{{toLowerCase .}}{{#if @last}} {{else}} {{/if}} 
-							{{/each}}\n
-						{{else}}
-							{{#if allowedParam}}
-								{{#each allowedParam}}
-									{{#if ../mParams}}
-										[ {{joinArray this seperator=" | "}} ] {{#if @last}} {{else}}  {{/if}}
-									{{else}}
-										{{toLowerCase .}}{{#if @last}} {{else}} | {{/if}} 
-									{{/if}}
-								{{/each}}\n
-							{{/if}}
+							`{{#if ../prefix}} <@{{../prefix}}> {{/if}}{{toLowerCase @key}}
+							{{#if sampleParams}}
+								 {{joinArray sampleParams seperator=" "}}
+							{{/if}}` should work! \n
 						{{/if}}
-					{{/if}}
-				{{/if}}
-				{{#if aLimit }}
-				 - _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{toLowerCase name}} {{{toLowerCase aLimit}}}_
-				{{/if}}
-				{{#if alertContext}}
-				 Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup <threshold> \n
-				{{/if}}
-				{{#if aParams}}
-					- _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{toLowerCase name}} 
-					{{#if mParams}}
-							{{#each aParams}}
-								{{toLowerCase .}} 
+					{{/if}}\n
+				{{else}}
+					{{#if errorContext}}
+						{{#if upperLimit}}
+							{{lowerLimit}} to {{{upperLimit}}} 
+						{{/if}}
+						{{#if failedParams}}
+							{{#each failedParams}}
+								 - {{toLowerCase error}} \n
 							{{/each}}
-							_
+						{{else}}
+							{{#if recommend}}
+								`{{#if ../prefix}} <@{{../prefix}}>{{/if}} {{toLowerCase @key}} 
+								{{#each recommend}}
+									{{toLowerCase .}}{{#if @last}} {{else}} {{/if}} 
+								{{/each}}`\n
+							{{else}}
+								{{#if allowedParam}}
+									{{#each allowedParam}}
+										{{#if ../mParams}}
+											[ {{joinArray this seperator=" | "}} ] {{#if @last}} {{else}}  {{/if}}
+										{{else}}
+											{{toLowerCase .}}{{#if @last}} {{else}} | {{/if}} 
+										{{/if}}
+									{{/each}}\n
+								{{/if}}
+							{{/if}}
+						{{/if}}\n
 					{{else}}
-						{{toLowerCase aParams}}_
+						{{#if ../prefix}} <@{{../prefix}}> {{/if}}*{{toLowerCase @key}}* 
+						{{#if aLimit }}
+						 - _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{toLowerCase name}} {{{toLowerCase aLimit}}}_ \n
+						{{/if}}
+						{{#if alertContext}}
+						 - _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup <threshold>_ \n
+						{{/if}}
+						{{#if aParams}}
+							- _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{toLowerCase name}} 
+							{{#if mParams}}
+									{{#each aParams}}
+										{{toLowerCase .}} 
+									{{/each}}
+							{{else}}
+								{{toLowerCase aParams}}
+							{{/if}}_ \n
+						{{/if}}\n
 					{{/if}}
-				{{/if}}\n
+				{{/if}}
 				{{#if helpText}}
 					{{{helpText}}} \n
-				{{/if}}
+				{{/if}}\n
 			{{/each}}\n
 		{{/if}}
 	{{/if}}
-	{{/if}}
+{{/if}}

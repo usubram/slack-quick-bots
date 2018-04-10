@@ -20,13 +20,15 @@ const config = {
     botCommand: {
       log: {
         commandType: 'DATA',
-        allowedParam: [[1, 2], ['hello', 'dear']],     // array of array
-        // allowedParam: [/(\d{8,11})/, /(\d{8,11})/], // regex
+        // allowedParam: [[1, 2], ['hello', 'dear']],     // array of array
+        allowedParam: [/(\d{8,11})/, /(\d{8,11})/], // regex
         defaultParamValue: [1, 'hello'],
         paramsHelpMessage: [{
+          sample: '{firstArg}',
           recommend: '2',
           error: '{{arg}} is incorrect',
         }, {
+          sample: '{secondArg}',
           recommend: 'hello',
           error: '{{arg}} is incorrect',
         }],
@@ -108,7 +110,6 @@ const config = {
       },
       file: {
         commandType: 'DATA',
-        allowedParam: ['*'],
         helpText: '    → this a alert command \\n',
         data: function (input, options, callback) {
           callback(null, {
