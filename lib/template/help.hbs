@@ -7,7 +7,7 @@
 ```
 	List of scheduled commands\n
 	{{#each scheduledEvents}}
-		• Scheduled by <@{{user}}> in 
+		• Scheduled by <@{{user}}> in
 			{{#if private}}
 				this channel\n
 			{{else}}
@@ -30,7 +30,7 @@
 ```
 	List of {{commandName}} commands\n
 	{{#each alertEvents}}
-		• Run by <@{{user}}> in 
+		• Run by <@{{user}}> in
 			{{#if private}}
 				this channel\n
 			{{else}}
@@ -50,7 +50,7 @@
 {{/if}}
 {{#if recursiveStop}}
 ```
-	I got it. I won't be sending you messages any more. 
+	I got it. I won't be sending you messages any more.
 	{{#if isNotSameUser}}
 		You stopped a schedule run by <@{{owner}}>
 	{{/if}}
@@ -63,7 +63,7 @@
 {{/if}}
 {{#if scheduleSuccess}}
 ```
-	Ok. I will start sending you messages as commanded. 
+	Ok. I will start sending you messages as commanded.
 	{{#if nextEvent}}
 		I will send the next message around {{nextEvent}} \n
 	{{/if}}

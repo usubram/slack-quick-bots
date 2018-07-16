@@ -52,7 +52,7 @@ describe('SlackBot test', function () {
         testBots.start().then((botEvt) => {
           botEvt[0].on('connect', () => {
             botEvt[0].injectMessage({
-              text: 'ping 1',
+              text: 'ping',
               channel: 'D1234567',
             });
           });

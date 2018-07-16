@@ -15,94 +15,89 @@
 			{{/each}}
 		{{else}}
 			Howdy! here is some help:- \n\n
+			{{#unless contextBool}}
+				 Need help for a particular command? try `{commandName} help` \n
+			{{/unless}}
 			{{#each command}}
-				{{#if failedParams}}
-					I found {{noOfErrors}} {{toPlural len=noOfErrors word="issue"}} in your request. \n
-				{{/if}}
 				{{#if inContext}}
-					{{#if ../prefix}} <@{{../prefix}}> {{/if}}*{{toLowerCase @key}}* 
-					{{#if upperLimit}}
-						{{lowerLimit}} to {{{upperLimit}}} 
+					{{#if descriptionText}}
+						 *{{toLowerCase @key}}* - _{{descriptionText}}_ \n
+					{{else}}\n
 					{{/if}}
-					{{#if paramsHelpMessage}}
-						{{#each paramsHelpMessage}}
-							{{toLowerCase sample}} 
-						{{/each}}\n
-						Usage: {{toLowerCase @key}} 
-						{{#each paramsHelpMessage}}
-							{{toLowerCase recommend}} 
-						{{/each}}\n
-					{{else}}
-						{{#if allowedParam}}
-							{{#each allowedParam}}
-								{{#if ../mParams}}
-									[ {{joinArray this seperator=" | "}} ] {{#if @last}} {{else}}  {{/if}}
-								{{else}}
-									{{toLowerCase .}}{{#if @last}} {{else}} | {{/if}} 
-								{{/if}}
+					{{#if validation}}
+						{{{indent len=6}}}■ Format: \n
+							{{#each validation}}
+								{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
+								{{#each help}}
+								  {{sample}}
+								{{/each}}_{{#if @last}}{{else}}\n{{{indent len=6}}}or{{/if}}\n
 							{{/each}}\n
-						{{/if}}
-					{{/if}}
-					{{#if failedParams}}
-						{{#each failedParams}}
-							 - {{toLowerCase error}} \n
+						{{{indent len=6}}}■ Usage: \n
+						{{#each validation}}
+							{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
+							{{#each help}}
+							   {{joinArray recommend separator=" | " prefix="{" suffix="}"}}
+							{{/each}}_ {{#if @last}} {{else}}\n{{{indent len=6}}}or{{/if}}\n
 						{{/each}}
-						{{#if recommend}}
-							`{{#if ../prefix}} <@{{../prefix}}> {{/if}}{{toLowerCase @key}}
-							{{#if sampleParams}}
-								 {{joinArray sampleParams seperator=" "}}
-							{{/if}}` should work! \n
-						{{/if}}
-					{{/if}}\n
+					{{/if}}
 				{{else}}
 					{{#if errorContext}}
-						{{#if upperLimit}}
-							{{lowerLimit}} to {{{upperLimit}}} 
-						{{/if}}
 						{{#if failedParams}}
+							I found {{noOfErrors}} {{toPlural len=noOfErrors word="issue"}} in your request. \n
 							{{#each failedParams}}
-								 - {{toLowerCase error}} \n
-							{{/each}}
-						{{else}}
-							{{#if recommend}}
-								`{{#if ../prefix}} <@{{../prefix}}>{{/if}} {{toLowerCase @key}} 
-								{{#each recommend}}
-									{{toLowerCase .}}{{#if @last}} {{else}} {{/if}} 
-								{{/each}}`\n
-							{{else}}
-								{{#if allowedParam}}
-									{{#each allowedParam}}
-										{{#if ../mParams}}
-											[ {{joinArray this seperator=" | "}} ] {{#if @last}} {{else}}  {{/if}}
-										{{else}}
-											{{toLowerCase .}}{{#if @last}} {{else}} | {{/if}} 
-										{{/if}}
-									{{/each}}\n
+								{{#if recommend}}
+									 {{recommend}}
+								{{else}}
+									- {{toLowerCase error}} \n
 								{{/if}}
-							{{/if}}
+							{{/each}}
 						{{/if}}\n
+						{{#if validation}}
+						{{{indent len=6}}}■ Format: \n
+							{{#each validation}}
+								{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
+								{{#each help}}
+								  {{sample}}
+								{{/each}}_{{#if @last}}{{else}}\n{{{indent len=6}}}or{{/if}}\n
+							{{/each}}\n
+						{{/if}}
 					{{else}}
-						{{#if ../prefix}} <@{{../prefix}}> {{/if}}*{{toLowerCase @key}}* 
-						{{#if aLimit }}
-						 - _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{toLowerCase name}} {{{toLowerCase aLimit}}}_ \n
+						{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @key}}*
+						{{#if descriptionText}}
+							 - _{{descriptionText}}_ \n\n
+						{{else}}\n
 						{{/if}}
 						{{#if alertContext}}
-						 - _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup <threshold>_ \n
+							■ Usage:\n _{{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup <threshold>_ \n
 						{{/if}}
-						{{#if aParams}}
-							- _Usage: {{#if ../prefix}}<@{{../prefix}}>{{/if}} {{toLowerCase name}} 
-							{{#if mParams}}
-									{{#each aParams}}
-										{{toLowerCase .}} 
-									{{/each}}
-							{{else}}
-								{{toLowerCase aParams}}
-							{{/if}}_ \n
-						{{/if}}\n
+						{{#if validation}}
+							{{#each validation}}
+								{{#if help}}
+									{{#if @first}}
+										{{{indent len=6}}}■ Format:\n
+									{{/if}}
+									{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
+									{{#each help}}
+										{{{indent len=2}}}{{sample}}
+									{{/each}}_ {{#if @last}}\n{{else}}\n{{{indent len=6}}}or\n{{/if}}
+								{{/if}}
+							{{/each}}
+							{{#each validation}}
+								{{#if help}}
+									{{#if @first}}
+										{{{indent len=6}}}■ Usage:\n
+									{{/if}}
+										{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
+									{{#each help}}
+										 {{joinArray recommend separator=" | " prefix="{" suffix="}"}}
+									{{/each}}_ {{#if @last}} {{else}}\n{{{indent len=6}}}or\n{{/if}}
+								{{/if}}
+							{{/each}}
+						{{/if}}
 					{{/if}}
 				{{/if}}
-				{{#if helpText}}
-					{{{helpText}}} \n
+				{{#if helpText}}\n\n
+					_{{{helpText}}}_ \n
 				{{/if}}\n
 			{{/each}}\n
 		{{/if}}
