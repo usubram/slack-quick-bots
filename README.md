@@ -13,15 +13,14 @@ const coolBot = new SlackBot({
 coolBot.start();
 ```
 
-## Simple bots
-[Sample bot](https://github.com/usubram/slack-quick-bots-reference)
-Clone and get started!!
+## Simple bot
+Clone and get started!! [Sample bot](https://github.com/usubram/slack-quick-bots-reference)
 
 [Pagerduty bot](https://github.com/usubram/pagerdutybot)
 
 ## Config schema
 
-slack-quick-bots uses handlebars template as a view layer for all bot messages. When `callback` with called with `data` it is rendered against the template. [Templates](https://github.com/usubram/slack-quick-bots-reference/blob/master/template/sample_tmpl.hbs) are like html and the data is inject into the template before it is sent to slack.
+slack-quick-bots uses handlebars template as view layer for all bot output messages. When `callback` with called with `data` it is rendered against the template. [Templates](https://github.com/usubram/slack-quick-bots-reference/blob/master/template/sample_tmpl.hbs) are like html. Data is injected into the template before sent to slack.
 
 ```javascript
 {
@@ -49,7 +48,7 @@ slack-quick-bots uses handlebars template as a view layer for all bot messages. 
 
 ## Command format
 
-In channel @botname {command} ['params1', 'params2']
+In channel @botname {command} {params1} {params2}
 
 ```
 @newbot firstCommand param1 params2
@@ -75,7 +74,7 @@ Use to stop a schedule command. A stop is automatically added to the command lis
 
 ```
 stop firstCommand // if firstCommand is a RECURSIVE command.
-stop schedule firstCommand // to stop schedule command.
+stop schedule scheduleId // to stop schedule command.
 ```
 
 ## Command type
@@ -86,7 +85,7 @@ stop schedule firstCommand // to stop schedule command.
 
 ## [Response type](https://github.com/usubram/slack-quick-bots-reference/blob/master/index.js#L100)
 
-Library support wide range of response type. You can stream file of any type for a DATA command. The below sample is to generate a graph in realtime. Make sure you have gnuplot for graph.
+Library support wide range of response type. You can stream file of any type for a DATA command. The below sample is to generate a graph in realtime. Make sure you have [gnuplot](http://www.gnuplot.info/download.html) for graphs for time series data.
 
 ```javascript
 responseType: {
@@ -104,9 +103,37 @@ responseType: {
 ## Input validation
 
 ```javascript
-  allowedParam: ['param1', 'param2'], // array of inputs to accept.
-  lowerLimit: 0,
-  upperLimit: 100,
+  validation: [{
+    schema: [1, 1],
+    default: [1, 1],
+    help: [{
+      sample: '{firstArg}',
+      recommend: '1',
+      error: '{{arg}} is incorrect',
+    }, {
+      sample: '{secondArg}',
+      recommend: '1',
+      error: '{{arg}} is incorrect',
+    }],
+  }],
+```
+
+### Supports regex
+
+```javascript
+  validation: [{
+    schema: [/^(?:[1-9]\d?|100)$/, 1],
+    default: [1, 1],
+    help: [{
+      sample: '{firstArg}',
+      recommend: '1',
+      error: '{{arg}} is incorrect',
+    }, {
+      sample: '{secondArg}',
+      recommend: '1',
+      error: '{{arg}} is incorrect',
+    }],
+  }],
 ```
 
 ## [Custom webhooks](https://github.com/usubram/slack-quick-bots-reference/blob/master/index.js#L139-L145)

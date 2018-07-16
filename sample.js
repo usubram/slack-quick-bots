@@ -20,19 +20,61 @@ const config = {
     botCommand: {
       log: {
         commandType: 'DATA',
-        // allowedParam: [[1, 2], ['hello', 'dear']],     // array of array
-        allowedParam: [/(\d{8,11})/, /(\d{8,11})/], // regex
-        defaultParamValue: [1, 'hello'],
-        paramsHelpMessage: [{
-          sample: '{firstArg}',
-          recommend: '2',
-          error: '{{arg}} is incorrect',
-        }, {
-          sample: '{secondArg}',
-          recommend: 'hello',
-          error: '{{arg}} is incorrect',
+        validation: [{
+          schema: [1, 1],
+          default: [1, 1],
+          help: [{
+            sample: '{firstArg}',
+            recommend: '1',
+            error: '{{arg}} is incorrect',
+          }, {
+            sample: '{secondArg}',
+            recommend: '1',
+            error: '{{arg}} is incorrect',
+          }],
         }],
-        helpText: '    → this is log command \\n',
+        descriptionText: 'Command to show log metrics',
+        helpText: '☞ this is log command',
+        template: sampleTemplate,
+        data: function (input, options, callback) {
+          // input.command - for command name.
+          // input.params - for params in array.
+          // options.user.profile.email - email in slack.
+          // options.hookUrl - custom webhook url.
+          // options.channel - channel from which the command was fired.
+          callback(null, {
+            param: input.params + ' log',
+          });
+        },
+      },
+      logme: {
+        commandType: 'DATA',
+        validation: [{
+          schema: [/[1]/, /[1]/],
+          default: [1, 1],
+          help: [{
+            sample: '{firstArg}',
+            recommend: '1',
+            error: '{{arg}} is incorrect',
+          }, {
+            sample: '{secondArg}',
+            recommend: '1',
+            error: '{{arg}} is incorrect',
+          }],
+        }, {
+          schema: [/[2]/, /[2]/],
+          default: [2],
+          help: [{
+            sample: '{firstArg}',
+            recommend: ['2', '2'],
+            error: '{{arg}} is incorrect',
+          }, {
+            sample: '{secondArg}',
+            recommend: '2',
+            error: '{{arg}} is incorrect',
+          }],
+        }],
+        helpText: '☞ this is log command',
         template: sampleTemplate,
         data: function (input, options, callback) {
           // input.command - for command name.
@@ -58,9 +100,20 @@ const config = {
             encoding: 'utf16',
           },
         },
-        allowedParam: [1, 2],
-        defaultParamValue: 1,
-        helpText: '    → this is trend command \\n',
+        validation: [{
+          schema: [1, 2],
+          default: [1, 2],
+          help: [{
+            sample: '{firstArg}',
+            recommend: '1',
+            error: '{{arg}} is incorrect',
+          }, {
+            sample: '{secondArg}',
+            recommend: '1',
+            error: '{{arg}} is incorrect',
+          }],
+        }],
+        helpText: '☞ this is trend command',
         data: function (input, options, callback) {
           const dataArr = [ // Sample data
             [100, 120, 130, 110, 123, 90],
@@ -78,10 +131,20 @@ const config = {
       },
       error: {
         commandType: 'RECURSIVE',
-        lowerLimit: 1,
-        upperLimit: 100,
-        defaultParamValue: 1,
-        helpText: '    → this is error command \\n',
+        validation: [{
+          schema: [/^(?:[1-9]\d?|100)$/],
+          default: [1],
+          help: [{
+            sample: '{firstArg}',
+            recommend: '1',
+            error: '{{arg}} is incorrect',
+          }, {
+            sample: '{secondArg}',
+            recommend: '1',
+            error: '{{arg}} is incorrect',
+          }],
+        }],
+        helpText: '☞ this is error command',
         template: sampleTemplate,
         data: function (input, options, callback) {
           callback(null, {
@@ -92,7 +155,7 @@ const config = {
       alert: {
         commandType: 'ALERT',
         timeInterval: 1,
-        helpText: '    → this a alert command \\n',
+        helpText: '    → this a alert command',
         algo: 'CUMULATIVE_DIFFERENCE',
         data: function (input, options, callback) {
           const dataArr = [ // Sample data
@@ -110,7 +173,7 @@ const config = {
       },
       file: {
         commandType: 'DATA',
-        helpText: '    → this a alert command \\n',
+        helpText: '☞ this a file post command',
         data: function (input, options, callback) {
           callback(null, {
             responseType: {
@@ -132,7 +195,7 @@ const config = {
         limit: 1000,
       },
       channel: {
-        exclude: false,
+        exclude: true,
       },
     },
     mock: {

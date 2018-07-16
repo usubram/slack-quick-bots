@@ -10,8 +10,14 @@ exports = module.exports = {
       botCommand: {
         PING: {
           commandType: 'DATA',
-          allowedParam: [1, 2],
-          defaultParamValue: 1,
+          validation: [{
+            schema: [[1, 2]],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
@@ -21,19 +27,20 @@ exports = module.exports = {
         },
         AUTO: {
           commandType: 'RECURSIVE',
-          lowerLimit: 0,
-          upperLimit: 100,
-          defaultParamValue: 1,
+          validation: [{
+            schema: [/^(?:[1-9]\d?|100)$/],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
               'param': input.params,
             });
           },
-        },
-        STOP: {
-          commandType: 'KILL',
-          parentTask: 'AUTO',
         },
       },
       mock: {
@@ -55,8 +62,14 @@ exports = module.exports = {
       botCommand: {
         PING: {
           commandType: 'DATA',
-          allowedParam: [1, 2],
-          defaultParamValue: 1,
+          validation: [{
+            schema: [[1, 2]],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
@@ -66,19 +79,20 @@ exports = module.exports = {
         },
         AUTO: {
           commandType: 'RECURSIVE',
-          lowerLimit: 0,
-          upperLimit: 100,
-          defaultParamValue: 1,
+          validation: [{
+            schema: [/^(?:[1-9]\d?|100)$/],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
               'param': input.params,
             });
           },
-        },
-        STOP: {
-          commandType: 'KILL',
-          parentTask: 'AUTO',
         },
       },
       mock: {
@@ -92,8 +106,14 @@ exports = module.exports = {
       botCommand: {
         PING: {
           commandType: 'DATA',
-          allowedParam: [1, 2],
-          defaultParamValue: 1,
+          validation: [{
+            schema: [[1, 2]],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
@@ -103,19 +123,20 @@ exports = module.exports = {
         },
         AUTO: {
           commandType: 'RECURSIVE',
-          lowerLimit: 0,
-          upperLimit: 100,
-          defaultParamValue: 1,
+          validation: [{
+            schema: [/^(?:[1-9]\d?|100)$/],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
               'param': input.params,
             });
           },
-        },
-        STOP: {
-          commandType: 'KILL',
-          parentTask: 'AUTO',
         },
       },
       mock: {
@@ -132,8 +153,14 @@ exports = module.exports = {
       botCommand: {
         'PING-ME': {
           commandType: 'DATA',
-          allowedParam: [1, 2],
-          defaultParamValue: 1,
+          validation: [{
+            schema: [[1, 2]],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
@@ -150,8 +177,14 @@ exports = module.exports = {
       botCommand: {
         'PING-ME': {
           commandType: 'DATA',
-          allowedParam: [1, 2],
-          defaultParamValue: 1,
+          validation: [{
+            schema: [[1, 2]],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
@@ -161,19 +194,20 @@ exports = module.exports = {
         },
         'auto data': {
           commandType: 'RECURSIVE',
-          lowerLimit: 0,
-          upperLimit: 100,
-          defaultParamValue: 1,
+          validation: [{
+            schema: [/^(?:[1-9]\d?|100)$/],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
               'param': input.params,
             });
           },
-        },
-        STOP: { // eslint-disable-line
-          commandType: 'KILL',
-          parentTask: 'auto data',
         },
       },
       botToken: 'xoxb-16681282704-dYYl7qESWogOUbzdJdqwK5gS',
@@ -184,8 +218,14 @@ exports = module.exports = {
       botCommand: {
         PING: {
           commandType: 'DATA',
-          allowedParam: [1, 2],
-          defaultParamValue: 1,
+          validation: [{
+            schema: [[1, 2]],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
@@ -195,8 +235,17 @@ exports = module.exports = {
         },
         PINGSIM: {
           commandType: 'DATA',
-          allowedParam: [[1, 2], [3, 4]],
-          defaultParamValue: 1,
+          validation: [{
+            schema: [[1, 2], [3, 4]],
+            default: [1, 3],
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }, {
+              recommend: '3',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
@@ -206,15 +255,37 @@ exports = module.exports = {
         },
         PINGARG: {
           commandType: 'DATA',
-          allowedParam: [[1, 2], [3, 4]],
-          paramsHelpMessage: [{
-            recommend: '1',
-            error: '{{arg}} is incorrect',
+          validation: [{
+            schema: [[4, 5], [6, 7]],
+            default: [4, 6],
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }, {
+              recommend: '3',
+              error: '{{arg}} is incorrect',
+            }],
           }, {
-            recommend: '3',
-            error: '{{arg}} is incorrect',
+            schema: [[4, 5], [3, 7]],
+            default: [4, 6],
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }, {
+              recommend: '3',
+              error: '{{arg}} is incorrect',
+            }],
+          }, {
+            schema: [[1, 2], [3, 4]],
+            default: [1, 1],
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }, {
+              recommend: '3',
+              error: '{{arg}} is incorrect',
+            }],
           }],
-          defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
@@ -224,40 +295,92 @@ exports = module.exports = {
         },
         PINGREGEX: {
           commandType: 'DATA',
-          allowedParam: [/([1-5])/, /([6-9])/],
-          paramsHelpMessage: [{
-            recommend: '1',
-            error: '{{arg}} is incorrect',
-          }, {
-            recommend: '3',
-            error: '{{arg}} is incorrect',
+          validation: [{
+            schema: [/([1-5])/, /([6-9])/],
+            default: [1, 6],
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }, {
+              recommend: '3',
+              error: '{{arg}} is incorrect',
+            }],
           }],
-          defaultParamValue: 1,
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
               'param': input.params,
+            });
+          },
+        },
+        PINGREGEXCHK: {
+          commandType: 'DATA',
+          validation: [{
+            schema: [/[1]/, /[1]/],
+            default: [1, 1],
+            help: [{
+              sample: '{firstArg}',
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }, {
+              sample: '{secondArg}',
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }, {
+            schema: [/[2]/, /[2]/],
+            default: [2, 2],
+            help: [{
+              sample: '{firstArg}',
+              recommend: '2',
+              error: '{{arg}} is incorrect',
+            }, {
+              sample: '{secondArg}',
+              recommend: '2',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
+          helpText: '    → this is log command \\n',
+          template: sampleTemplate,
+          data: function (input, options, callback) {
+            callback(null, {
+              param: input.params,
+            });
+          },
+        },
+        PINGREGEXCHK1: {
+          commandType: 'DATA',
+          validation: [{
+            schema: [/[1]/, [/(\bone)/, /(\btwo)/]],
+            default: [1, 'one'],
+            help: [{
+              sample: '{firstArg}',
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }, {
+              sample: '{secondArg}',
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
+          helpText: '    → this is log command \\n',
+          template: sampleTemplate,
+          data: function (input, options, callback) {
+            callback(null, {
+              param: input.params,
             });
           },
         },
         pingLimit: {
           commandType: 'DATA',
-          lowerLimit: 1,
-          upperLimit: 10,
-          defaultParamValue: 1,
-          template: sampleTemplate,
-          data: function (input, options, callback) {
-            callback(null, {
-              'param': input.params,
-            });
-          },
-        },
-        hybrid: {
-          commandType: 'DATA',
-          allowedParam: ['test', 'validate'],
-          lowerLimit: 1,
-          upperLimit: 10,
-          defaultParamValue: 1,
+          validation: [{
+            schema: [/^(?:[1-9]?|10)$/],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
@@ -267,19 +390,20 @@ exports = module.exports = {
         },
         AUTO: {
           commandType: 'RECURSIVE',
-          lowerLimit: 0,
-          upperLimit: 100,
-          defaultParamValue: 1,
+          validation: [{
+            schema: [/^(?:[1-9]\d?|100)$/],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
               'param': input.params,
             });
           },
-        },
-        STOP: {
-          commandType: 'KILL',
-          parentTask: 'AUTO',
         },
       },
       mock: {
@@ -296,8 +420,14 @@ exports = module.exports = {
       botCommand: {
         PING: {
           commandType: 'DATA',
-          allowedParam: [1, 2],
-          defaultParamValue: 1,
+          validation: [{
+            schema: [[1, 2]],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
@@ -307,9 +437,14 @@ exports = module.exports = {
         },
         pingLimit: {
           commandType: 'DATA',
-          lowerLimit: 1,
-          upperLimit: 10,
-          defaultParamValue: 1,
+          validation: [{
+            schema: [[1, 2]],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
@@ -319,9 +454,14 @@ exports = module.exports = {
         },
         AUTO: {
           commandType: 'RECURSIVE',
-          lowerLimit: 0,
-          upperLimit: 100,
-          defaultParamValue: 1,
+          validation: [{
+            schema: [/^(?:[1-9]\d?|100)$/],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
@@ -386,8 +526,14 @@ exports = module.exports = {
       botCommand: {
         PING: {
           commandType: 'DATA',
-          allowedParam: [1, 2],
-          defaultParamValue: 1,
+          validation: [{
+            schema: [[1, 2]],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
@@ -416,8 +562,14 @@ exports = module.exports = {
       botCommand: {
         PING: {
           commandType: 'DATA',
-          allowedParam: [1, 2],
-          defaultParamValue: 1,
+          validation: [{
+            schema: [[1, 2]],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback(null, {
@@ -446,7 +598,14 @@ exports = module.exports = {
       botCommand: {
         ALERT: {
           commandType: 'ALERT',
-          allowedParam: [1, 2],
+          validation: [{
+            schema: [[1, 2]],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           timeInterval: 1,
           template: sampleTemplate,
           algo: 'CUMULATIVE_DIFFERENCE',
@@ -477,8 +636,14 @@ exports = module.exports = {
       botCommand: {
         PING: {
           commandType: 'DATA',
-          allowedParam: [1, 2],
-          defaultParamValue: 1,
+          validation: [{
+            schema: [[1, 2]],
+            default: 1,
+            help: [{
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
           template: sampleTemplate,
           data: function (input, options, callback) {
             callback({
