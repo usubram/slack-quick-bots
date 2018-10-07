@@ -293,6 +293,55 @@ exports = module.exports = {
             });
           },
         },
+        PINGARGRECOMEND: {
+          commandType: 'DATA',
+          validation: [{
+            schema: ['first', [4, 5], [6, 7]],
+            default: ['first', 4, 6],
+            help: [{
+              recommend: 'first',
+              error: '{{arg}} is incorrect',
+            }, {
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }, {
+              recommend: '3',
+              error: '{{arg}} is incorrect',
+            }],
+          }, {
+            schema: ['second', [4, 5], [3, 7]],
+            default: ['second', 4, 6],
+            help: [{
+              recommend: 'second',
+              error: '{{arg}} is incorrect',
+            }, {
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }, {
+              recommend: '3',
+              error: '{{arg}} is incorrect',
+            }],
+          }, {
+            schema: ['third', [1, 2], [3, 4]],
+            default: ['third', 1, 3],
+            help: [{
+              recommend: 'third',
+              error: '{{arg}} is incorrect',
+            }, {
+              recommend: '1',
+              error: '{{arg}} is incorrect',
+            }, {
+              recommend: '3',
+              error: '{{arg}} is incorrect',
+            }],
+          }],
+          template: sampleTemplate,
+          data: function (input, options, callback) {
+            callback(null, {
+              'param': input.params,
+            });
+          },
+        },
         PINGREGEX: {
           commandType: 'DATA',
           validation: [{
