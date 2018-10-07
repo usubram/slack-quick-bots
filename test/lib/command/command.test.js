@@ -345,7 +345,9 @@ describe('/command', function () {
           });
         });
 
-      it('Success command vaidation for two arguments should recommend the closet one',
+      it('Success command vaidation for two arguments ' +
+        'should recommend the closet one',
+
         function (done) {
           slackMessage.text = 'pingargrecomend second 2 3';
           delete errorContext.error;
