@@ -345,6 +345,35 @@ describe('/command', function () {
           });
         });
 
+      it('Success command vaidation for two arguments should recommend the closet one',
+        function (done) {
+          slackMessage.text = 'pingargrecomend second 2 3';
+          delete errorContext.error;
+          errorContext.failedParams = [{
+            error: '2 is incorrect',
+          }];
+          errorContext.sampleParams = [1, 3];
+          errorContext.noOfErrors = 1;
+          errorContext.parsedMessage = messageParser(slackMessage);
+          const errorMessage = responseHandler.generateErrorTemplate('testbot1',
+            testBots.bots[0].config.botCommand, errorContext);
+
+          const onMessageSpy = sandbox.spy((response) => {
+            setTimeout(() => {
+              expect(response.message).to.equal(errorMessage);
+              done();
+            }, 1);
+          });
+
+          testBots.start().then((botEvt) => {
+            botEvt[0].on('message', onMessageSpy);
+
+            botEvt[0].on('connect', () => {
+              botEvt[0].injectMessage(slackMessage);
+            });
+          });
+        });
+
       it('Should show param specific error message for validation error',
         function (done) {
           slackMessage.text = 'pingarg hello 4';
