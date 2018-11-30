@@ -14,9 +14,18 @@ coolBot.start();
 ```
 
 ## Simple bot
-Clone and get started!! [Sample bot](https://github.com/usubram/slack-quick-bots-reference)
+### Step 1
+```
+git clone https://github.com/usubram/slack-quick-bots-reference.git
+npm install && node index.js <botToken> // pass your bot token.
+```
+### Step 2
+```
+No more steps. You have successfully started your bot.
+```
 
-[Pagerduty bot](https://github.com/usubram/pagerdutybot)
+### Pagerduty bot
+```[Pagerduty bot](https://github.com/usubram/pagerdutybot)```
 
 ## Config schema
 
@@ -46,35 +55,12 @@ slack-quick-bots uses handlebars template as view layer for all bot output messa
 }
 ```
 
-## Command format
-
-In channel @botname {command} {params1} {params2}
-
-```
-@newbot firstCommand param1 params2
-```
-
-DM {command} ['params1', 'params2']
-
-```
-firstCommand param1 params2
-```
-
 ### Schedule command
 
-schedule commandName [params] (* * * * *)
+```schedule commandName [params] (* * * * *)```
 
 ```
 schedule firstCommand params1 params2 (* * * * *)
-```
-
-### Stop command
-
-Use to stop a schedule command. A stop is automatically added to the command list if the bots contains `RECURSIVE`, `ALERT` or `SCHEDULE` is enabled.
-
-```
-stop firstCommand // if firstCommand is a RECURSIVE command.
-stop schedule scheduleId // to stop schedule command.
 ```
 
 ## Command type
@@ -164,7 +150,7 @@ data: function(input, options, callback) {
      bot: [{
        botCommand: {
          firstCommand: {
-           allowedUsers: ['slackUsername'] // firstCommand work only for slack user with id 'slackUsername'.
+           allowedUsers: ['slackUserId'] // firstCommand work only for slack user with id 'slackUserId'.
          }
        }
      }],
@@ -196,7 +182,7 @@ data: function(input, options, callback) {
 ```
 
 ## License
-Copyright (c) 2017 Umashankar Subramanian  
+Copyright (c) 2018 Umashankar Subramanian  
 Licensed under the MIT license.
 
 [npm-badge]: https://badge.fury.io/js/slack-quick-bots.svg
