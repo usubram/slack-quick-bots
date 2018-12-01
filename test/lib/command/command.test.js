@@ -58,7 +58,7 @@ describe('/command', function () {
   };
 
   beforeEach(function () {
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
     sandbox.stub(storage, 'updateEvents').callsFake(() => {
       return Promise.resolve({});
     });
@@ -227,71 +227,69 @@ describe('/command', function () {
 
       it('command vaidation correct for two regex arguments' +
         'nested array schema should succeed',
-        function (done) {
-          slackMessage.text = 'pingregexchk1 1 one';
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal('Hello 1,one');
-              done();
-            }, 1);
-          });
-
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
-          });
+      function (done) {
+        slackMessage.text = 'pingregexchk1 1 one';
+        const onMessageSpy = sandbox.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal('Hello 1,one');
+            done();
+          }, 1);
         });
 
-      it('command vaidation message for general help',
-        function (done) {
-          slackMessage.text = 'help';
-          delete errorContext.error;
-          errorContext.parsedMessage = messageParser(slackMessage);
-          const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-            testBots.bots[0].config.botCommand, errorContext);
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
 
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal(errorMessage);
-              done();
-            }, 1);
-          });
-
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
           });
         });
+      });
 
-      it('command vaidation message for context help',
-        function (done) {
-          slackMessage.text = 'pingregexchk help';
-          delete errorContext.error;
-          errorContext.parsedMessage = messageParser(slackMessage);
-          const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-            testBots.bots[0].config.botCommand, errorContext);
+      it('command vaidation message for general help', function (done) {
+        slackMessage.text = 'help';
+        delete errorContext.error;
+        errorContext.parsedMessage = messageParser(slackMessage);
+        const errorMessage = responseHandler.generateErrorTemplate('testbot1',
+          testBots.bots[0].config.botCommand, errorContext);
 
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal(errorMessage);
-              done();
-            }, 1);
-          });
+        const onMessageSpy = sandbox.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal(errorMessage);
+            done();
+          }, 1);
+        });
 
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
 
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
           });
         });
+      });
+
+      it('command vaidation message for context help', function (done) {
+        slackMessage.text = 'pingregexchk help';
+        delete errorContext.error;
+        errorContext.parsedMessage = messageParser(slackMessage);
+        const errorMessage = responseHandler.generateErrorTemplate('testbot1',
+          testBots.bots[0].config.botCommand, errorContext);
+
+        const onMessageSpy = sandbox.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal(errorMessage);
+            done();
+          }, 1);
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      });
 
       it('command vaidation for two regex args should fail with error',
         function (done) {
@@ -347,34 +345,33 @@ describe('/command', function () {
 
       it('Success command vaidation for two arguments ' +
         'should recommend the closet one',
+      function (done) {
+        slackMessage.text = 'pingargrecomend second 2 3';
+        delete errorContext.error;
+        errorContext.failedParams = [{
+          error: '2 is incorrect',
+        }];
+        errorContext.sampleParams = [1, 3];
+        errorContext.noOfErrors = 1;
+        errorContext.parsedMessage = messageParser(slackMessage);
+        const errorMessage = responseHandler.generateErrorTemplate('testbot1',
+          testBots.bots[0].config.botCommand, errorContext);
 
-        function (done) {
-          slackMessage.text = 'pingargrecomend second 2 3';
-          delete errorContext.error;
-          errorContext.failedParams = [{
-            error: '2 is incorrect',
-          }];
-          errorContext.sampleParams = [1, 3];
-          errorContext.noOfErrors = 1;
-          errorContext.parsedMessage = messageParser(slackMessage);
-          const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-            testBots.bots[0].config.botCommand, errorContext);
+        const onMessageSpy = sandbox.spy((response) => {
+          setTimeout(() => {
+            expect(response.message).to.equal(errorMessage);
+            done();
+          }, 1);
+        });
 
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal(errorMessage);
-              done();
-            }, 1);
-          });
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
 
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
           });
         });
+      });
 
       it('Should show param specific error message for validation error',
         function (done) {
