@@ -140,7 +140,7 @@ describe('/command', function () {
         slackMessage.text = 'ping 3';
         delete errorContext.error;
         errorContext.noOfErrors = 1;
-        errorContext.failedParams = [{error: '3 is incorrect'}];
+        errorContext.failedParams = [{ error: '3 is incorrect' }];
         errorContext.parsedMessage = messageParser(slackMessage);
         const errorMessage = responseHandler.generateErrorTemplate('testbot1',
           testBots.bots[0].config.botCommand, errorContext);
@@ -166,7 +166,7 @@ describe('/command', function () {
           slackMessage.text = 'pingsim 3 4';
           delete errorContext.error;
           errorContext.noOfErrors = 1;
-          errorContext.failedParams = [{error: '3 is incorrect'}];
+          errorContext.failedParams = [{ error: '3 is incorrect' }];
           errorContext.parsedMessage = messageParser(slackMessage);
           const errorMessage = responseHandler.generateErrorTemplate('testbot1',
             testBots.bots[0].config.botCommand, errorContext);
@@ -753,8 +753,8 @@ describe('/command', function () {
       slackMessage.text = 'stop';
       delete errorContext.error;
       errorContext.noOfErrors = 1;
-      errorContext.failedParams = [{error: 'err!! you are missing ' +
-        'another argument'}];
+      errorContext.failedParams = [{ error: 'err!! you are missing ' +
+        'another argument' }];
       errorContext.parsedMessage = messageParser(slackMessage);
 
       const errorMessage = responseHandler.generateErrorTemplate('testbot1',
@@ -780,8 +780,8 @@ describe('/command', function () {
       slackMessage.text = 'alert';
       delete errorContext.error;
       errorContext.noOfErrors = 1;
-      errorContext.failedParams = [{error: 'err!! you are missing ' +
-        'another argument'}];
+      errorContext.failedParams = [{ error: 'err!! you are missing ' +
+        'another argument' }];
       errorContext.parsedMessage = messageParser(slackMessage);
       const errorMessage = responseHandler.generateErrorTemplate('testbot1',
         testBots.bots[0].config.botCommand, errorContext);

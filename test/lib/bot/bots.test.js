@@ -5,7 +5,7 @@ const _ = require('lodash');
 const chai = require('chai');
 const expect = chai.expect;
 const sinonChai = require('sinon-chai');
-const Bots = require('./../../../lib/bot/bots');
+const { Bots } = require('./../../../lib/bot/bots');
 const config = require('../../mock/config');
 
 chai.use(sinonChai);

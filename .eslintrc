@@ -10,6 +10,7 @@
   ],
   "rules": {
     "space-before-function-paren": ["error", "always"],
+    "object-curly-spacing": ["error", "always"],
     "quotes": ["error", "single"],
     "indent": ["error", 2],
     "no-console": 1

@@ -41,7 +41,10 @@ describe('/storage', function () {
     });
 
     it('Should update events correctly', function () {
-      return storage.updateEvents('newBot', 'events', {}).then(() => {
+      return storage.updateEvents({
+        eventType: 'events',
+        botName: 'newBot',
+      }, {}).then(() => {
         readFileStub.should.have.been.calledOnce;
       });
     });
