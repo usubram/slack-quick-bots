@@ -29,7 +29,7 @@
   ],
   "main": "./dist/index.js",
   "engines": {
-    "node": ">=4.5.0"
+    "node": ">=6.0.0"
   },
   "keywords": [
     "slack",
