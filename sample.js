@@ -155,6 +155,9 @@ const config = {
       alert: {
         commandType: 'ALERT',
         timeInterval: 1,
+        snooze: function (input, options) {
+          return false;
+        },
         helpText: '    → this a alert command',
         algo: 'CUMULATIVE_DIFFERENCE',
         data: function (input, options, callback) {

@@ -1,5 +1,6 @@
-{{#if properties}}
-   hook is there.
-  {{properties.tenantName}} changed to {{hook.properties.status}} from {{hook.properties.prevStatus}}
+{{#if hook}}
+   Data from webhook.
+  {{hook.name}}
+{{else}}
+  Hello {{param}}
 {{/if}}
-Hello {{param}}
