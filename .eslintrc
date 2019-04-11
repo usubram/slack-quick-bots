@@ -13,5 +13,8 @@
     "quotes": ["error", "single"],
     "indent": ["error", 2],
     "no-console": 1
+  },
+  "parserOptions": {
+    "ecmaVersion": 2017
   }
 }

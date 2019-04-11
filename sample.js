@@ -15,6 +15,9 @@ const moment = require('moment');
 
 const args = process.argv.slice(2);
 
+const username = args[1];
+const password = args[2];
+
 const config = {
   bots: [{
     botCommand: {
@@ -193,11 +196,22 @@ const config = {
         exclude: true,
         presence: false,
         limit: 1000,
+        info: true,
       },
       channel: {
         exclude: true,
       },
     },
+    activeDirectory: {
+      url: 'ldap://localhost',
+      baseDN: 'dc=domain,dc=com',
+      username: username,
+      password: password,
+    },
+    allowedADGroupsOnly: [
+      'some-ad-group',
+      'specific-ad-group',
+    ],
     mock: {
       self: {
         name: 'testbot1',

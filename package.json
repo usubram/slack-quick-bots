@@ -43,11 +43,12 @@
   ],
   "dependencies": {
     "@umashankar/plotter": "0.5.3",
+    "activedirectory2": "^1.2.7",
     "cron": "1.3.0",
     "form-data": "2.3.2",
-    "handlebars": "4.0.11",
+    "handlebars": "^4.1.1",
     "https-proxy-agent": "2.2.1",
-    "lodash": "4.17.5",
+    "lodash": "^4.17.11",
     "mime": "2.2.2",
     "moment": "2.22.0",
     "shortid": "2.2.8",
@@ -55,8 +56,8 @@
     "ws": "5.1.1"
   },
   "devDependencies": {
-    "babel-cli": "6.24.1",
-    "babel-core": "6.24.1",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-eslint": "7.2.3",
     "babel-loader": "7.0.0",
     "babel-preset-es2015": "6.24.1",
@@ -66,7 +67,7 @@
     "eslint-config-defaults": "9.0.0",
     "eslint-config-google": "0.7.1",
     "eslint-plugin-filenames": "1.2.0",
-    "mocha": "3.4.1",
+    "mocha": "^6.1.2",
     "sinon": "4.4.2",
     "sinon-chai": "3.0.0",
     "webpack": "2.5.1"
