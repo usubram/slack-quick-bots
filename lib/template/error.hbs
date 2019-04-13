@@ -7,11 +7,11 @@
 		*Invalid schedule command*.\n Make sure to send something like `schedule commandName (*/15 * * * *).`\n
 		The above example schedules _commandName_ every 15 minutes.
 	{{else}}
-    {{#if notInGroup}}
-        *Attention!!* \n
-        You're not an authorized user, please request access to at least one of these groups.\n
-        ```{{#each groups}}{{this}}\n{{/each}}```
-    {{else}}
+	{{#if notInGroup}}
+		*Attention!!* \n
+		You're not an authorized user, please request access to at least one of these groups.\n
+		```{{#each groups}}{{this}}\n{{/each}}```
+	{{else}}
 		{{#if restrictedUser}}
 			*Attention!!* \n
 			I'm configured to only respond to\n
@@ -106,6 +106,6 @@
 				{{/if}}\n
 			{{/each}}\n
 		{{/if}}
-    {{/if}}
+	{{/if}}
 	{{/if}}
 {{/if}}
