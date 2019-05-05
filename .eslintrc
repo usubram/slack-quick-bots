@@ -2,17 +2,18 @@
   "env": {
     "es6": true,
     "node": true,
-    "mocha": true,
+    "mocha": true
   },
   "extends": [
     "eslint:recommended",
-    "google",
+    "google"
   ],
   "rules": {
     "space-before-function-paren": ["error", "always"],
     "object-curly-spacing": ["error", "always"],
     "quotes": ["error", "single"],
     "indent": ["error", 2],
-    "no-console": 1
+    "no-console": 1,
+    "prefer-promise-reject-errors": 0
   }
 }

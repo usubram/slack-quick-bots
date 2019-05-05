@@ -12,3 +12,4 @@ log/.*
 /coverage
 /data/*.*
 /dist
+package-lock.json
