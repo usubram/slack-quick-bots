@@ -519,6 +519,63 @@ describe('/command', function () {
     });
   });
 
+  describe('isAllowedChannel', function () {
+    beforeEach(function () {
+      initTestSetup({
+        config: config.isAllowedChannel,
+        slackMessage: {
+          text: 'ping 1',
+          channel: 'D0GL06JD7',
+          user: 'U0GG92T46',
+        },
+      });
+    });
+
+    it('Should block message for not allowed channels', function (done) {
+      delete errorContext.error;
+      errorContext.restrictedChannel = true;
+      errorContext.parsedMessage = messageParser(slackMessage);
+      errorContext.users = testBots.bots[0].config.allowedUsers;
+      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
+        testBots.bots[0].config.botCommand, errorContext);
+
+      const onMessageSpy = sandbox.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal(errorMessage);
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
+    });
+
+    it('Should not block message for allowed channels', function (done) {
+      slackMessage.channel = 'C0GG92T45';
+      slackMessage.text = '<@U1234567> ping 1';
+
+      const onMessageSpy = sandbox.spy((response) => {
+        setTimeout(() => {
+          expect(response.message).to.equal('Hello 1');
+          done();
+        }, 1);
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
+    });
+  });
+
   describe('blockDirectMessage', function () {
     beforeEach(function () {
       initTestSetup({

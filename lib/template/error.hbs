@@ -7,99 +7,104 @@
 		*Invalid schedule command*.\n Make sure to send something like `schedule commandName (*/15 * * * *).`\n
 		The above example schedules _commandName_ every 15 minutes.
 	{{else}}
-		{{#if restrictedUser}}
+		{{#if restrictedChannel}}
 			*Attention!!* \n
-			I'm configured to only respond to\n
-			{{#each users}}
-				<@{{this}}>\n
-			{{/each}}
+			I'm not allowed to work in this channel. Ask the bot owner for help.\n
 		{{else}}
-			Howdy! here is some help:- \n\n
-			{{#unless contextBool}}
-				 Need help for a particular command? try `{commandName} help` \n
-			{{/unless}}
-			{{#each command}}
-				{{#if inContext}}
-					{{#if descriptionText}}
-						 *{{toLowerCase @key}}* - _{{descriptionText}}_ \n
-					{{else}}\n
-					{{/if}}
-					{{#if validation}}
-						{{{indent len=6}}}■ Format: \n
-							{{#each validation}}
-								{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
-								{{#each help}}
-								  {{sample}}
-								{{/each}}_{{#if @last}}{{else}}\n{{{indent len=6}}}or{{/if}}\n
-							{{/each}}\n
-						{{{indent len=6}}}■ Usage: \n
-						{{#each validation}}
-							{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
-							{{#each help}}
-							   {{joinArray recommend separator=" | " prefix="{" suffix="}"}}
-							{{/each}}_ {{#if @last}} {{else}}\n{{{indent len=6}}}or{{/if}}\n
-						{{/each}}
-					{{/if}}
-				{{else}}
-					{{#if errorContext}}
-						{{#if failedParams}}
-							I found {{noOfErrors}} {{toPlural len=noOfErrors word="issue"}} in your request. \n
-							{{#each failedParams}}
-								{{#if recommend}}
-									 {{recommend}}
-								{{else}}
-									- {{toLowerCase error}} \n
-								{{/if}}
-							{{/each}}
-						{{/if}}\n
-						{{#if validation}}
-						{{{indent len=6}}}■ Format: \n
-							{{#each validation}}
-								{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
-								{{#each help}}
-								  {{sample}}
-								{{/each}}_{{#if @last}}{{else}}\n{{{indent len=6}}}or{{/if}}\n
-							{{/each}}\n
-						{{/if}}
-					{{else}}
-						{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @key}}*
+			{{#if restrictedUser}}
+				*Attention!!* \n
+				I'm configured to only respond to\n
+				{{#each users}}
+					<@{{this}}>\n
+				{{/each}}
+			{{else}}
+				Howdy! here is some help:- \n\n
+				{{#unless contextBool}}
+					Need help for a particular command? try `{commandName} help` \n
+				{{/unless}}
+				{{#each command}}
+					{{#if inContext}}
 						{{#if descriptionText}}
-							 - _{{descriptionText}}_ \n\n
+							*{{toLowerCase @key}}* - _{{descriptionText}}_ \n
 						{{else}}\n
 						{{/if}}
-						{{#if alertContext}}
-							■ Usage:\n _{{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup <threshold>_ \n
-						{{/if}}
 						{{#if validation}}
-							{{#each validation}}
-								{{#if help}}
-									{{#if @first}}
-										{{{indent len=6}}}■ Format:\n
-									{{/if}}
+							{{{indent len=6}}}■ Format: \n
+								{{#each validation}}
 									{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
 									{{#each help}}
-										{{{indent len=2}}}{{sample}}
-									{{/each}}_ {{#if @last}}\n{{else}}\n{{{indent len=6}}}or\n{{/if}}
-								{{/if}}
-							{{/each}}
+									{{sample}}
+									{{/each}}_{{#if @last}}{{else}}\n{{{indent len=6}}}or{{/if}}\n
+								{{/each}}\n
+							{{{indent len=6}}}■ Usage: \n
 							{{#each validation}}
-								{{#if help}}
-									{{#if @first}}
-										{{{indent len=6}}}■ Usage:\n
-									{{/if}}
-										{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
-									{{#each help}}
-										 {{joinArray recommend separator=" | " prefix="{" suffix="}"}}
-									{{/each}}_ {{#if @last}} {{else}}\n{{{indent len=6}}}or\n{{/if}}
-								{{/if}}
+								{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
+								{{#each help}}
+								{{joinArray recommend separator=" | " prefix="{" suffix="}"}}
+								{{/each}}_ {{#if @last}} {{else}}\n{{{indent len=6}}}or{{/if}}\n
 							{{/each}}
 						{{/if}}
+					{{else}}
+						{{#if errorContext}}
+							{{#if failedParams}}
+								I found {{noOfErrors}} {{toPlural len=noOfErrors word="issue"}} in your request. \n
+								{{#each failedParams}}
+									{{#if recommend}}
+										{{recommend}}
+									{{else}}
+										- {{toLowerCase error}} \n
+									{{/if}}
+								{{/each}}
+							{{/if}}\n
+							{{#if validation}}
+							{{{indent len=6}}}■ Format: \n
+								{{#each validation}}
+									{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
+									{{#each help}}
+									{{sample}}
+									{{/each}}_{{#if @last}}{{else}}\n{{{indent len=6}}}or{{/if}}\n
+								{{/each}}\n
+							{{/if}}
+						{{else}}
+							{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @key}}*
+							{{#if descriptionText}}
+								- _{{descriptionText}}_ \n\n
+							{{else}}\n
+							{{/if}}
+							{{#if alertContext}}
+								■ Usage:\n _{{#if ../prefix}}<@{{../prefix}}>{{/if}} {{name}} setup <threshold>_ \n
+							{{/if}}
+							{{#if validation}}
+								{{#each validation}}
+									{{#if help}}
+										{{#if @first}}
+											{{{indent len=6}}}■ Format:\n
+										{{/if}}
+										{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
+										{{#each help}}
+											{{{indent len=2}}}{{sample}}
+										{{/each}}_ {{#if @last}}\n{{else}}\n{{{indent len=6}}}or\n{{/if}}
+									{{/if}}
+								{{/each}}
+								{{#each validation}}
+									{{#if help}}
+										{{#if @first}}
+											{{{indent len=6}}}■ Usage:\n
+										{{/if}}
+											{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
+										{{#each help}}
+											{{joinArray recommend separator=" | " prefix="{" suffix="}"}}
+										{{/each}}_ {{#if @last}} {{else}}\n{{{indent len=6}}}or\n{{/if}}
+									{{/if}}
+								{{/each}}
+							{{/if}}
+						{{/if}}
 					{{/if}}
-				{{/if}}
-				{{#if helpText}}\n\n
-					_{{{helpText}}}_ \n
-				{{/if}}\n
-			{{/each}}\n
+					{{#if helpText}}\n\n
+						_{{{helpText}}}_ \n
+					{{/if}}\n
+				{{/each}}\n
+			{{/if}}
 		{{/if}}
 	{{/if}}
 {{/if}}

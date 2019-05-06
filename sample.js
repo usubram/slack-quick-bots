@@ -25,6 +25,7 @@ const config = {
             error: '{{arg}} is incorrect',
           }],
         }],
+        allowedChannels: ['G4G117PFG'],
         descriptionText: 'Command to show log metrics',
         helpText: '☞ this is log command',
         template: sampleTemplate,

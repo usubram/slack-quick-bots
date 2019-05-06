@@ -8,7 +8,7 @@ Command driven slack bot library focused to quickly rolled out api/data driven b
 ```javascript
 const SlackBot = require('slack-quick-bots');
 const coolBot = new SlackBot({
-  // all bot config
+  // all bot schema
 });
 coolBot.start();
 ```
@@ -27,7 +27,7 @@ No more steps. You have successfully started your bot.
 ### Pagerduty bot
 ```[Pagerduty bot](https://github.com/usubram/pagerdutybot)```
 
-## Config schema
+## Schema
 
 slack-quick-bots uses handlebars template as view layer for all bot output messages. When `callback` with called with `data` it is rendered against the template. [Templates](https://github.com/usubram/slack-quick-bots-reference/blob/master/template/sample_tmpl.hbs) are like html. Data is injected into the template before sent to slack.
 
@@ -124,7 +124,7 @@ responseType: {
 
 ## [Custom webhooks](https://github.com/usubram/slack-quick-bots-reference/blob/master/index.js#L139-L145)
 
-Supports setting up custom webhooks. Below configuration sets up a http server to serve webhook request. You should also add `webHook: true` at bot level config to make webhook available for bots. Custom webhook can be used to trigger long running operation and at the completion of the operation the hookUrl can be used to notify the user who triggered the operation.
+Supports setting up custom webhooks. Below schema sets up a http server to serve webhook request. You should also add `webHook: true` at bot level schema to make webhook available for bots. Custom webhook can be used to trigger long running operation and at the completion of the operation the hookUrl can be used to notify the user who triggered the operation.
 
 ```javascript
 server: {
