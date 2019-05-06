@@ -25,7 +25,7 @@
       "url": "https://github.com/usubram/slack-quick-bots/blob/master/LICENSE-MIT"
     }
   ],
-  "main": "lib/index.js",
+  "main": "./dist/index.js",
   "engines": {
     "node": ">=10.0.0"
   },
