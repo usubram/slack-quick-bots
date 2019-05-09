@@ -32,7 +32,7 @@ No more steps. You have successfully started your bot.
 
 ## Schema
 
-slack-quick-bots uses handlebars template as view layer for all bot output messages. When `callback` with called with `data` it is rendered against the template. [Templates](https://github.com/usubram/slack-quick-bots-reference/blob/master/template/sample_tmpl.hbs) are like html. Data is injected into the template before sent to slack.
+slack-quick-bots uses handlebars template as view layer for all bot output messages. When `callback` with called with `data` it is rendered against the template. [Templates](https://github.com/usubram/slack-quick-bots/blob/master/sample.hbs) are like html. Data is injected into the template before sent to slack.
 
 ```javascript
 {
@@ -68,11 +68,11 @@ schedule firstCommand params1 params2 (* * * * *)
 
 ## Command type
 
-* [DATA](https://github.com/usubram/slack-quick-bots-reference/blob/master/index.js#L27) - Simple data query.
-* [RECURSIVE](https://github.com/usubram/slack-quick-bots-reference/blob/master/index.js#L40) - Simple data query bound to a timer.
-* [Alert](https://github.com/usubram/slack-quick-bots-reference/blob/master/index.js#L81) - Run a peak/dip algorithm on a dataset and notifies channels/users bases on the threshold set in realtime.
+* [DATA](https://github.com/usubram/slack-quick-bots-reference/blob/master/lib/commands/api.js#L11) - Simple data query.
+* [RECURSIVE](https://github.com/usubram/slack-quick-bots-reference/blob/master/lib/commands/repeat.js#L10) - Simple data query bound to a timer.
+* [Alert](https://github.com/usubram/slack-quick-bots-reference/blob/master/lib/commands/alert.js#L5) - Run a peak/dip algorithm on a dataset and notifies channels/users bases on the threshold set in realtime.
 
-## [Response type](https://github.com/usubram/slack-quick-bots-reference/blob/master/index.js#L100)
+## [Response type](https://github.com/usubram/slack-quick-bots-reference/blob/master/lib/commands/trend.js#L6)
 
 Library support wide range of response type. You can stream file of any type for a DATA command. The below sample is to generate a graph in realtime. Make sure you have [gnuplot](http://www.gnuplot.info/download.html) for graphs for time series data.
 
@@ -125,7 +125,7 @@ responseType: {
   }],
 ```
 
-## [Custom webhooks](https://github.com/usubram/slack-quick-bots-reference/blob/master/index.js#L139-L145)
+## [Custom webhooks](https://github.com/usubram/slack-quick-bots-reference/blob/master/lib/commands/api.js#L32)
 
 Supports setting up custom webhooks. Below schema sets up a http server to serve webhook request. You should also add `webHook: true` at bot level schema to make webhook available for bots. Custom webhook can be used to trigger long running operation and at the completion of the operation the hookUrl can be used to notify the user who triggered the operation.
 
