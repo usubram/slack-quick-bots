@@ -24,8 +24,11 @@ npm install && node index.js <botToken> // pass your bot token.
 No more steps. You have successfully started your bot.
 ```
 
+### Sample reference app
+[Sample app](https://github.com/usubram/slack-quick-bots-reference)
+
 ### Pagerduty bot
-```[Pagerduty bot](https://github.com/usubram/pagerdutybot)```
+[Pagerduty bot](https://github.com/usubram/pagerdutybot)
 
 ## Schema
 
