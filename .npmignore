@@ -7,9 +7,6 @@ test
 #linters
 .eslintrc.json
 
-#source
-lib
-
 #sample
 sample.js
 sample.hbs
