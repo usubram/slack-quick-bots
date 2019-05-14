@@ -72,6 +72,7 @@ describe('/command', function () {
 
   afterEach(function () {
     sandbox.restore();
+    testBots.shutdown();
     socketServer.closeClient();
   });
 
@@ -725,6 +726,7 @@ describe('/command', function () {
     });
 
     afterEach(function () {
+      testBots.shutdown();
       socketServer.closeClient();
     });
 

@@ -66,6 +66,7 @@ describe('/bot', function () {
     afterEach(function () {
       updateEventsStub.restore();
       apiRequestFetchStub.restore();
+      testBots.shutdown();
       socketServer.closeClient();
     });
 
@@ -190,6 +191,7 @@ describe('/bot', function () {
 
     afterEach(function () {
       apiRequestFetchStub.restore();
+      testBots.shutdown();
       socketServer.closeClient();
     });
 
