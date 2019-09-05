@@ -33,7 +33,7 @@
 								{{#each validation}}
 									{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
 									{{#each help}}
-									{{sample}}
+										{{{indent len=2}}}{{sample}}
 									{{/each}}_{{#if @last}}{{else}}\n{{{indent len=6}}}or{{/if}}\n
 								{{/each}}\n
 							{{{indent len=6}}}■ Usage: \n
@@ -61,7 +61,7 @@
 								{{#each validation}}
 									{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
 									{{#each help}}
-									{{sample}}
+										{{{indent len=2}}}{{sample}}
 									{{/each}}_{{#if @last}}{{else}}\n{{{indent len=6}}}or{{/if}}\n
 								{{/each}}\n
 							{{/if}}
@@ -91,9 +91,9 @@
 										{{#if @first}}
 											{{{indent len=6}}}■ Usage:\n
 										{{/if}}
-											{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
+										 {{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
 										{{#each help}}
-											{{joinArray recommend separator=" | " prefix="{" suffix="}"}}
+										 {{joinArray recommend separator=" | " prefix="{" suffix="}"}}
 										{{/each}}_ {{#if @last}} {{else}}\n{{{indent len=6}}}or\n{{/if}}
 									{{/if}}
 								{{/each}}
