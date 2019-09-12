@@ -7,7 +7,7 @@ const expect = chai.expect;
 const root = '../../';
 const botLogger = require(root + 'lib/utils/logger');
 const SlackBot = require(root + 'lib/index');
-const config = require(root + 'test/mock/config');
+const config = require(root + 'test/mock');
 const socketServer = require('./../../lib/bot/socket-server');
 const apiRequest = require('./../../lib/slack-api/api-request');
 

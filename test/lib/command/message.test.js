@@ -5,7 +5,7 @@ const expect = chai.expect;
 const root = '../../../';
 
 const _ = require('lodash');
-const config = require(root + 'test/mock/config');
+const config = require(root + 'test/mock');
 const sinonChai = require('sinon-chai');
 const message = require(root + 'lib/command/message');
 
