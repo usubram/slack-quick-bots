@@ -1600,7 +1600,7 @@ describe('/command', function () {
       });
     });
 
-    xit('Should call setUpRecursiveTask for recursive command', function (done) {
+    it('Should call setUpRecursiveTask for recursive command', function (done) {
       slackMessage.text = 'auto';
 
       const onMessageSpy = sandbox.spy((response) => {
