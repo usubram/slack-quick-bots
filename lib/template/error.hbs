@@ -40,7 +40,7 @@
 							{{#each validation}}
 								{{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
 								{{#each help}}
-								{{joinArray recommend separator=" | " prefix="{" suffix="}"}}
+								{{{indent len=2}}}{{joinArray recommend separator=" | " prefix="{" suffix="}"}}
 								{{/each}}_ {{#if @last}} {{else}}\n{{{indent len=6}}}or{{/if}}\n
 							{{/each}}
 						{{/if}}
@@ -93,7 +93,7 @@
 										{{/if}}
 										 {{{indent len=6}}}_{{#if ../prefix}} <@{{../prefix}}> {{/if}} *{{toLowerCase @../key}}*
 										{{#each help}}
-										 {{joinArray recommend separator=" | " prefix="{" suffix="}"}}
+										 {{{indent len=2}}}{{joinArray recommend separator=" | " prefix="{" suffix="}"}}
 										{{/each}}_ {{#if @last}} {{else}}\n{{{indent len=6}}}or\n{{/if}}
 									{{/if}}
 								{{/each}}
