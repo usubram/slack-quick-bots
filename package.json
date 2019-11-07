@@ -40,17 +40,17 @@
     "chatbots"
   ],
   "dependencies": {
-    "@umashankar/plotter": "0.5.3",
+    "@umashankar/plotter": "0.5.5",
     "cron": "1.7.1",
-    "form-data": "2.5.1",
-    "handlebars": "4.2.0",
-    "https-proxy-agent": "2.2.2",
+    "form-data": "3.0.0",
+    "handlebars": "4.5.1",
+    "https-proxy-agent": "3.0.1",
     "lodash": "4.17.15",
     "mime": "2.4.4",
     "moment": "2.24.0",
     "shortid": "2.2.14",
     "uuid": "3.3.3",
-    "ws": "7.1.2"
+    "ws": "7.2.0"
   },
   "devDependencies": {
     "chai": "4.2.0",
