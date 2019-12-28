@@ -43,7 +43,7 @@
     "@umashankar/plotter": "0.5.5",
     "cron": "1.7.1",
     "form-data": "3.0.0",
-    "handlebars": "4.5.1",
+    "handlebars": "4.3.0",
     "https-proxy-agent": "3.0.1",
     "lodash": "4.17.15",
     "mime": "2.4.4",
