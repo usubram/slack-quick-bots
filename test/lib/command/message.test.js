@@ -1,15 +1,9 @@
 'use strict';
 
-const chai = require('chai');
-const expect = chai.expect;
 const root = '../../../';
-
 const _ = require('lodash');
 const config = require(root + 'test/mock');
-const sinonChai = require('sinon-chai');
 const message = require(root + 'lib/command/message');
-
-chai.use(sinonChai);
 
 describe('/message', function () {
   let slackMessage = '';
@@ -31,8 +25,9 @@ describe('/message', function () {
       isDirectMessage: true,
     };
     messageParser = message.parse(
-      _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')),
-        _.toUpper), messageOptions);
+      _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')), _.toUpper),
+      messageOptions
+    );
   });
 
   afterEach(function () {
@@ -47,7 +42,7 @@ describe('/message', function () {
         command: 'PING',
         params: ['1'],
       };
-      expect(parsedMessage).to.deep.equal(slackMessage);
+      expect(parsedMessage).toEqual(slackMessage);
     });
 
     it('Should correctly parse direct message with more params', function () {
@@ -58,7 +53,7 @@ describe('/message', function () {
         params: ['1', '2', '3'],
       };
 
-      expect(parsedMessage).to.deep.equal(slackMessage);
+      expect(parsedMessage).toEqual(slackMessage);
     });
 
     it('Should correctly parse uuid in the params', function () {
@@ -70,7 +65,7 @@ describe('/message', function () {
         params: ['39e5394a-36f8-49ca-9fed-b48019ee1845'],
       };
 
-      expect(parsedMessage).to.deep.equal(slackMessage);
+      expect(parsedMessage).toEqual(slackMessage);
     });
 
     it('Should correctly convert uppercase command to lowercase', function () {
@@ -82,7 +77,7 @@ describe('/message', function () {
         params: ['39e5394a-36f8-49ca-9fed-b48019ee1845'],
       };
 
-      expect(parsedMessage).to.deep.equal(slackMessage);
+      expect(parsedMessage).toEqual(slackMessage);
     });
 
     it('Should allow proper botname prefix in direct message', function () {
@@ -95,7 +90,7 @@ describe('/message', function () {
         params: ['123', '456'],
       };
 
-      expect(parsedMessage).to.deep.equal(slackMessage);
+      expect(parsedMessage).toEqual(slackMessage);
     });
   });
 
@@ -111,7 +106,7 @@ describe('/message', function () {
         params: ['1'],
       };
 
-      expect(parsedMessage).to.deep.equal(slackMessage);
+      expect(parsedMessage).toEqual(slackMessage);
     });
 
     it('Should correctly parse channel message for just @botname', function () {
@@ -125,23 +120,22 @@ describe('/message', function () {
         params: ['1'],
       };
 
-      expect(parsedMessage).to.deep.equal(slackMessage);
+      expect(parsedMessage).toEqual(slackMessage);
     });
 
-    it('Should correctly parse channel message with bot name and params',
-      function () {
-        slackMessage.text = 'testbot1 ping 1 2 3';
+    it('Should correctly parse channel message with bot name and params', function () {
+      slackMessage.text = 'testbot1 ping 1 2 3';
 
-        const parsedMessage = messageParser(slackMessage, false);
+      const parsedMessage = messageParser(slackMessage, false);
 
-        slackMessage.message = {
-          commandPrefix: 'TESTBOT1',
-          command: 'PING',
-          params: ['1', '2', '3'],
-        };
+      slackMessage.message = {
+        commandPrefix: 'TESTBOT1',
+        command: 'PING',
+        params: ['1', '2', '3'],
+      };
 
-        expect(parsedMessage).to.deep.equal(slackMessage);
-      });
+      expect(parsedMessage).toEqual(slackMessage);
+    });
 
     it('Should correctly parse channel message with bot mentions', function () {
       slackMessage.text = '<@U1234567>: ping 1 2 3';
@@ -154,34 +148,32 @@ describe('/message', function () {
         params: ['1', '2', '3'],
       };
 
-      expect(parsedMessage).to.deep.equal(slackMessage);
+      expect(parsedMessage).toEqual(slackMessage);
     });
 
-    it('Should correctly parse channel message with bot id without colon',
-      function () {
-        slackMessage.text = '<@U1234567> ping 1 2 3';
+    it('Should correctly parse channel message with bot id without colon', function () {
+      slackMessage.text = '<@U1234567> ping 1 2 3';
 
-        const parsedMessage = messageParser(slackMessage, false);
+      const parsedMessage = messageParser(slackMessage, false);
 
-        slackMessage.message = {
-          commandPrefix: 'U1234567',
-          command: 'PING',
-          params: ['1', '2', '3'],
-        };
+      slackMessage.message = {
+        commandPrefix: 'U1234567',
+        command: 'PING',
+        params: ['1', '2', '3'],
+      };
 
-        expect(parsedMessage).to.deep.equal(slackMessage);
-      });
+      expect(parsedMessage).toEqual(slackMessage);
+    });
 
-    it('Should parse channel message with just numeric to empty object',
-      function () {
-        slackMessage.text = '1 2 3';
+    it('Should parse channel message with just numeric to empty object', function () {
+      slackMessage.text = '1 2 3';
 
-        const parsedMessage = messageParser(slackMessage, false);
+      const parsedMessage = messageParser(slackMessage, false);
 
-        slackMessage.message = {};
+      slackMessage.message = {};
 
-        expect(parsedMessage).to.deep.equal(slackMessage);
-      });
+      expect(parsedMessage).toEqual(slackMessage);
+    });
 
     it('Should correctly parse channel message with just spaces', function () {
       slackMessage.text = '    ';
@@ -190,7 +182,7 @@ describe('/message', function () {
 
       slackMessage.message = {};
 
-      expect(parsedMessage).to.deep.equal(slackMessage);
+      expect(parsedMessage).toEqual(slackMessage);
     });
   });
 });

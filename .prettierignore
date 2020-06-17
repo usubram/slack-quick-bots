@@ -1,0 +1,4 @@
+**/*.hbs
+node_modules
+data
+package-lock.json

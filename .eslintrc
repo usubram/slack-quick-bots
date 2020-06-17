@@ -4,10 +4,7 @@
     "node": true,
     "mocha": true
   },
-  "extends": [
-    "eslint:recommended",
-    "google"
-  ],
+  "extends": ["eslint:recommended", "google"],
   "rules": {
     "space-before-function-paren": ["error", "always"],
     "object-curly-spacing": ["error", "always"],

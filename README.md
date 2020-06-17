@@ -1,4 +1,5 @@
 # slack-quick-bots
+
 [![npm version][npm-badge]][npm-url]
 [![Build Status][travis-badge]][travis-url]
 [![Dependency Status][daviddm-image]][daviddm-url]
@@ -14,20 +15,26 @@ coolBot.start();
 ```
 
 ## Simple bot
+
 ### Step 1
+
 ```
 git clone https://github.com/usubram/slack-quick-bots-reference.git
 npm install && node index.js <botToken> // pass your bot token.
 ```
+
 ### Step 2
+
 ```
 No more steps. You have successfully started your bot.
 ```
 
 ### Sample reference app
+
 [Sample app](https://github.com/usubram/slack-quick-bots-reference)
 
 ### Pagerduty bot
+
 [Pagerduty bot](https://github.com/usubram/pagerdutybot)
 
 ## Schema
@@ -60,7 +67,7 @@ slack-quick-bots uses handlebars template as view layer for all bot output messa
 
 ### Schedule command
 
-```schedule commandName [params] (* * * * *)```
+`schedule commandName [params] (* * * * *)`
 
 ```
 schedule firstCommand params1 params2 (* * * * *)
@@ -68,9 +75,9 @@ schedule firstCommand params1 params2 (* * * * *)
 
 ## Command type
 
-* [DATA](https://github.com/usubram/slack-quick-bots-reference/blob/master/lib/commands/api.js#L11) - Simple data query.
-* [RECURSIVE](https://github.com/usubram/slack-quick-bots-reference/blob/master/lib/commands/repeat.js#L10) - Simple data query bound to a timer.
-* [Alert](https://github.com/usubram/slack-quick-bots-reference/blob/master/lib/commands/alert.js#L5) - Run a peak/dip algorithm on a dataset and notifies channels/users bases on the threshold set in realtime.
+- [DATA](https://github.com/usubram/slack-quick-bots-reference/blob/master/lib/commands/api.js#L11) - Simple data query.
+- [RECURSIVE](https://github.com/usubram/slack-quick-bots-reference/blob/master/lib/commands/repeat.js#L10) - Simple data query bound to a timer.
+- [Alert](https://github.com/usubram/slack-quick-bots-reference/blob/master/lib/commands/alert.js#L5) - Run a peak/dip algorithm on a dataset and notifies channels/users bases on the threshold set in realtime.
 
 ## [Response type](https://github.com/usubram/slack-quick-bots-reference/blob/master/lib/commands/trend.js#L6)
 
@@ -164,27 +171,27 @@ data: function(input, options, callback) {
 ## Testing bots
 
 ```javascript
-  const onMessageSpy = sinon.spy((response) => {
-    setTimeout(() => {
-      expect(response.message).to.equal('Hello 1');
-      done();
-    }, 1);
-  });
+const onMessageSpy = sinon.spy((response) => {
+  setTimeout(() => {
+    expect(response.message).to.equal('Hello 1');
+    done();
+  }, 1);
+});
 
-  testBots.start().then((botEvt) => {
-
-    botEvt[0].on('connect', () => {
-      botEvt[0].injectMessage({
-        text: 'ping 1',
-        channel: 'D1234567'
-      });
+testBots.start().then((botEvt) => {
+  botEvt[0].on('connect', () => {
+    botEvt[0].injectMessage({
+      text: 'ping 1',
+      channel: 'D1234567',
     });
-
-    botEvt[0].on('message', onMessageSpy);
   });
+
+  botEvt[0].on('message', onMessageSpy);
+});
 ```
 
 ## License
+
 Copyright (c) 2018 Umashankar Subramanian  
 Licensed under the MIT license.
 

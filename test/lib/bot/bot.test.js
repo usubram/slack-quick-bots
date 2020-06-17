@@ -1,10 +1,6 @@
 'use strict';
 
 const _ = require('lodash');
-const sinon = require('sinon');
-const chai = require('chai');
-const expect = chai.expect;
-
 const uuid = require('uuid');
 const root = '../../../';
 
@@ -19,28 +15,22 @@ const apiRequest = require(root + 'lib/slack-api/api-request');
 
 botLogger.setLogger();
 
-describe('/bot', function () {
+describe.only('/bot', function () {
   describe('direct message', function () {
     let testBots;
     let errorContext;
     let slackMessage;
-    let updateEventsStub;
     let messageParser;
     let messageOptions;
-    let apiRequestFetchStub;
 
     beforeEach(function () {
       testBots = new SlackBot(config.singleBot, {
         isMock: true,
       });
-      updateEventsStub = sinon.stub(storage, 'updateEvents').callsFake(() => {
-        return Promise.resolve({});
-      });
-      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch').callsFake(() => {
-        return Promise.resolve({
-          members: [],
-          channels: [],
-        });
+      jest.spyOn(storage, 'updateEvents').mockResolvedValue({});
+      jest.spyOn(apiRequest, 'fetch').mockResolvedValue({
+        members: [],
+        channels: [],
       });
       errorContext = {
         error: true,
@@ -59,23 +49,20 @@ describe('/bot', function () {
         isDirectMessage: true,
       };
       messageParser = message.parse(
-        _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')),
-          _.toUpper), messageOptions);
+        _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')), _.toUpper),
+        messageOptions
+      );
     });
 
     afterEach(function () {
-      updateEventsStub.restore();
-      apiRequestFetchStub.restore();
       testBots.shutdown();
-      socketServer.closeClient();
+      return socketServer.closeClient();
     });
 
     it('Should response with the expected response', function (done) {
-      const onMessageSpy = sinon.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal('Hello 1');
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual('Hello 1');
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -90,14 +77,15 @@ describe('/bot', function () {
     it('Should respond with empty message', function (done) {
       slackMessage.text = '';
       errorContext.parsedMessage = messageParser(slackMessage);
-      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-        testBots.bots[0].config.botCommand, errorContext);
+      const errorMessage = responseHandler.generateErrorTemplate(
+        'testbot1',
+        testBots.bots[0].config.botCommand,
+        errorContext
+      );
 
-      const onMessageSpy = sinon.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -111,11 +99,9 @@ describe('/bot', function () {
 
     it('Should respond with uppercase command', function (done) {
       slackMessage.text = 'PING';
-      const onMessageSpy = sinon.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal('Hello 1');
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual('Hello 1');
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -130,14 +116,15 @@ describe('/bot', function () {
     it('Should respond with error message', function (done) {
       slackMessage.text = 'wrong command';
       errorContext.parsedMessage = messageParser(slackMessage);
-      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-        testBots.bots[0].config.botCommand, errorContext);
+      const errorMessage = responseHandler.generateErrorTemplate(
+        'testbot1',
+        testBots.bots[0].config.botCommand,
+        errorContext
+      );
 
-      const onMessageSpy = sinon.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -162,11 +149,9 @@ describe('/bot', function () {
       testBots = new SlackBot(config.singleBot, {
         isMock: true,
       });
-      apiRequestFetchStub = sinon.stub(apiRequest, 'fetch').callsFake(() => {
-        return Promise.resolve({
-          members: [],
-          channels: [],
-        });
+      jest.spyOn(apiRequest, 'fetch').mockResolvedValue({
+        members: [],
+        channels: [],
       });
       errorContext = {
         error: true,
@@ -185,22 +170,20 @@ describe('/bot', function () {
         isDirectMessage: true,
       };
       messageParser = message.parse(
-        _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')),
-          _.toUpper), messageOptions);
+        _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')), _.toUpper),
+        messageOptions
+      );
     });
 
     afterEach(function () {
-      apiRequestFetchStub.restore();
       testBots.shutdown();
-      socketServer.closeClient();
+      return socketServer.closeClient();
     });
 
     it('Should call dispatchMessage with correct arguments', function (done) {
-      const onMessageSpy = sinon.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal('Hello 1');
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual('Hello 1');
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -212,14 +195,68 @@ describe('/bot', function () {
       });
     });
 
-    it('Should call dispatchMessage with botname and command without param',
+    it('Should call dispatchMessage with botname and command without param', function (done) {
+      slackMessage.text = 'testbot1 ping';
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual('Hello 1');
+        done();
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('message', onMessageSpy);
+
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
+      });
+    });
+
+    it('Should not call dispatchMessage', function (done) {
+      slackMessage.text = 'hello';
+      const onMessageSpy = jest.fn();
+      const onConnectSpy = jest.fn(() => {
+        expect(onConnectSpy).toHaveBeenCalledTimes(1);
+        expect(onMessageSpy).toHaveBeenCalledTimes(0);
+        done();
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('connect', onConnectSpy);
+        botEvt[0].on('message', onMessageSpy);
+      });
+    });
+
+    it('Should not call dispatchMessage without botname', function (done) {
+      slackMessage.text = 'ping 1';
+      const onMessageSpy = jest.fn();
+      const onConnectSpy = jest.fn(() => {
+        expect(onConnectSpy).toHaveBeenCalledTimes(1);
+        expect(onMessageSpy).toHaveBeenCalledTimes(0);
+        done();
+      });
+
+      testBots.start().then((botEvt) => {
+        botEvt[0].on('connect', onConnectSpy);
+        botEvt[0].on('message', onMessageSpy);
+      });
+    });
+
+    it(
+      'Should show help message for message starting with' +
+        'botname and wrong command',
       function (done) {
-        slackMessage.text = 'testbot1 ping';
-        const onMessageSpy = sinon.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal('Hello 1');
-            done();
-          }, 1);
+        slackMessage.text = 'testbot1 wrong command';
+        errorContext.parsedMessage = messageParser(slackMessage);
+
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
+
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -229,64 +266,7 @@ describe('/bot', function () {
             botEvt[0].injectMessage(slackMessage);
           });
         });
-      });
-
-    it('Should not call dispatchMessage', function (done) {
-      slackMessage.text = 'hello';
-      const onMessageSpy = sinon.spy();
-      const onConnectSpy = sinon.spy();
-
-      testBots.start().then((botEvt) => {
-        botEvt[0].on('connect', onConnectSpy);
-        botEvt[0].on('message', onMessageSpy);
-      });
-
-      setTimeout(() => {
-        expect(onConnectSpy).to.be.calledOnce;
-        expect(onMessageSpy).to.not.have.been.called;
-        done();
-      }, 50);
-    });
-
-    it('Should not call dispatchMessage without botname', function (done) {
-      slackMessage.text = 'ping 1';
-      const onMessageSpy = sinon.spy();
-      const onConnectSpy = sinon.spy();
-
-      testBots.start().then((botEvt) => {
-        botEvt[0].on('connect', onConnectSpy);
-        botEvt[0].on('message', onMessageSpy);
-      });
-
-      setTimeout(() => {
-        expect(onConnectSpy).to.be.calledOnce;
-        expect(onMessageSpy).to.not.have.been.called;
-        done();
-      }, 50);
-    });
-
-    it('Should show help message for message starting with' +
-      'botname and wrong command', function (done) {
-      slackMessage.text = 'testbot1 wrong command';
-      errorContext.parsedMessage = messageParser(slackMessage);
-
-      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-        testBots.bots[0].config.botCommand, errorContext);
-
-      const onMessageSpy = sinon.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
-      });
-
-      testBots.start().then((botEvt) => {
-        botEvt[0].on('message', onMessageSpy);
-
-        botEvt[0].on('connect', () => {
-          botEvt[0].injectMessage(slackMessage);
-        });
-      });
-    });
+      }
+    );
   });
 });

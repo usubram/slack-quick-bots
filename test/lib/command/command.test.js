@@ -2,10 +2,6 @@
 
 const _ = require('lodash');
 const botLogger = require('../../../lib/utils/logger');
-const sinon = require('sinon');
-const chai = require('chai');
-const expect = chai.expect;
-
 const uuid = require('uuid');
 const root = '../../../';
 
@@ -16,64 +12,68 @@ const responseHandler = require(root + 'lib/bot/response-handler');
 const message = require(root + 'lib/command/message');
 const storage = require(root + 'lib/storage/storage');
 const apiRequest = require(root + 'lib/slack-api/api-request');
+const FakeTimers = require('@sinonjs/fake-timers');
 
 botLogger.setLogger();
 
 describe('/command', function () {
-  let sandbox;
   let testBots;
   let errorContext;
   let slackMessage;
   let messageParser;
   let messageOptions;
+  let clock;
 
   const initTestSetup = function (options) {
+    jest.spyOn(storage, 'createEventDirectory').mockReturnValue({});
     testBots = new SlackBot(options.config, {
       isMock: true,
     });
 
-    errorContext = _.merge({}, {
-      error: true,
-    }, options.errorContext);
+    errorContext = _.merge(
+      {},
+      {
+        error: true,
+      },
+      options.errorContext
+    );
 
-    slackMessage = _.merge({}, {
-      id: uuid.v4(),
-      type: 'message',
-      channel: 'D0GL06JD7',
-      user: 'U0GG92T45',
-      text: 'ping',
-      ts: '1453007224.000007',
-      team: 'T0GGDKVDE',
-    }, options.slackMessage);
+    slackMessage = _.merge(
+      {},
+      {
+        id: uuid.v4(),
+        type: 'message',
+        channel: 'D0GL06JD7',
+        user: 'U0GG92T45',
+        text: 'ping',
+        ts: '1453007224.000007',
+        team: 'T0GGDKVDE',
+      },
+      options.slackMessage
+    );
 
-    messageOptions = _.merge({}, {
-      name: 'testbot1',
-      id: 'U1234567',
-      isDirectMessage: true,
-    }, options.messageOptions);
+    messageOptions = _.merge(
+      {},
+      {
+        name: 'testbot1',
+        id: 'U1234567',
+        isDirectMessage: true,
+      },
+      options.messageOptions
+    );
 
     messageParser = message.parse(
-      _.map(_.keys(_.get(testBots, 'bots.0.config.botCommand')),
-        _.toUpper), messageOptions);
+      _.map(_.keys(_.get(testBots, 'bots.0.config.botCommand')), _.toUpper),
+      messageOptions
+    );
   };
 
   beforeEach(function () {
-    sandbox = sinon.createSandbox();
-    sandbox.stub(storage, 'updateEvents').callsFake(() => {
-      return Promise.resolve({});
+    jest.spyOn(storage, 'updateEvents').mockResolvedValue({});
+    jest.spyOn(apiRequest, 'fetch').mockResolvedValue({
+      members: [],
+      channels: [],
     });
-    sandbox.stub(apiRequest, 'fetch').callsFake(() => {
-      return Promise.resolve({
-        members: [],
-        channels: [],
-      });
-    });
-  });
-
-  afterEach(function () {
-    sandbox.restore();
-    testBots.shutdown();
-    socketServer.closeClient();
   });
 
   describe('validateCommand', function () {
@@ -84,12 +84,14 @@ describe('/command', function () {
         });
       });
 
+      afterEach(function () {
+        return socketServer.closeClient();
+      });
+
       it('Should pass command vaidation with default value', function (done) {
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal('Hello 1');
-            done();
-          }, 1);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual('Hello 1');
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -103,11 +105,9 @@ describe('/command', function () {
 
       it('Should pass command vaidation with value 1', function (done) {
         slackMessage.text = 'ping 1';
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal('Hello 1');
-            done();
-          }, 1);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual('Hello 1');
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -121,11 +121,9 @@ describe('/command', function () {
 
       it('Should pass command vaidation with value 2', function (done) {
         slackMessage.text = 'ping 2';
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal('Hello 2');
-            done();
-          }, 1);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual('Hello 2');
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -143,14 +141,15 @@ describe('/command', function () {
         errorContext.noOfErrors = 1;
         errorContext.failedParams = [{ error: '3 is incorrect' }];
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-          testBots.bots[0].config.botCommand, errorContext);
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
 
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal(errorMessage);
-            done();
-          }, 1);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -162,79 +161,21 @@ describe('/command', function () {
         });
       });
 
-      it('Should fail command vaidation for two arguments',
-        function (done) {
-          slackMessage.text = 'pingsim 3 4';
-          delete errorContext.error;
-          errorContext.noOfErrors = 1;
-          errorContext.failedParams = [{ error: '3 is incorrect' }];
-          errorContext.parsedMessage = messageParser(slackMessage);
-          const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-            testBots.bots[0].config.botCommand, errorContext);
+      it('Should fail command vaidation for two arguments', function (done) {
+        slackMessage.text = 'pingsim 3 4';
+        delete errorContext.error;
+        errorContext.noOfErrors = 1;
+        errorContext.failedParams = [{ error: '3 is incorrect' }];
+        errorContext.parsedMessage = messageParser(slackMessage);
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
 
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal(errorMessage);
-              done();
-            }, 1);
-          });
-
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
-          });
-        });
-
-      it('command vaidation for two regex arguments should succeed',
-        function (done) {
-          slackMessage.text = 'pingregex 1 6';
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal('Hello 1,6');
-              done();
-            }, 1);
-          });
-
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
-          });
-        });
-
-      it('command vaidation correct for two regex arguments should succeed',
-        function (done) {
-          slackMessage.text = 'pingregexchk 1 1';
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal('Hello 1,1');
-              done();
-            }, 1);
-          });
-
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
-          });
-        });
-
-      it('command vaidation correct for two regex arguments' +
-        'nested array schema should succeed',
-      function (done) {
-        slackMessage.text = 'pingregexchk1 1 one';
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal('Hello 1,one');
-            done();
-          }, 1);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -245,19 +186,72 @@ describe('/command', function () {
           });
         });
       });
+
+      it('command vaidation for two regex arguments should succeed', function (done) {
+        slackMessage.text = 'pingregex 1 6';
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual('Hello 1,6');
+          done();
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      });
+
+      it('command vaidation correct for two regex arguments should succeed', function (done) {
+        slackMessage.text = 'pingregexchk 1 1';
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual('Hello 1,1');
+          done();
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      });
+
+      it(
+        'command vaidation correct for two regex arguments' +
+          'nested array schema should succeed',
+        function (done) {
+          slackMessage.text = 'pingregexchk1 1 one';
+          const onMessageSpy = jest.fn((response) => {
+            expect(response.message).toEqual('Hello 1,one');
+            done();
+          });
+
+          testBots.start().then((botEvt) => {
+            botEvt[0].on('message', onMessageSpy);
+
+            botEvt[0].on('connect', () => {
+              botEvt[0].injectMessage(slackMessage);
+            });
+          });
+        }
+      );
 
       it('command vaidation message for general help', function (done) {
         slackMessage.text = 'help';
         delete errorContext.error;
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-          testBots.bots[0].config.botCommand, errorContext);
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
 
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal(errorMessage);
-            done();
-          }, 1);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -273,14 +267,15 @@ describe('/command', function () {
         slackMessage.text = 'pingregexchk help';
         delete errorContext.error;
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-          testBots.bots[0].config.botCommand, errorContext);
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
 
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal(errorMessage);
-            done();
-          }, 1);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -292,77 +287,29 @@ describe('/command', function () {
         });
       });
 
-      it('command vaidation for two regex args should fail with error',
-        function (done) {
-          slackMessage.text = 'pingregex 1 10';
-          delete errorContext.error;
-          errorContext = {
-            sampleParams: [1, 3],
-            noOfErrors: 1,
-            failedParams: [{
-              error: '10 is incorrect',
-            }],
-          };
-          errorContext.parsedMessage = messageParser(slackMessage);
-
-          const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-            testBots.bots[0].config.botCommand, errorContext);
-
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal(errorMessage);
-              done();
-            }, 1);
-          });
-
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
-          });
-        });
-
-      it('Success command vaidation for two arguments',
-        function (done) {
-          slackMessage.text = 'pingarg 2 4';
-
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal('Hello 2,4');
-              done();
-            }, 1);
-          });
-
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
-          });
-        });
-
-      it('Success command vaidation for two arguments ' +
-        'should recommend the closet one',
-      function (done) {
-        slackMessage.text = 'pingargrecomend second 2 3';
+      it('command vaidation for two regex args should fail with error', function (done) {
+        slackMessage.text = 'pingregex 1 10';
         delete errorContext.error;
-        errorContext.failedParams = [{
-          error: '2 is incorrect',
-        }];
-        errorContext.sampleParams = [1, 3];
-        errorContext.noOfErrors = 1;
+        errorContext = {
+          sampleParams: [1, 3],
+          noOfErrors: 1,
+          failedParams: [
+            {
+              error: '10 is incorrect',
+            },
+          ],
+        };
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-          testBots.bots[0].config.botCommand, errorContext);
 
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal(errorMessage);
-            done();
-          }, 1);
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
+
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -374,68 +321,126 @@ describe('/command', function () {
         });
       });
 
-      it('Should show param specific error message for validation error',
+      it('Success command vaidation for two arguments', function (done) {
+        slackMessage.text = 'pingarg 2 4';
+
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual('Hello 2,4');
+          done();
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      });
+
+      it(
+        'Success command vaidation for two arguments ' +
+          'should recommend the closet one',
         function (done) {
-          slackMessage.text = 'pingarg hello 4';
+          slackMessage.text = 'pingargrecomend second 2 3';
           delete errorContext.error;
-          errorContext.failedParams = [{
+          errorContext.failedParams = [
+            {
+              error: '2 is incorrect',
+            },
+          ];
+          errorContext.sampleParams = [1, 3];
+          errorContext.noOfErrors = 1;
+          errorContext.parsedMessage = messageParser(slackMessage);
+          const errorMessage = responseHandler.generateErrorTemplate(
+            'testbot1',
+            testBots.bots[0].config.botCommand,
+            errorContext
+          );
+
+          const onMessageSpy = jest.fn((response) => {
+            expect(response.message).toEqual(errorMessage);
+            done();
+          });
+
+          testBots.start().then((botEvt) => {
+            botEvt[0].on('message', onMessageSpy);
+
+            botEvt[0].on('connect', () => {
+              botEvt[0].injectMessage(slackMessage);
+            });
+          });
+        }
+      );
+
+      it('Should show param specific error message for validation error', function (done) {
+        slackMessage.text = 'pingarg hello 4';
+        delete errorContext.error;
+        errorContext.failedParams = [
+          {
             error: 'HELLO is incorrect',
-          }, {
+          },
+          {
             error: '4 is incorrect',
-          }];
-          errorContext.sampleParams = [1, 3];
-          errorContext.noOfErrors = 2;
-          errorContext.parsedMessage = messageParser(slackMessage);
-          const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-            testBots.bots[0].config.botCommand, errorContext);
+          },
+        ];
+        errorContext.sampleParams = [1, 3];
+        errorContext.noOfErrors = 2;
+        errorContext.parsedMessage = messageParser(slackMessage);
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
 
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal(errorMessage);
-              done();
-            }, 1);
-          });
-
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
-          });
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
         });
 
-      it('Should show param specific error message for two validation error',
-        function (done) {
-          slackMessage.text = 'pingarg hello 5';
-          delete errorContext.error;
-          errorContext.failedParams = [{
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      });
+
+      it('Should show param specific error message for two validation error', function (done) {
+        slackMessage.text = 'pingarg hello 5';
+        delete errorContext.error;
+        errorContext.failedParams = [
+          {
             error: 'HELLO is incorrect',
-          }, {
+          },
+          {
             error: '5 is incorrect',
-          }];
+          },
+        ];
 
-          errorContext.sampleParams = [1, 3];
-          errorContext.noOfErrors = 2;
-          errorContext.parsedMessage = messageParser(slackMessage);
-          const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-            testBots.bots[0].config.botCommand, errorContext);
+        errorContext.sampleParams = [1, 3];
+        errorContext.noOfErrors = 2;
+        errorContext.parsedMessage = messageParser(slackMessage);
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
 
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal(errorMessage);
-              done();
-            }, 1);
-          });
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
+        });
 
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
 
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
           });
         });
+      });
     });
 
     describe('isAllowedParamValid - data func returns Promise', function () {
@@ -445,12 +450,14 @@ describe('/command', function () {
         });
       });
 
+      afterEach(function () {
+        return socketServer.closeClient();
+      });
+
       it('Should pass command vaidation with default value', function (done) {
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal('Hello 1');
-            done();
-          }, 1);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual('Hello 1');
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -464,11 +471,9 @@ describe('/command', function () {
 
       it('Should pass command vaidation with value 1', function (done) {
         slackMessage.text = 'ping 1';
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal('Hello 1');
-            done();
-          }, 1);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual('Hello 1');
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -482,11 +487,9 @@ describe('/command', function () {
 
       it('Should pass command vaidation with value 2', function (done) {
         slackMessage.text = 'ping 2';
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal('Hello 2');
-            done();
-          }, 1);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual('Hello 2');
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -504,14 +507,15 @@ describe('/command', function () {
         errorContext.noOfErrors = 1;
         errorContext.failedParams = [{ error: '3 is incorrect' }];
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-          testBots.bots[0].config.botCommand, errorContext);
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
 
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal(errorMessage);
-            done();
-          }, 1);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -523,79 +527,21 @@ describe('/command', function () {
         });
       });
 
-      it('Should fail command vaidation for two arguments',
-        function (done) {
-          slackMessage.text = 'pingsim 3 4';
-          delete errorContext.error;
-          errorContext.noOfErrors = 1;
-          errorContext.failedParams = [{ error: '3 is incorrect' }];
-          errorContext.parsedMessage = messageParser(slackMessage);
-          const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-            testBots.bots[0].config.botCommand, errorContext);
+      it('Should fail command vaidation for two arguments', function (done) {
+        slackMessage.text = 'pingsim 3 4';
+        delete errorContext.error;
+        errorContext.noOfErrors = 1;
+        errorContext.failedParams = [{ error: '3 is incorrect' }];
+        errorContext.parsedMessage = messageParser(slackMessage);
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
 
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal(errorMessage);
-              done();
-            }, 1);
-          });
-
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
-          });
-        });
-
-      it('command vaidation for two regex arguments should succeed',
-        function (done) {
-          slackMessage.text = 'pingregex 1 6';
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal('Hello 1,6');
-              done();
-            }, 1);
-          });
-
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
-          });
-        });
-
-      it('command vaidation correct for two regex arguments should succeed',
-        function (done) {
-          slackMessage.text = 'pingregexchk 1 1';
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal('Hello 1,1');
-              done();
-            }, 1);
-          });
-
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
-          });
-        });
-
-      it('command vaidation correct for two regex arguments' +
-        'nested array schema should succeed',
-      function (done) {
-        slackMessage.text = 'pingregexchk1 1 one';
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal('Hello 1,one');
-            done();
-          }, 1);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -606,19 +552,72 @@ describe('/command', function () {
           });
         });
       });
+
+      it('command vaidation for two regex arguments should succeed', function (done) {
+        slackMessage.text = 'pingregex 1 6';
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual('Hello 1,6');
+          done();
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      });
+
+      it('command vaidation correct for two regex arguments should succeed', function (done) {
+        slackMessage.text = 'pingregexchk 1 1';
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual('Hello 1,1');
+          done();
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      });
+
+      it(
+        'command vaidation correct for two regex arguments' +
+          'nested array schema should succeed',
+        function (done) {
+          slackMessage.text = 'pingregexchk1 1 one';
+          const onMessageSpy = jest.fn((response) => {
+            expect(response.message).toEqual('Hello 1,one');
+            done();
+          });
+
+          testBots.start().then((botEvt) => {
+            botEvt[0].on('message', onMessageSpy);
+
+            botEvt[0].on('connect', () => {
+              botEvt[0].injectMessage(slackMessage);
+            });
+          });
+        }
+      );
 
       it('command vaidation message for general help', function (done) {
         slackMessage.text = 'help';
         delete errorContext.error;
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-          testBots.bots[0].config.botCommand, errorContext);
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
 
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal(errorMessage);
-            done();
-          }, 1);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -634,14 +633,15 @@ describe('/command', function () {
         slackMessage.text = 'pingregexchk help';
         delete errorContext.error;
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-          testBots.bots[0].config.botCommand, errorContext);
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
 
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal(errorMessage);
-            done();
-          }, 1);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -653,77 +653,29 @@ describe('/command', function () {
         });
       });
 
-      it('command vaidation for two regex args should fail with error',
-        function (done) {
-          slackMessage.text = 'pingregex 1 10';
-          delete errorContext.error;
-          errorContext = {
-            sampleParams: [1, 3],
-            noOfErrors: 1,
-            failedParams: [{
-              error: '10 is incorrect',
-            }],
-          };
-          errorContext.parsedMessage = messageParser(slackMessage);
-
-          const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-            testBots.bots[0].config.botCommand, errorContext);
-
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal(errorMessage);
-              done();
-            }, 1);
-          });
-
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
-          });
-        });
-
-      it('Success command vaidation for two arguments',
-        function (done) {
-          slackMessage.text = 'pingarg 2 4';
-
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal('Hello 2,4');
-              done();
-            }, 1);
-          });
-
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
-          });
-        });
-
-      it('Success command vaidation for two arguments ' +
-        'should recommend the closet one',
-      function (done) {
-        slackMessage.text = 'pingargrecomend second 2 3';
+      it('command vaidation for two regex args should fail with error', function (done) {
+        slackMessage.text = 'pingregex 1 10';
         delete errorContext.error;
-        errorContext.failedParams = [{
-          error: '2 is incorrect',
-        }];
-        errorContext.sampleParams = [1, 3];
-        errorContext.noOfErrors = 1;
+        errorContext = {
+          sampleParams: [1, 3],
+          noOfErrors: 1,
+          failedParams: [
+            {
+              error: '10 is incorrect',
+            },
+          ],
+        };
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-          testBots.bots[0].config.botCommand, errorContext);
 
-        const onMessageSpy = sandbox.spy((response) => {
-          setTimeout(() => {
-            expect(response.message).to.equal(errorMessage);
-            done();
-          }, 1);
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
+
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
         });
 
         testBots.start().then((botEvt) => {
@@ -735,68 +687,126 @@ describe('/command', function () {
         });
       });
 
-      it('Should show param specific error message for validation error',
+      it('Success command vaidation for two arguments', function (done) {
+        slackMessage.text = 'pingarg 2 4';
+
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual('Hello 2,4');
+          done();
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      });
+
+      it(
+        'Success command vaidation for two arguments ' +
+          'should recommend the closet one',
         function (done) {
-          slackMessage.text = 'pingarg hello 4';
+          slackMessage.text = 'pingargrecomend second 2 3';
           delete errorContext.error;
-          errorContext.failedParams = [{
+          errorContext.failedParams = [
+            {
+              error: '2 is incorrect',
+            },
+          ];
+          errorContext.sampleParams = [1, 3];
+          errorContext.noOfErrors = 1;
+          errorContext.parsedMessage = messageParser(slackMessage);
+          const errorMessage = responseHandler.generateErrorTemplate(
+            'testbot1',
+            testBots.bots[0].config.botCommand,
+            errorContext
+          );
+
+          const onMessageSpy = jest.fn((response) => {
+            expect(response.message).toEqual(errorMessage);
+            done();
+          });
+
+          testBots.start().then((botEvt) => {
+            botEvt[0].on('message', onMessageSpy);
+
+            botEvt[0].on('connect', () => {
+              botEvt[0].injectMessage(slackMessage);
+            });
+          });
+        }
+      );
+
+      it('Should show param specific error message for validation error', function (done) {
+        slackMessage.text = 'pingarg hello 4';
+        delete errorContext.error;
+        errorContext.failedParams = [
+          {
             error: 'HELLO is incorrect',
-          }, {
+          },
+          {
             error: '4 is incorrect',
-          }];
-          errorContext.sampleParams = [1, 3];
-          errorContext.noOfErrors = 2;
-          errorContext.parsedMessage = messageParser(slackMessage);
-          const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-            testBots.bots[0].config.botCommand, errorContext);
+          },
+        ];
+        errorContext.sampleParams = [1, 3];
+        errorContext.noOfErrors = 2;
+        errorContext.parsedMessage = messageParser(slackMessage);
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
 
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal(errorMessage);
-              done();
-            }, 1);
-          });
-
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
-
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
-          });
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
         });
 
-      it('Should show param specific error message for two validation error',
-        function (done) {
-          slackMessage.text = 'pingarg hello 5';
-          delete errorContext.error;
-          errorContext.failedParams = [{
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      });
+
+      it('Should show param specific error message for two validation error', function (done) {
+        slackMessage.text = 'pingarg hello 5';
+        delete errorContext.error;
+        errorContext.failedParams = [
+          {
             error: 'HELLO is incorrect',
-          }, {
+          },
+          {
             error: '5 is incorrect',
-          }];
+          },
+        ];
 
-          errorContext.sampleParams = [1, 3];
-          errorContext.noOfErrors = 2;
-          errorContext.parsedMessage = messageParser(slackMessage);
-          const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-            testBots.bots[0].config.botCommand, errorContext);
+        errorContext.sampleParams = [1, 3];
+        errorContext.noOfErrors = 2;
+        errorContext.parsedMessage = messageParser(slackMessage);
+        const errorMessage = responseHandler.generateErrorTemplate(
+          'testbot1',
+          testBots.bots[0].config.botCommand,
+          errorContext
+        );
 
-          const onMessageSpy = sandbox.spy((response) => {
-            setTimeout(() => {
-              expect(response.message).to.equal(errorMessage);
-              done();
-            }, 1);
-          });
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
+        });
 
-          testBots.start().then((botEvt) => {
-            botEvt[0].on('message', onMessageSpy);
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
 
-            botEvt[0].on('connect', () => {
-              botEvt[0].injectMessage(slackMessage);
-            });
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
           });
         });
+      });
     });
   });
 
@@ -812,19 +822,24 @@ describe('/command', function () {
       });
     });
 
+    afterEach(function () {
+      return socketServer.closeClient();
+    });
+
     it('Should block user and respond error', function (done) {
       delete errorContext.error;
       errorContext.restrictedUser = true;
       errorContext.parsedMessage = messageParser(slackMessage);
       errorContext.users = testBots.bots[0].config.allowedUsers;
-      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-        testBots.bots[0].config.botCommand, errorContext);
+      const errorMessage = responseHandler.generateErrorTemplate(
+        'testbot1',
+        testBots.bots[0].config.botCommand,
+        errorContext
+      );
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -839,11 +854,9 @@ describe('/command', function () {
     it('Should respond to messages for allowed user', function (done) {
       slackMessage.user = 'U0GG92T45';
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal('Hello 1');
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual('Hello 1');
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -861,14 +874,15 @@ describe('/command', function () {
       errorContext.restrictedUser = true;
       errorContext.parsedMessage = messageParser(slackMessage);
       errorContext.users = testBots.bots[0].config.allowedUsers;
-      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-        testBots.bots[0].config.botCommand, errorContext);
+      const errorMessage = responseHandler.generateErrorTemplate(
+        'testbot1',
+        testBots.bots[0].config.botCommand,
+        errorContext
+      );
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -893,19 +907,24 @@ describe('/command', function () {
       });
     });
 
+    afterEach(function () {
+      return socketServer.closeClient();
+    });
+
     it('Should block user and respond error', function (done) {
       delete errorContext.error;
       errorContext.restrictedUser = true;
       errorContext.parsedMessage = messageParser(slackMessage);
       errorContext.users = testBots.bots[0].config.allowedUsers;
-      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-        testBots.bots[0].config.botCommand, errorContext);
+      const errorMessage = responseHandler.generateErrorTemplate(
+        'testbot1',
+        testBots.bots[0].config.botCommand,
+        errorContext
+      );
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -920,11 +939,9 @@ describe('/command', function () {
     it('Should respond to messages for allowed user', function (done) {
       slackMessage.user = 'U0GG92T45';
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal('Hello 1');
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual('Hello 1');
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -942,14 +959,15 @@ describe('/command', function () {
       errorContext.restrictedUser = true;
       errorContext.parsedMessage = messageParser(slackMessage);
       errorContext.users = testBots.bots[0].config.allowedUsers;
-      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-        testBots.bots[0].config.botCommand, errorContext);
+      const errorMessage = responseHandler.generateErrorTemplate(
+        'testbot1',
+        testBots.bots[0].config.botCommand,
+        errorContext
+      );
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -974,19 +992,24 @@ describe('/command', function () {
       });
     });
 
+    afterEach(function () {
+      return socketServer.closeClient();
+    });
+
     it('Should block message for not allowed channels', function (done) {
       delete errorContext.error;
       errorContext.restrictedChannel = true;
       errorContext.parsedMessage = messageParser(slackMessage);
       errorContext.users = testBots.bots[0].config.allowedUsers;
-      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-        testBots.bots[0].config.botCommand, errorContext);
+      const errorMessage = responseHandler.generateErrorTemplate(
+        'testbot1',
+        testBots.bots[0].config.botCommand,
+        errorContext
+      );
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -1002,11 +1025,9 @@ describe('/command', function () {
       slackMessage.channel = 'C0GG92T45';
       slackMessage.text = '<@U1234567> ping 1';
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal('Hello 1');
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual('Hello 1');
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -1022,7 +1043,7 @@ describe('/command', function () {
   describe('isAllowedChannel - data function returns Promise', function () {
     beforeEach(function () {
       initTestSetup({
-        config: config.dataPromise.isAllowedChannel,
+        config: config.isAllowedChannel,
         slackMessage: {
           text: 'ping 1',
           channel: 'D0GL06JD7',
@@ -1031,19 +1052,24 @@ describe('/command', function () {
       });
     });
 
+    afterEach(function () {
+      return socketServer.closeClient();
+    });
+
     it('Should block message for not allowed channels', function (done) {
       delete errorContext.error;
       errorContext.restrictedChannel = true;
       errorContext.parsedMessage = messageParser(slackMessage);
       errorContext.users = testBots.bots[0].config.allowedUsers;
-      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-        testBots.bots[0].config.botCommand, errorContext);
+      const errorMessage = responseHandler.generateErrorTemplate(
+        'testbot1',
+        testBots.bots[0].config.botCommand,
+        errorContext
+      );
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -1059,11 +1085,9 @@ describe('/command', function () {
       slackMessage.channel = 'C0GG92T45';
       slackMessage.text = '<@U1234567> ping 1';
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal('Hello 1');
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual('Hello 1');
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -1088,18 +1112,21 @@ describe('/command', function () {
       });
     });
 
+    afterEach(function () {
+      return socketServer.closeClient();
+    });
+
     it('Should respond with blocked message on DM', function (done) {
       delete errorContext.error;
       errorContext.botDirectMessageError = true;
 
-      const errorMessage = responseHandler
-        .generateBotResponseTemplate(errorContext);
+      const errorMessage = responseHandler.generateBotResponseTemplate(
+        errorContext
+      );
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -1116,60 +1143,14 @@ describe('/command', function () {
       slackMessage.text = 'testbot1 ping 1';
       delete errorContext.error;
       errorContext.botDirectMessageError = true;
-      const errorMessage = responseHandler
-        .generateBotResponseTemplate(errorContext);
+      const errorMessage = responseHandler.generateBotResponseTemplate(
+        errorContext
+      );
 
-      const onMessageSpy = sinon.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
-      });
-
-      testBots.start().then((botEvt) => {
-        botEvt[0].on('message', onMessageSpy);
-
-        botEvt[0].on('connect', () => {
-          botEvt[0].injectMessage(slackMessage);
-        });
-      });
-    });
-
-    it('Should respond with blocked message on ' +
-      'private group with custom message', function (done) {
-      slackMessage.channel = 'G0GL06JD7';
-      slackMessage.text = 'testbot1 ping 1';
-      delete errorContext.error;
-      errorContext.botDirectMessageError = true;
-      const errorMessage = responseHandler
-        .generateBotResponseTemplate(errorContext);
-
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
-      });
-
-      testBots.start().then((botEvt) => {
-        botEvt[0].on('message', onMessageSpy);
-
-        botEvt[0].on('connect', () => {
-          botEvt[0].injectMessage(slackMessage);
-        });
-      });
-    });
-
-    it('Should not respond for non-bot message' +
-      'in private group', function (done) {
-      slackMessage.channel = 'G0GL06JD7';
-      slackMessage.text = 'ping 1';
-      const onMessageSpy = sinon.spy();
-
-      setTimeout(() => {
-        expect(onMessageSpy).to.not.called;
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
         done();
-      }, 100);
+      });
 
       testBots.start().then((botEvt) => {
         botEvt[0].on('message', onMessageSpy);
@@ -1179,16 +1160,63 @@ describe('/command', function () {
         });
       });
     });
+
+    it(
+      'Should respond with blocked message on ' +
+        ' private group with custom message',
+      function (done) {
+        slackMessage.channel = 'G0GL06JD7';
+        slackMessage.text = 'testbot1 ping 1';
+        delete errorContext.error;
+        errorContext.botDirectMessageError = true;
+        const errorMessage = responseHandler.generateBotResponseTemplate(
+          errorContext
+        );
+
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      }
+    );
+
+    it(
+      'Should not respond for non-bot message' + ' in private group',
+      function (done) {
+        slackMessage.channel = 'G0GL06JD7';
+        slackMessage.text = 'ping 1';
+        const onMessageSpy = jest.fn();
+
+        setTimeout(() => {
+          expect(onMessageSpy).toHaveBeenCalledTimes(0);
+          done();
+        }, 100);
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      }
+    );
 
     it('Should respond to messages in public channel', function (done) {
       slackMessage.channel = 'C0GL06JD7';
       slackMessage.text = 'testbot1 ping 1';
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal('Hello 1');
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual('Hello 1');
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -1213,18 +1241,21 @@ describe('/command', function () {
       });
     });
 
+    afterEach(function () {
+      return socketServer.closeClient();
+    });
+
     it('Should respond with blocked message on DM', function (done) {
       delete errorContext.error;
       errorContext.botDirectMessageError = true;
 
-      const errorMessage = responseHandler
-        .generateBotResponseTemplate(errorContext);
+      const errorMessage = responseHandler.generateBotResponseTemplate(
+        errorContext
+      );
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -1241,60 +1272,14 @@ describe('/command', function () {
       slackMessage.text = 'testbot1 ping 1';
       delete errorContext.error;
       errorContext.botDirectMessageError = true;
-      const errorMessage = responseHandler
-        .generateBotResponseTemplate(errorContext);
+      const errorMessage = responseHandler.generateBotResponseTemplate(
+        errorContext
+      );
 
-      const onMessageSpy = sinon.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
-      });
-
-      testBots.start().then((botEvt) => {
-        botEvt[0].on('message', onMessageSpy);
-
-        botEvt[0].on('connect', () => {
-          botEvt[0].injectMessage(slackMessage);
-        });
-      });
-    });
-
-    it('Should respond with blocked message on ' +
-      'private group with custom message', function (done) {
-      slackMessage.channel = 'G0GL06JD7';
-      slackMessage.text = 'testbot1 ping 1';
-      delete errorContext.error;
-      errorContext.botDirectMessageError = true;
-      const errorMessage = responseHandler
-        .generateBotResponseTemplate(errorContext);
-
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
-      });
-
-      testBots.start().then((botEvt) => {
-        botEvt[0].on('message', onMessageSpy);
-
-        botEvt[0].on('connect', () => {
-          botEvt[0].injectMessage(slackMessage);
-        });
-      });
-    });
-
-    it('Should not respond for non-bot message' +
-      'in private group', function (done) {
-      slackMessage.channel = 'G0GL06JD7';
-      slackMessage.text = 'ping 1';
-      const onMessageSpy = sinon.spy();
-
-      setTimeout(() => {
-        expect(onMessageSpy).to.not.called;
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
         done();
-      }, 100);
+      });
 
       testBots.start().then((botEvt) => {
         botEvt[0].on('message', onMessageSpy);
@@ -1304,16 +1289,63 @@ describe('/command', function () {
         });
       });
     });
+
+    it(
+      'Should respond with blocked message on ' +
+        'private group with custom message',
+      function (done) {
+        slackMessage.channel = 'G0GL06JD7';
+        slackMessage.text = 'testbot1 ping 1';
+        delete errorContext.error;
+        errorContext.botDirectMessageError = true;
+        const errorMessage = responseHandler.generateBotResponseTemplate(
+          errorContext
+        );
+
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
+        });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      }
+    );
+
+    it(
+      'Should not respond for non-bot message' + ' in private group',
+      function (done) {
+        slackMessage.channel = 'G0GL06JD7';
+        slackMessage.text = 'ping 1';
+        const onMessageSpy = jest.fn();
+
+        setTimeout(() => {
+          expect(onMessageSpy).toHaveBeenCalledTimes(0);
+          done();
+        }, 100);
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      }
+    );
 
     it('Should respond to messages in public channel', function (done) {
       slackMessage.channel = 'C0GL06JD7';
       slackMessage.text = 'testbot1 ping 1';
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal('Hello 1');
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual('Hello 1');
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -1350,35 +1382,36 @@ describe('/command', function () {
     });
 
     afterEach(function () {
-      testBots.shutdown();
-      socketServer.closeClient();
+      return socketServer.closeClient();
     });
 
-    it('Should respond with blocked message on' +
-      'private group with custom message', function (done) {
-      slackMessage.channel = 'G0GL06JD7';
-      slackMessage.text = 'testbot1 ping 1';
-      delete errorContext.error;
-      errorContext.botDirectMessageError = true;
-      errorContext.message = 'Hi <@U0GG92T46> custom message';
-      const errorMessage = responseHandler
-        .generateBotResponseTemplate(errorContext);
+    it(
+      'Should respond with blocked message on' +
+        'private group with custom message',
+      function (done) {
+        slackMessage.channel = 'G0GL06JD7';
+        slackMessage.text = 'testbot1 ping 1';
+        delete errorContext.error;
+        errorContext.botDirectMessageError = true;
+        errorContext.message = 'Hi <@U0GG92T46> custom message';
+        const errorMessage = responseHandler.generateBotResponseTemplate(
+          errorContext
+        );
 
-      const onMessageSpy = sinon.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
           done();
-        }, 1);
-      });
-
-      testBots.start().then((botEvt) => {
-        botEvt[0].on('message', onMessageSpy);
-
-        botEvt[0].on('connect', () => {
-          botEvt[0].injectMessage(slackMessage);
         });
-      });
-    });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      }
+    );
   });
 
   describe('blockDirectCustomMessage - data func returns Promise', function () {
@@ -1387,6 +1420,7 @@ describe('/command', function () {
     let slackMessage;
 
     beforeEach(function () {
+      jest.spyOn(storage, 'createEventDirectory').mockReturnValue({});
       testBots = new SlackBot(config.dataPromise.blockDirectCustomMessage, {
         isMock: true,
       });
@@ -1405,35 +1439,36 @@ describe('/command', function () {
     });
 
     afterEach(function () {
-      testBots.shutdown();
-      socketServer.closeClient();
+      return socketServer.closeClient();
     });
 
-    it('Should respond with blocked message on' +
-      'private group with custom message', function (done) {
-      slackMessage.channel = 'G0GL06JD7';
-      slackMessage.text = 'testbot1 ping 1';
-      delete errorContext.error;
-      errorContext.botDirectMessageError = true;
-      errorContext.message = 'Hi <@U0GG92T46> custom message';
-      const errorMessage = responseHandler
-        .generateBotResponseTemplate(errorContext);
+    it(
+      'Should respond with blocked message on' +
+        'private group with custom message',
+      function (done) {
+        slackMessage.channel = 'G0GL06JD7';
+        slackMessage.text = 'testbot1 ping 1';
+        delete errorContext.error;
+        errorContext.botDirectMessageError = true;
+        errorContext.message = 'Hi <@U0GG92T46> custom message';
+        const errorMessage = responseHandler.generateBotResponseTemplate(
+          errorContext
+        );
 
-      const onMessageSpy = sinon.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
           done();
-        }, 1);
-      });
-
-      testBots.start().then((botEvt) => {
-        botEvt[0].on('message', onMessageSpy);
-
-        botEvt[0].on('connect', () => {
-          botEvt[0].injectMessage(slackMessage);
         });
-      });
-    });
+
+        testBots.start().then((botEvt) => {
+          botEvt[0].on('message', onMessageSpy);
+
+          botEvt[0].on('connect', () => {
+            botEvt[0].injectMessage(slackMessage);
+          });
+        });
+      }
+    );
   });
 
   describe('Test command types', function () {
@@ -1446,16 +1481,21 @@ describe('/command', function () {
           text: 'ping 1',
         },
       });
+      clock = FakeTimers.install();
+    });
+
+    afterEach(function () {
+      clock.uninstall();
+
+      return socketServer.closeClient();
     });
 
     it('Should call getData for data command', function (done) {
       slackMessage.text = 'ping';
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal('Hello 1');
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual('Hello 1');
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -1470,12 +1510,10 @@ describe('/command', function () {
     it('Should call setUpRecursiveTask for recursive command', function (done) {
       slackMessage.text = 'auto';
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          if (response.message === 'Hello 1') {
-            done();
-          }
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        if (response.message === 'Hello 1') {
+          done();
+        }
       });
 
       testBots.start().then((botEvt) => {
@@ -1491,18 +1529,20 @@ describe('/command', function () {
       slackMessage.text = 'stop';
       delete errorContext.error;
       errorContext.noOfErrors = 1;
-      errorContext.failedParams = [{ error: 'err!! you are missing ' +
-          'another argument' }];
+      errorContext.failedParams = [
+        { error: 'err!! you are missing ' + 'another argument' },
+      ];
       errorContext.parsedMessage = messageParser(slackMessage);
 
-      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-        testBots.bots[0].config.botCommand, errorContext);
+      const errorMessage = responseHandler.generateErrorTemplate(
+        'testbot1',
+        testBots.bots[0].config.botCommand,
+        errorContext
+      );
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -1518,17 +1558,19 @@ describe('/command', function () {
       slackMessage.text = 'alert';
       delete errorContext.error;
       errorContext.noOfErrors = 1;
-      errorContext.failedParams = [{ error: 'err!! you are missing ' +
-          'another argument' }];
+      errorContext.failedParams = [
+        { error: 'err!! you are missing ' + 'another argument' },
+      ];
       errorContext.parsedMessage = messageParser(slackMessage);
-      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-        testBots.bots[0].config.botCommand, errorContext);
+      const errorMessage = responseHandler.generateErrorTemplate(
+        'testbot1',
+        testBots.bots[0].config.botCommand,
+        errorContext
+      );
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -1536,34 +1578,6 @@ describe('/command', function () {
 
         botEvt[0].on('connect', () => {
           botEvt[0].injectMessage(slackMessage);
-        });
-      });
-    });
-
-    it('Should call schedule command', function (done) {
-      sandbox.stub(storage, 'getEvents').callsFake(() => {
-        return Promise.resolve({
-          events: {},
-          schedule: config.schedule,
-        });
-      });
-      const clock = sandbox.useFakeTimers(new Date());
-
-      const onMessageSpy = sandbox.spy((response) => {
-        if (onMessageSpy.getCalls().length === 1) {
-          expect(response.message).to.eq('Hello 1');
-          clock.tick(60000);
-        }
-        if (onMessageSpy.getCalls().length === 2) {
-          expect(response.message).to.eq('Hello 1');
-          done();
-        }
-      });
-      testBots.start().then((botEvt) => {
-        botEvt[0].on('message', onMessageSpy);
-
-        botEvt[0].on('connect', () => {
-          clock.tick(60000);
         });
       });
     });
@@ -1581,14 +1595,16 @@ describe('/command', function () {
       });
     });
 
+    afterEach(function () {
+      return socketServer.closeClient();
+    });
+
     it('Should call getData for data command', function (done) {
       slackMessage.text = 'ping';
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal('Hello 1');
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual('Hello 1');
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -1603,12 +1619,10 @@ describe('/command', function () {
     it('Should call setUpRecursiveTask for recursive command', function (done) {
       slackMessage.text = 'auto';
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          if (response.message === 'Hello 1') {
-            done();
-          }
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        if (response.message === 'Hello 1') {
+          done();
+        }
       });
 
       testBots.start().then((botEvt) => {
@@ -1624,18 +1638,20 @@ describe('/command', function () {
       slackMessage.text = 'stop';
       delete errorContext.error;
       errorContext.noOfErrors = 1;
-      errorContext.failedParams = [{ error: 'err!! you are missing ' +
-          'another argument' }];
+      errorContext.failedParams = [
+        { error: 'err!! you are missing ' + 'another argument' },
+      ];
       errorContext.parsedMessage = messageParser(slackMessage);
 
-      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-        testBots.bots[0].config.botCommand, errorContext);
+      const errorMessage = responseHandler.generateErrorTemplate(
+        'testbot1',
+        testBots.bots[0].config.botCommand,
+        errorContext
+      );
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -1651,17 +1667,19 @@ describe('/command', function () {
       slackMessage.text = 'alert';
       delete errorContext.error;
       errorContext.noOfErrors = 1;
-      errorContext.failedParams = [{ error: 'err!! you are missing ' +
-          'another argument' }];
+      errorContext.failedParams = [
+        { error: 'err!! you are missing ' + 'another argument' },
+      ];
       errorContext.parsedMessage = messageParser(slackMessage);
-      const errorMessage = responseHandler.generateErrorTemplate('testbot1',
-        testBots.bots[0].config.botCommand, errorContext);
+      const errorMessage = responseHandler.generateErrorTemplate(
+        'testbot1',
+        testBots.bots[0].config.botCommand,
+        errorContext
+      );
 
-      const onMessageSpy = sandbox.spy((response) => {
-        setTimeout(() => {
-          expect(response.message).to.equal(errorMessage);
-          done();
-        }, 1);
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
       });
 
       testBots.start().then((botEvt) => {
@@ -1672,23 +1690,35 @@ describe('/command', function () {
         });
       });
     });
+  });
+
+  describe('Schedule - command tools', function () {
+    beforeEach(function () {
+      jest.spyOn(storage, 'getEvents').mockResolvedValue({
+        events: {},
+        schedule: config.schedule,
+      });
+
+      initTestSetup({
+        config: config.dataPromise.commandTypeBots,
+      });
+      clock = FakeTimers.install();
+    });
+
+    afterEach(function () {
+      clock.uninstall();
+
+      return socketServer.closeClient();
+    });
 
     it('Should call schedule command', function (done) {
-      sandbox.stub(storage, 'getEvents').callsFake(() => {
-        return Promise.resolve({
-          events: {},
-          schedule: config.schedule,
-        });
-      });
-      const clock = sandbox.useFakeTimers(new Date());
-
-      const onMessageSpy = sandbox.spy((response) => {
-        if (onMessageSpy.getCalls().length === 1) {
-          expect(response.message).to.eq('Hello 1');
+      const onMessageSpy = jest.fn((response) => {
+        if (onMessageSpy.mock.calls.length === 1) {
+          expect(response.message).toEqual('Hello 1');
           clock.tick(60000);
         }
-        if (onMessageSpy.getCalls().length === 2) {
-          expect(response.message).to.eq('Hello 1');
+        if (onMessageSpy.mock.calls.length === 2) {
+          expect(response.message).toEqual('Hello 1');
           done();
         }
       });
