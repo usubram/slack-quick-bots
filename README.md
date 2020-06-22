@@ -161,6 +161,21 @@ data: function(input, options, callback) {
   }
 ```
 
+## Threaded Replies
+
+```javascript
+  {
+     bot: [{
+       botCommand: {
+         firstCommand: {
+           allowedUsers: ['slackUserId'] // firstCommand work only for slack user with id 'slackUserId'.
+         }
+       }
+     }],
+     repliesInThread: true, // All Replies will be in threads instead of channel directly.
+  }
+```
+
 ## Testing bots
 
 ```javascript
