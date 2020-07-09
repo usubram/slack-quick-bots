@@ -56,6 +56,7 @@ describe('/bot', function () {
       messageOptions = {
         name: 'testbot1',
         id: 'U1234567',
+        eId: 'U1234567',
         isDirectMessage: true,
       };
       messageParser = message.parse(

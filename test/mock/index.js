@@ -53,6 +53,9 @@ exports = module.exports = {
         }, {
           id: 'U0GG92T46', name: 'user2',
         }],
+        enterprise_user: {
+          id: 'U1234567',
+        },
       },
       botToken: 'xoxb-dummy',
     }],
@@ -99,6 +102,12 @@ exports = module.exports = {
         self: {
           name: 'testbot1',
           id: 'U1234567',
+          enterprise_user: {
+            id: 'U1234567',
+          },
+        },
+        enterprise_user: {
+          id: 'U1234567',
         },
       },
       botToken: 'xoxb-dummy',
@@ -144,6 +153,9 @@ exports = module.exports = {
           name: 'testbot2',
           id: 'U1234567',
         },
+      },
+      enterprise_user: {
+        id: 'U1234567',
       },
       botToken: 'xoxb-dummy',
     }],
@@ -461,6 +473,9 @@ exports = module.exports = {
           id: 'U1234567',
         },
       },
+      enterprise_user: {
+        id: 'U1234567',
+      },
       botToken: 'xoxb-dummy',
     }],
   },
@@ -559,12 +574,18 @@ exports = module.exports = {
         self: {
           name: 'testbot1',
           id: 'U1234567',
+          enterprise_user: {
+            id: 'U1234567',
+          },
         },
         members: [{
           id: 'U0GG92T45', name: 'user1',
         }, {
           id: 'U0GG92T46', name: 'user2',
         }],
+        enterprise_user: {
+          id: 'U1234567',
+        },
       },
       schedule: true,
       botToken: 'xoxb-dummy',
@@ -602,6 +623,9 @@ exports = module.exports = {
         }, {
           id: 'U0GG92T46', name: 'user2',
         }],
+        enterprise_user: {
+          id: 'U1234567',
+        },
       },
       botToken: 'xoxb-dummy',
     }],
@@ -638,6 +662,9 @@ exports = module.exports = {
         }, {
           id: 'U0GG92T46', name: 'user2',
         }],
+        enterprise_user: {
+          id: 'U1234567',
+        },
       },
       botToken: 'xoxb-dummy',
     }],
@@ -666,6 +693,9 @@ exports = module.exports = {
       mock: {
         self: {
           name: 'testbot1',
+          id: 'U1234567',
+        },
+        enterprise_user: {
           id: 'U1234567',
         },
         members: [{
@@ -707,6 +737,9 @@ exports = module.exports = {
           name: 'testbot1',
           id: 'U1234567',
         },
+        enterprise_user: {
+          id: 'U1234567',
+        },
         members: [{
           id: 'U0GG92T45', name: 'user1',
         }, {
@@ -740,6 +773,9 @@ exports = module.exports = {
       mock: {
         self: {
           name: 'testbot1',
+          id: 'U1234567',
+        },
+        enterprise_user: {
           id: 'U1234567',
         },
         members: [{
@@ -848,6 +884,9 @@ exports = module.exports = {
             name: 'testbot1',
             id: 'U1234567',
           },
+          enterprise_user: {
+            id: 'U1234567',
+          },
           members: [{
             id: 'U0GG92T45', name: 'user1',
           }, {
@@ -900,6 +939,9 @@ exports = module.exports = {
             name: 'testbot1',
             id: 'U1234567',
           },
+          enterprise_user: {
+            id: 'U1234567',
+          },
         },
         botToken: 'xoxb-dummy',
       }, {
@@ -942,6 +984,9 @@ exports = module.exports = {
         mock: {
           self: {
             name: 'testbot2',
+            id: 'U1234567',
+          },
+          enterprise_user: {
             id: 'U1234567',
           },
         },
@@ -1260,6 +1305,9 @@ exports = module.exports = {
             name: 'testbot2',
             id: 'U1234567',
           },
+          enterprise_user: {
+            id: 'U1234567',
+          },
         },
         botToken: 'xoxb-dummy',
       }],
@@ -1360,6 +1408,9 @@ exports = module.exports = {
             name: 'testbot1',
             id: 'U1234567',
           },
+          enterprise_user: {
+            id: 'U1234567',
+          },
           members: [{
             id: 'U0GG92T45', name: 'user1',
           }, {
@@ -1395,6 +1446,9 @@ exports = module.exports = {
         mock: {
           self: {
             name: 'testbot2',
+            id: 'U1234567',
+          },
+          enterprise_user: {
             id: 'U1234567',
           },
           members: [{
@@ -1433,6 +1487,9 @@ exports = module.exports = {
             name: 'testbot2',
             id: 'U1234567',
           },
+          enterprise_user: {
+            id: 'U1234567',
+          },
           members: [{
             id: 'U0GG92T45', name: 'user1',
           }, {
@@ -1466,6 +1523,9 @@ exports = module.exports = {
         mock: {
           self: {
             name: 'testbot1',
+            id: 'U1234567',
+          },
+          enterprise_user: {
             id: 'U1234567',
           },
           members: [{
@@ -1507,6 +1567,9 @@ exports = module.exports = {
             name: 'testbot1',
             id: 'U1234567',
           },
+          enterprise_user: {
+            id: 'U1234567',
+          },
           members: [{
             id: 'U0GG92T45', name: 'user1',
           }, {
@@ -1540,6 +1603,9 @@ exports = module.exports = {
         mock: {
           self: {
             name: 'testbot1',
+            id: 'U1234567',
+          },
+          enterprise_user: {
             id: 'U1234567',
           },
           members: [{
