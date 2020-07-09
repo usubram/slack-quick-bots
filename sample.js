@@ -95,7 +95,7 @@ const config = {
             ylabel: '#B6C3CC',
             grid: 'grey10',
             key: '#B6C3CC',
-            title: '#FB4D0B'
+            title: '#FB4D0B',
           },
           timeUnit: 'm',
           title: 'Log data',
