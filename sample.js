@@ -86,6 +86,17 @@ const config = {
         responseType: {
           type: 'png',
           ylabel: 'errors',
+          color: {
+            bg: '#121F26',
+            border: '#677E8C',
+            ytics: '#B6C3CC',
+            xtics: '#B6C3CC',
+            xlabel: '#B6C3CC',
+            ylabel: '#B6C3CC',
+            grid: 'grey10',
+            key: '#B6C3CC',
+            title: '#FB4D0B'
+          },
           timeUnit: 'm',
           title: 'Log data',
           logscale: false,
@@ -93,6 +104,7 @@ const config = {
           exec: {
             encoding: 'utf16',
           },
+          yformat: '%t',
         },
         validation: [{
           schema: [1, 2],
