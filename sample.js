@@ -72,6 +72,7 @@ const config = {
         data: function (input, options, callback) {
           // input.command - for command name.
           // input.params - for params in array.
+          // input.files - contains file input.
           // options.user.profile.email - email in slack.
           // options.hookUrl - custom webhook url.
           // options.channel - channel from which the command was fired.
