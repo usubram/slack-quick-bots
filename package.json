@@ -1,7 +1,7 @@
 {
   "name": "slack-quick-bots",
   "description": "A slack bot solution for enterprise.",
-  "version": "7.1.23",
+  "version": "7.1.28",
   "homepage": "https://github.com/usubram/slack-quick-bots",
   "author": {
     "name": "Umashankar Subramanian",
@@ -36,13 +36,13 @@
     "chatbots"
   ],
   "dependencies": {
-    "@umashankar/plotter": "0.5.6",
+    "@umashankar/plotter": "0.5.7",
     "bufferutil": "4.0.1",
     "cron": "1.8.2",
     "form-data": "3.0.0",
     "handlebars": "4.7.6",
     "https-proxy-agent": "5.0.0",
-    "lodash": "4.17.15",
+    "lodash": "4.17.19",
     "mime": "2.4.4",
     "moment": "2.24.0",
     "shortid": "2.2.15",

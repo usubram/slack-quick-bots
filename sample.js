@@ -45,6 +45,7 @@ const config = {
               param: input.params + ' log',
             });
           },
+          yformat: '%t',
         },
         logme: {
           commandType: 'DATA',

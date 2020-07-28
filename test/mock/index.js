@@ -136,6 +136,9 @@ exports = module.exports = {
               id: 'U1234567',
             },
           },
+          enterprise_user: {
+            id: 'U1234567',
+          },
         },
         botToken: 'xoxb-dummy',
       },
@@ -191,6 +194,9 @@ exports = module.exports = {
             enterprise_user: {
               id: 'U1234567',
             },
+          },
+          enterprise_user: {
+            id: 'U1234567',
           },
         },
         botToken: 'xoxb-dummy',
@@ -605,6 +611,9 @@ exports = module.exports = {
             enterprise_user: {
               id: 'U1234567',
             },
+          },
+          enterprise_user: {
+            id: 'U1234567',
           },
         },
         botToken: 'xoxb-dummy',
