@@ -3,15 +3,14 @@
 const _ = require('lodash');
 const botLogger = require('../../../lib/utils/logger');
 const uuid = require('uuid');
-const root = '../../../';
 
-const SlackBot = require(root + 'lib/index');
-const socketServer = require(root + '/lib/bot/socket-server');
-const config = require(root + 'test/mock');
-const responseHandler = require(root + 'lib/bot/response-handler');
-const message = require(root + 'lib/command/message');
-const storage = require(root + 'lib/storage/storage');
-const apiRequest = require(root + 'lib/slack-api/api-request');
+const SlackBot = require('../../../lib/index');
+const socketServer = require('../../../lib/bot/socket-server');
+const config = require('../../../test/mock');
+const responseHandler = require('../../../lib/bot/response-handler');
+const message = require('../../../lib/command/message');
+const storage = require('../../../lib/storage/storage');
+const apiRequest = require('../../../lib/slack-api/api-request');
 const FakeTimers = require('@sinonjs/fake-timers');
 
 botLogger.setLogger();

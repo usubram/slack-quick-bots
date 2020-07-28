@@ -1,9 +1,8 @@
 'use strict';
 
-const root = '../../../';
 const _ = require('lodash');
-const config = require(root + 'test/mock');
-const message = require(root + 'lib/command/message');
+const config = require('../../mock');
+const message = require('../../../lib/command/message');
 
 describe('/message', function () {
   let slackMessage = '';

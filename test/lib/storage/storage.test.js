@@ -1,7 +1,6 @@
 'use strict';
 
-const root = '../../../';
-const storage = require(root + 'lib/storage/storage');
+const storage = require('../../../lib/storage/storage');
 
 describe('/storage', function () {
   describe('validate if read event is called on bootstrap', function () {
