@@ -1,0 +1,24 @@
+{{#if _orderedResponse.question}}
+  {{_orderedResponse.question}}\n
+
+  To start over send <@{{botName}}> {{commandName}} redo
+{{/if}}
+{{#if _orderedResponse.response}}
+  {{#each _orderedResponse.response}}
+    {{#each this}}*{{@key}}* - _{{.}}_\n{{/each}}
+  {{/each}}
+
+  To start over send <@{{botName}}> {{toLowerCase commandName}} redo
+{{/if}}
+{{#if _response.response.selection}}
+  selected 1
+
+  To start over send <@{{botName}}> {{toLowerCase commandName}} redo
+{{/if}}
+{{#if _response.response.yes}}
+  {{#if _response.response.yes}}
+    Page out sent.
+  {{/if}}
+
+  To start over send <@{{botName}}> {{toLowerCase commandName}} redo
+{{/if}}

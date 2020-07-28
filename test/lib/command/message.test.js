@@ -81,7 +81,7 @@ describe('/message', function () {
     });
 
     it('Should allow proper botname prefix in direct message', function () {
-      slackMessage.text = '<@U1234567>: ping 123 456';
+      slackMessage.text = '<@U1234567> ping 123 456';
       const parsedMessage = messageParser(slackMessage, true);
 
       slackMessage.message = {
@@ -96,7 +96,7 @@ describe('/message', function () {
 
   describe('channel message', function () {
     it('Should correctly parse channel message', function () {
-      slackMessage.text = '<@U1234567>: ping 1';
+      slackMessage.text = '<@U1234567> ping 1';
 
       const parsedMessage = messageParser(slackMessage, false);
 
@@ -138,7 +138,7 @@ describe('/message', function () {
     });
 
     it('Should correctly parse channel message with bot mentions', function () {
-      slackMessage.text = '<@U1234567>: ping 1 2 3';
+      slackMessage.text = '<@U1234567> ping 1 2 3';
 
       const parsedMessage = messageParser(slackMessage, false);
 
@@ -153,6 +153,34 @@ describe('/message', function () {
 
     it('Should correctly parse channel message with bot id without colon', function () {
       slackMessage.text = '<@U1234567> ping 1 2 3';
+
+      const parsedMessage = messageParser(slackMessage, false);
+
+      slackMessage.message = {
+        commandPrefix: 'U1234567',
+        command: 'PING',
+        params: ['1', '2', '3'],
+      };
+
+      expect(parsedMessage).toEqual(slackMessage);
+    });
+
+    it('Should correctly parse channel message with bot id without no space', function () {
+      slackMessage.text = '<@U1234567>ping 1 2 3';
+
+      const parsedMessage = messageParser(slackMessage, false);
+
+      slackMessage.message = {
+        commandPrefix: 'U1234567',
+        command: 'PING',
+        params: ['1', '2', '3'],
+      };
+
+      expect(parsedMessage).toEqual(slackMessage);
+    });
+
+    it('Should correctly parse channel message with bot id without two space', function () {
+      slackMessage.text = '<@U1234567>  ping 1 2 3';
 
       const parsedMessage = messageParser(slackMessage, false);
 

@@ -1507,6 +1507,49 @@ describe('/command', function () {
       });
     });
 
+    it('Should respond with redo response', async (done) => {
+      slackMessage.text = 'flowit redo';
+      delete errorContext.error;
+      errorContext.noflow = true;
+      const errorMessage = responseHandler.generateBotResponseTemplate(
+        errorContext
+      );
+
+      const onMessageSpy = jest.fn((response) => {
+        expect(response.message).toEqual(errorMessage);
+        done();
+      });
+
+      const testbot = await testBots.start();
+      testbot[0].on('connect', () => {
+        testbot[0].injectMessage(slackMessage);
+      });
+      testbot[0].on('message', onMessageSpy);
+    });
+
+    it('Should run all flow command steps', async (done) => {
+      slackMessage.text = 'flowit user 123';
+
+      const onMessageSpy = jest.fn((response) => {
+        if (onMessageSpy.mock.calls.length === 1) {
+          expect(response.message).toContain('*1*');
+          slackMessage.text = 'flowit 1';
+          testbot[0].injectMessage(slackMessage);
+        }
+        if (onMessageSpy.mock.calls.length === 2) {
+          slackMessage.text = 'flowit yes';
+          expect(response.message).toContain('selected 1');
+          done();
+        }
+      });
+
+      const testbot = await testBots.start();
+      testbot[0].on('connect', () => {
+        testbot[0].injectMessage(slackMessage);
+      });
+      testbot[0].on('message', onMessageSpy);
+    });
+
     it('Should call setUpRecursiveTask for recursive command', function (done) {
       slackMessage.text = 'auto';
 

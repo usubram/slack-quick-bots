@@ -8,7 +8,6 @@ const apiRequest = require('./../../lib/slack-api/api-request');
 const FakeTimers = require('@sinonjs/fake-timers');
 const { Connector } = require('./../../lib/bot/connector');
 
-console.log('Connector.prototype', Connector.prototype.connect);
 describe('/connector', function () {
   let slackBot;
   let botConfig;
@@ -38,7 +37,7 @@ describe('/connector', function () {
         channel: 'D1234567',
       });
     });
-    const response = await new Promise(function (resolve) {
+    const response = await new Promise((resolve) => {
       testbot[0].on('message', resolve);
     });
 

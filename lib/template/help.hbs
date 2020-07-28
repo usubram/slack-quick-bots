@@ -3,6 +3,21 @@
 	I'm not running any scheduled commands here. Go to your private channel or DM if you are looking for a command scheduled in your DM or private channel.
 ```
 {{/if}}
+{{#if noflow}}
+	```
+	Howdy, i received your command. Go ahead and stat over.
+	```
+{{/if}}
+{{#if flowExist}}
+	```
+	Howdy, i received your command. Go ahead and stat over.
+	```
+{{/if}}
+{{#if flowExpired}}
+	```
+	Howdy, I must have forgotten about our conversation, please stat over.
+	```
+{{/if}}
 {{#if scheduledEvents}}
 ```
 	List of scheduled commands\n

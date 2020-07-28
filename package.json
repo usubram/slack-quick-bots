@@ -20,12 +20,7 @@
   "bugs": {
     "url": "https://github.com/usubram/slack-quick-bots/issues"
   },
-  "license": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/usubram/slack-quick-bots/blob/master/LICENSE-MIT"
-    }
-  ],
+  "license": "MIT",
   "main": "./lib/index.js",
   "engines": {
     "node": ">=10.0.0"
@@ -59,6 +54,6 @@
     "@sinonjs/fake-timers": "^6.0.1",
     "eslint": "6.8.0",
     "jest": "^26.0.1",
-    "prettier": "2.0.4"
+    "prettier": "2.0.5"
   }
 }

@@ -15,7 +15,7 @@ const apiRequest = require(root + 'lib/slack-api/api-request');
 
 botLogger.setLogger();
 
-describe.only('/bot', function () {
+describe('/bot', function () {
   describe('direct message', function () {
     let testBots;
     let errorContext;
@@ -46,6 +46,7 @@ describe.only('/bot', function () {
       messageOptions = {
         name: 'testbot1',
         id: 'U1234567',
+        eId: 'U1234567',
         isDirectMessage: true,
       };
       messageParser = message.parse(
@@ -143,7 +144,6 @@ describe.only('/bot', function () {
     let slackMessage;
     let messageParser;
     let messageOptions;
-    let apiRequestFetchStub;
 
     beforeEach(function () {
       testBots = new SlackBot(config.singleBot, {

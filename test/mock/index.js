@@ -5,6 +5,10 @@ const sampleTemplate = fs.readFileSync(
   './test/mock/template/' + 'sample-template.hbs',
   'utf8'
 );
+const flowTemplate = fs.readFileSync(
+  './test/mock/template/' + 'flow-template.hbs',
+  'utf8'
+);
 
 exports = module.exports = {
   singleBot: {
@@ -58,6 +62,9 @@ exports = module.exports = {
           self: {
             name: 'testbot1',
             id: 'U1234567',
+            enterprise_user: {
+              id: 'U1234567',
+            },
           },
           members: [
             {
@@ -125,6 +132,9 @@ exports = module.exports = {
           self: {
             name: 'testbot1',
             id: 'U1234567',
+            enterprise_user: {
+              id: 'U1234567',
+            },
           },
         },
         botToken: 'xoxb-dummy',
@@ -178,6 +188,9 @@ exports = module.exports = {
           self: {
             name: 'testbot2',
             id: 'U1234567',
+            enterprise_user: {
+              id: 'U1234567',
+            },
           },
         },
         botToken: 'xoxb-dummy',
@@ -589,6 +602,9 @@ exports = module.exports = {
           self: {
             name: 'testbot2',
             id: 'U1234567',
+            enterprise_user: {
+              id: 'U1234567',
+            },
           },
         },
         botToken: 'xoxb-dummy',
@@ -699,11 +715,77 @@ exports = module.exports = {
               });
             },
           },
+          flowit: {
+            commandType: 'FLOW',
+            timeout: '60',
+            template: flowTemplate,
+            validation: [
+              {
+                schema: [['user', 'team'], /^[a-zA-Z\d\D]{3,}$/],
+                help: [
+                  {
+                    recommend: 'user',
+                    error: '{{arg}} your input is isvalid',
+                  },
+                  {
+                    recommend: '1',
+                    error:
+                      '{{arg}} is incorrect. Enter minimum of three characters',
+                  },
+                ],
+              },
+              {
+                schema: [/\d$/],
+                help: [
+                  {
+                    recommend: '1',
+                    error: '{{arg}} enter a valid digit',
+                  },
+                ],
+              },
+              {
+                schema: [['yes', 'no']],
+                help: [
+                  {
+                    recommend: 'yes or no',
+                    error: '{{arg}} Try yes or no',
+                  },
+                ],
+              },
+            ],
+            data: function (input, options, callback) {
+              if (options.response[0].answered === false) {
+                return callback(null, {
+                  param: input.params,
+                  orderedResponse: ['result1', 'result2'],
+                });
+              }
+              if (options.response[1].answered === false) {
+                return callback(null, {
+                  param: input.params,
+                  response: {
+                    selection: input.params[0],
+                  },
+                });
+              }
+              if (options.response[2].answered === false) {
+                return callback(null, {
+                  param: input.params,
+                  response: {
+                    [input.params[0]]: true,
+                  },
+                });
+              }
+            },
+          },
         },
         mock: {
           self: {
             name: 'testbot1',
             id: 'U1234567',
+            enterprise_user: {
+              id: 'U1234567',
+            },
           },
           members: [
             {
@@ -752,6 +834,9 @@ exports = module.exports = {
           self: {
             name: 'testbot2',
             id: 'U1234567',
+            enterprise_user: {
+              id: 'U1234567',
+            },
           },
           members: [
             {
@@ -799,6 +884,9 @@ exports = module.exports = {
           self: {
             name: 'testbot2',
             id: 'U1234567',
+            enterprise_user: {
+              id: 'U1234567',
+            },
           },
           members: [
             {
@@ -845,6 +933,9 @@ exports = module.exports = {
           self: {
             name: 'testbot1',
             id: 'U1234567',
+            enterprise_user: {
+              id: 'U1234567',
+            },
           },
           members: [
             {
@@ -895,6 +986,9 @@ exports = module.exports = {
           self: {
             name: 'testbot1',
             id: 'U1234567',
+            enterprise_user: {
+              id: 'U1234567',
+            },
           },
           members: [
             {
@@ -941,6 +1035,9 @@ exports = module.exports = {
           self: {
             name: 'testbot1',
             id: 'U1234567',
+            enterprise_user: {
+              id: 'U1234567',
+            },
           },
           members: [
             {
@@ -1050,6 +1147,9 @@ exports = module.exports = {
             self: {
               name: 'testbot1',
               id: 'U1234567',
+              enterprise_user: {
+                id: 'U1234567',
+              },
             },
             members: [
               {
@@ -1117,6 +1217,9 @@ exports = module.exports = {
             self: {
               name: 'testbot1',
               id: 'U1234567',
+              enterprise_user: {
+                id: 'U1234567',
+              },
             },
           },
           botToken: 'xoxb-dummy',
@@ -1170,6 +1273,9 @@ exports = module.exports = {
             self: {
               name: 'testbot2',
               id: 'U1234567',
+              enterprise_user: {
+                id: 'U1234567',
+              },
             },
           },
           botToken: 'xoxb-dummy',
@@ -1225,7 +1331,7 @@ exports = module.exports = {
                 },
               ],
               template: sampleTemplate,
-              data: function (input, options) {
+              data: function (input) {
                 return Promise.resolve({
                   param: input.params,
                 });
@@ -1246,7 +1352,7 @@ exports = module.exports = {
                 },
               ],
               template: sampleTemplate,
-              data: function (input, options) {
+              data: function (input) {
                 return Promise.resolve({
                   param: input.params,
                 });
@@ -1581,6 +1687,9 @@ exports = module.exports = {
             self: {
               name: 'testbot2',
               id: 'U1234567',
+              enterprise_user: {
+                id: 'U1234567',
+              },
             },
           },
           botToken: 'xoxb-dummy',
@@ -1658,7 +1767,7 @@ exports = module.exports = {
               commandType: 'ALERT',
               timeInterval: 1,
               algo: 'CUMULATIVE_DIFFERENCE',
-              data: function (input) {
+              data: function () {
                 const dataArr = [
                   // Sample data
                   {
@@ -1696,6 +1805,9 @@ exports = module.exports = {
             self: {
               name: 'testbot1',
               id: 'U1234567',
+              enterprise_user: {
+                id: 'U1234567',
+              },
             },
             members: [
               {
@@ -1744,6 +1856,9 @@ exports = module.exports = {
             self: {
               name: 'testbot2',
               id: 'U1234567',
+              enterprise_user: {
+                id: 'U1234567',
+              },
             },
             members: [
               {
@@ -1791,6 +1906,9 @@ exports = module.exports = {
             self: {
               name: 'testbot2',
               id: 'U1234567',
+              enterprise_user: {
+                id: 'U1234567',
+              },
             },
             members: [
               {
@@ -1837,6 +1955,9 @@ exports = module.exports = {
             self: {
               name: 'testbot1',
               id: 'U1234567',
+              enterprise_user: {
+                id: 'U1234567',
+              },
             },
             members: [
               {
@@ -1887,6 +2008,9 @@ exports = module.exports = {
             self: {
               name: 'testbot1',
               id: 'U1234567',
+              enterprise_user: {
+                id: 'U1234567',
+              },
             },
             members: [
               {
@@ -1933,6 +2057,9 @@ exports = module.exports = {
             self: {
               name: 'testbot1',
               id: 'U1234567',
+              enterprise_user: {
+                id: 'U1234567',
+              },
             },
             members: [
               {

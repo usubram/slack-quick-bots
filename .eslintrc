@@ -2,14 +2,22 @@
   "env": {
     "es6": true,
     "node": true,
-    "mocha": true
+    "jest": true
   },
-  "extends": ["eslint:recommended", "google"],
+  "extends": ["eslint:recommended"],
+  "parserOptions": {
+    "ecmaVersion": 8
+  },
   "rules": {
-    "space-before-function-paren": ["error", "always"],
     "object-curly-spacing": ["error", "always"],
     "quotes": ["error", "single"],
-    "indent": ["error", 2],
+    "indent": [
+      "error",
+      2,
+      {
+        "SwitchCase": 1
+      }
+    ],
     "no-console": 1,
     "prefer-promise-reject-errors": 0
   }
