@@ -5,7 +5,6 @@ const botLogger = require('../../../lib/utils/logger');
 const uuid = require('uuid');
 
 const SlackBot = require('../../../lib/index');
-const socketServer = require('../../../lib/bot/socket-server');
 const config = require('../../../test/mock');
 const responseHandler = require('../../../lib/bot/response-handler');
 const message = require('../../../lib/command/message');
@@ -81,10 +80,6 @@ describe('/command', function () {
         initTestSetup({
           config: config.singleBotForAllowedParam,
         });
-      });
-
-      afterEach(function () {
-        return socketServer.closeClient();
       });
 
       it('Should pass command vaidation with default value', function (done) {
@@ -447,10 +442,6 @@ describe('/command', function () {
         initTestSetup({
           config: config.dataPromise.singleBotForAllowedParam,
         });
-      });
-
-      afterEach(function () {
-        return socketServer.closeClient();
       });
 
       it('Should pass command vaidation with default value', function (done) {
@@ -821,10 +812,6 @@ describe('/command', function () {
       });
     });
 
-    afterEach(function () {
-      return socketServer.closeClient();
-    });
-
     it('Should block user and respond error', function (done) {
       delete errorContext.error;
       errorContext.restrictedUser = true;
@@ -904,10 +891,6 @@ describe('/command', function () {
           user: 'U0GG92T46',
         },
       });
-    });
-
-    afterEach(function () {
-      return socketServer.closeClient();
     });
 
     it('Should block user and respond error', function (done) {
@@ -991,10 +974,6 @@ describe('/command', function () {
       });
     });
 
-    afterEach(function () {
-      return socketServer.closeClient();
-    });
-
     it('Should block message for not allowed channels', function (done) {
       delete errorContext.error;
       errorContext.restrictedChannel = true;
@@ -1051,10 +1030,6 @@ describe('/command', function () {
       });
     });
 
-    afterEach(function () {
-      return socketServer.closeClient();
-    });
-
     it('Should block message for not allowed channels', function (done) {
       delete errorContext.error;
       errorContext.restrictedChannel = true;
@@ -1109,10 +1084,6 @@ describe('/command', function () {
           text: 'ping 1',
         },
       });
-    });
-
-    afterEach(function () {
-      return socketServer.closeClient();
     });
 
     it('Should respond with blocked message on DM', function (done) {
@@ -1238,10 +1209,6 @@ describe('/command', function () {
           text: 'ping 1',
         },
       });
-    });
-
-    afterEach(function () {
-      return socketServer.closeClient();
     });
 
     it('Should respond with blocked message on DM', function (done) {
@@ -1380,10 +1347,6 @@ describe('/command', function () {
       };
     });
 
-    afterEach(function () {
-      return socketServer.closeClient();
-    });
-
     it(
       'Should respond with blocked message on' +
         'private group with custom message',
@@ -1437,10 +1400,6 @@ describe('/command', function () {
       };
     });
 
-    afterEach(function () {
-      return socketServer.closeClient();
-    });
-
     it(
       'Should respond with blocked message on' +
         'private group with custom message',
@@ -1485,8 +1444,6 @@ describe('/command', function () {
 
     afterEach(function () {
       clock.uninstall();
-
-      return socketServer.closeClient();
     });
 
     it('Should call getData for data command', function (done) {
@@ -1637,10 +1594,6 @@ describe('/command', function () {
       });
     });
 
-    afterEach(function () {
-      return socketServer.closeClient();
-    });
-
     it('Should call getData for data command', function (done) {
       slackMessage.text = 'ping';
 
@@ -1749,8 +1702,6 @@ describe('/command', function () {
 
     afterEach(function () {
       clock.uninstall();
-
-      return socketServer.closeClient();
     });
 
     it('Should call schedule command', function (done) {

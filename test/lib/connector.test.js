@@ -3,7 +3,6 @@
 const _ = require('lodash');
 const config = require('../mock');
 const SlackBot = require('./../../lib/index');
-const socketServer = require('./../../lib/bot/socket-server');
 const apiRequest = require('./../../lib/slack-api/api-request');
 const FakeTimers = require('@sinonjs/fake-timers');
 const { Connector } = require('./../../lib/bot/connector');
@@ -19,10 +18,6 @@ describe('/connector', function () {
       members: [],
       channels: [],
     });
-  });
-
-  afterEach(() => {
-    return socketServer.closeClient();
   });
 
   it('Should connect to socker server at first attempt and respond', async () => {

@@ -5,7 +5,6 @@ const uuid = require('uuid');
 
 const botLogger = require('../../../lib/utils/logger');
 const SlackBot = require('../../../lib/index');
-const socketServer = require('../../..//lib/bot/socket-server');
 const config = require('../../../test/mock');
 const responseHandler = require('../../../lib/bot/response-handler');
 const message = require('../../../lib/command/message');
@@ -14,7 +13,7 @@ const apiRequest = require('../../../lib/slack-api/api-request');
 
 botLogger.setLogger();
 
-describe('/bot', function () {
+describe.only('/bot', function () {
   describe('direct message', function () {
     let testBots;
     let errorContext;
@@ -56,7 +55,6 @@ describe('/bot', function () {
 
     afterEach(function () {
       testBots.shutdown();
-      return socketServer.closeClient();
     });
 
     it('Should response with the expected response', function (done) {
@@ -176,7 +174,6 @@ describe('/bot', function () {
 
     afterEach(function () {
       testBots.shutdown();
-      return socketServer.closeClient();
     });
 
     it('Should call dispatchMessage with correct arguments', function (done) {

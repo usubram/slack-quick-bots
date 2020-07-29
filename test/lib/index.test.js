@@ -3,12 +3,11 @@
 const botLogger = require('../../lib/utils/logger');
 const SlackBot = require('../../lib/index');
 const config = require('../../test/mock');
-const socketServer = require('../../lib/bot/socket-server');
 const apiRequest = require('../../lib/slack-api/api-request');
 
 botLogger.setLogger();
 
-describe('SlackBot test', function () {
+describe.only('SlackBot test', function () {
   describe('single bot', function () {
     let testBots;
 
@@ -20,10 +19,6 @@ describe('SlackBot test', function () {
         members: [],
         channels: [],
       });
-    });
-
-    afterEach(function () {
-      return socketServer.closeClient();
     });
 
     describe('Should instantiate slackbots correctly', function () {
@@ -63,10 +58,6 @@ describe('SlackBot test', function () {
         members: [],
         channels: [],
       });
-    });
-
-    afterEach(function () {
-      return socketServer.closeClient();
     });
 
     describe('Should instantiate slackbots correctly', function () {
