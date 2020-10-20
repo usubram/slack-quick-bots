@@ -3,8 +3,8 @@
 
   To start over send <@{{botName}}> {{commandName}} redo
 {{/if}}
-{{#if _orderedResponse.response}}
-  {{#each _orderedResponse.response}}
+{{#if _response.response}}
+  {{#each _response.response}}
     {{#each this}}*{{@key}}* - _{{.}}_\n{{/each}}
   {{/each}}
 

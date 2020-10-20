@@ -780,6 +780,7 @@ exports = module.exports = {
               if (options.response[2].answered === false) {
                 return callback(null, {
                   param: input.params,
+                  finished: true,
                   response: {
                     [input.params[0]]: true,
                   },
