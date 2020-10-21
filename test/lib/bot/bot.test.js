@@ -48,7 +48,12 @@ describe.only('/bot', function () {
         isDirectMessage: true,
       };
       messageParser = message.parse(
-        _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')), _.toUpper),
+        _.map(_.get(config, 'singleBot.bots.0.botCommand'), (command, key) => {
+          return {
+            command: _.toUpper(key),
+            alias: command.alias ? (command.alias || []).map(_.toUpper) : [],
+          };
+        }),
         messageOptions
       );
     });
@@ -167,7 +172,12 @@ describe.only('/bot', function () {
         isDirectMessage: true,
       };
       messageParser = message.parse(
-        _.map(_.keys(_.get(config, 'singleBot.bots.0.botCommand')), _.toUpper),
+        _.map(_.get(config, 'singleBot.bots.0.botCommand'), (command, key) => {
+          return {
+            command: _.toUpper(key),
+            alias: command.alias ? (command.alias || []).map(_.toUpper) : [],
+          };
+        }),
         messageOptions
       );
     });

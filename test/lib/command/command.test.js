@@ -61,7 +61,12 @@ describe('/command', function () {
     );
 
     messageParser = message.parse(
-      _.map(_.keys(_.get(testBots, 'bots.0.config.botCommand')), _.toUpper),
+      _.map(_.get(testBots, 'bots.0.config.botCommand'), (command, key) => {
+        return {
+          command: _.toUpper(key),
+          alias: command.alias ? (command.alias || []).map(_.toUpper) : [],
+        };
+      }),
       messageOptions
     );
   };
