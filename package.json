@@ -44,7 +44,7 @@
     "https-proxy-agent": "5.0.0",
     "lodash": "4.17.19",
     "mime": "2.4.6",
-    "moment": "2.27.0",
+    "moment": "2.29.2",
     "shortid": "2.2.15",
     "utf-8-validate": "5.0.2",
     "uuid": "8.3.0",
