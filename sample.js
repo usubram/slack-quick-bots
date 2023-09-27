@@ -1,9 +1,9 @@
 'use strict';
 
-const SlackBot = require('./lib/index');
-const fs = require('fs');
-const sampleTemplate = fs.readFileSync('./sample.hbs', 'utf8');
-const moment = require('moment');
+import SlackBot from './lib/index.js';
+import { readFileSync } from 'fs';
+const sampleTemplate = readFileSync('./sample.hbs', 'utf8');
+import moment from 'moment';
 
 const args = process.argv.slice(2);
 
@@ -31,7 +31,7 @@ const config = {
               ],
             },
           ],
-          allowedChannels: ['G4G117PFG'],
+          allowedChannels: ['G89W82GBE'],
           descriptionText: 'Command to show log metrics',
           helpText: '☞ this is log command',
           template: sampleTemplate,
@@ -46,6 +46,70 @@ const config = {
             });
           },
           yformat: '%t',
+        },
+        flowit: {
+          commandType: 'FLOW',
+          timeout: '60',
+          template: sampleTemplate,
+          validation: [
+            {
+              schema: [['user', 'team'], /^[a-zA-Z\d\D]{3,}$/],
+              help: [
+                {
+                  recommend: 'user',
+                  error: '{{arg}} your input is isvalid',
+                },
+                {
+                  recommend: '1',
+                  error:
+                    '{{arg}} is incorrect. Enter minimum of three characters',
+                },
+              ],
+            },
+            {
+              schema: [/\d$/],
+              help: [
+                {
+                  recommend: '1',
+                  error: '{{arg}} enter a valid digit',
+                },
+              ],
+            },
+            {
+              schema: [['yes', 'no']],
+              help: [
+                {
+                  recommend: 'yes or no',
+                  error: '{{arg}} Try yes or no',
+                },
+              ],
+            },
+          ],
+          data: function (input, options, callback) {
+            if (options.response[0].answered === false) {
+              return callback(null, {
+                param: input.params,
+                orderedResponse: ['result1', 'result2'],
+              });
+            }
+            if (options.response[1].answered === false) {
+              return callback(null, {
+                param: input.params,
+                response: {
+                  selection: input.params[0],
+                },
+              });
+            }
+            if (options.response[2].answered === false) {
+              return callback(null, {
+                param: input.params,
+                finished: true,
+                response: {
+                  [input.params[0]]: true,
+                },
+              });
+            }
+          },
         },
         logme: {
           commandType: 'DATA',
@@ -245,7 +309,7 @@ const config = {
     },
   ],
   // proxy: {
-  //   url: 'http://proxy.socketproxy.com:8080/'
+  //   url: 'http://proxy.socketproxy.com:8080',
   // },
   logger: console, // you could pass a winston logger.
   server: {

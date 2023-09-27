@@ -1,8 +1,8 @@
 'use strict';
 
-const _ = require('lodash');
-const config = require('../../mock');
-const message = require('../../../lib/command/message');
+import { map, get, toUpper } from 'lodash-es';
+import config from '../../mock/index.js';
+import { parse } from '../../../lib/command/message.js';
 
 describe('/message', function () {
   let slackMessage = '';
@@ -23,11 +23,11 @@ describe('/message', function () {
       id: 'U1234567',
       isDirectMessage: true,
     };
-    messageParser = message.parse(
-      _.map(_.get(config, 'singleBot.bots.0.botCommand'), (command, key) => {
+    messageParser = parse(
+      map(get(config, 'singleBot.bots.0.botCommand'), (command, key) => {
         return {
-          command: _.toUpper(key),
-          alias: command.alias ? (command.alias || []).map(_.toUpper) : [],
+          command: toUpper(key),
+          alias: command.alias ? (command.alias || []).map(toUpper) : [],
         };
       }),
       messageOptions

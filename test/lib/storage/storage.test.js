@@ -1,36 +1,34 @@
 'use strict';
 
-const storage = require('../../../lib/storage/storage');
+import { Storage } from '../../../lib/storage/storage.js';
 
 describe('/storage', function () {
   describe('validate if read event is called on bootstrap', function () {
     beforeEach(function () {
-      jest.spyOn(storage, 'updateEvents');
-      jest.spyOn(storage, 'removeEvents');
+      jest.spyOn(Storage, 'updateEvents');
+      jest.spyOn(Storage, 'removeEvents');
 
-      jest.spyOn(storage, 'readFile').mockResolvedValue({});
-      jest.spyOn(storage, 'writeFile').mockImplementation((fileType, data) => {
+      jest.spyOn(Storage, 'readFile').mockResolvedValue({});
+      jest.spyOn(Storage, 'writeFile').mockImplementation((fileType, data) => {
         return Promise.resolve(data);
       });
     });
 
     it('Should update events correctly', function () {
-      return storage
-        .updateEvents(
-          {
-            eventType: 'events',
-            botName: 'newBot',
-          },
-          {}
-        )
-        .then(() => {
-          expect(storage.readFile).toHaveBeenCalledTimes(1);
-        });
+      return Storage.updateEvents(
+        {
+          eventType: 'events',
+          botName: 'newBot',
+        },
+        {}
+      ).then(() => {
+        expect(Storage.readFile).toHaveBeenCalledTimes(1);
+      });
     });
 
     it('Should remove events correctly', function () {
-      return storage.removeEvents('newBot', 'events', {}).then(() => {
-        expect(storage.readFile).toHaveBeenCalledTimes(1);
+      return Storage.removeEvents('newBot', 'events', {}).then(() => {
+        expect(Storage.readFile).toHaveBeenCalledTimes(1);
       });
     });
   });

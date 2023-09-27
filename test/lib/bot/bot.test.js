@@ -1,19 +1,16 @@
 'use strict';
 
-const _ = require('lodash');
-const uuid = require('uuid');
+import { map, get, toUpper } from 'lodash-es';
+import { v4 } from 'uuid';
 
-const botLogger = require('../../../lib/utils/logger');
-const SlackBot = require('../../../lib/index');
-const config = require('../../../test/mock');
-const responseHandler = require('../../../lib/bot/response-handler');
-const message = require('../../../lib/command/message');
-const storage = require('../../../lib/storage/storage');
-const apiRequest = require('../../../lib/slack-api/api-request');
+import SlackBot from '../../../lib/index.js';
+import fixtures from '../../../test/mock/index.js';
+import { generateErrorTemplate } from '../../../lib/bot/response-handler.js';
+import { parse } from '../../../lib/command/message.js';
+import { Storage } from '../../../lib/storage/storage.js';
+import apiRequest from '../../../lib/slack-api/api-request.js';
 
-botLogger.setLogger();
-
-describe.only('/bot', function () {
+describe('/bot', function () {
   describe('direct message', function () {
     let testBots;
     let errorContext;
@@ -22,10 +19,10 @@ describe.only('/bot', function () {
     let messageOptions;
 
     beforeEach(function () {
-      testBots = new SlackBot(config.singleBot, {
+      testBots = new SlackBot(fixtures.singleBot, {
         isMock: true,
       });
-      jest.spyOn(storage, 'updateEvents').mockResolvedValue({});
+      jest.spyOn(Storage, 'updateEvents').mockResolvedValue({});
       jest.spyOn(apiRequest, 'fetch').mockResolvedValue({
         members: [],
         channels: [],
@@ -34,7 +31,7 @@ describe.only('/bot', function () {
         error: true,
       };
       slackMessage = {
-        id: uuid.v4(),
+        id: v4(),
         type: 'message',
         channel: 'D0GL06JD7',
         user: 'U0GG92T45',
@@ -47,11 +44,11 @@ describe.only('/bot', function () {
         eId: 'U1234567',
         isDirectMessage: true,
       };
-      messageParser = message.parse(
-        _.map(_.get(config, 'singleBot.bots.0.botCommand'), (command, key) => {
+      messageParser = parse(
+        map(get(fixtures, 'singleBot.bots.0.botCommand'), (command, key) => {
           return {
-            command: _.toUpper(key),
-            alias: command.alias ? (command.alias || []).map(_.toUpper) : [],
+            command: toUpper(key),
+            alias: command.alias ? (command.alias || []).map(toUpper) : [],
           };
         }),
         messageOptions
@@ -80,7 +77,7 @@ describe.only('/bot', function () {
     it('Should respond with empty message', function (done) {
       slackMessage.text = '';
       errorContext.parsedMessage = messageParser(slackMessage);
-      const errorMessage = responseHandler.generateErrorTemplate(
+      const errorMessage = generateErrorTemplate(
         'testbot1',
         testBots.bots[0].config.botCommand,
         errorContext
@@ -119,7 +116,7 @@ describe.only('/bot', function () {
     it('Should respond with error message', function (done) {
       slackMessage.text = 'wrong command';
       errorContext.parsedMessage = messageParser(slackMessage);
-      const errorMessage = responseHandler.generateErrorTemplate(
+      const errorMessage = generateErrorTemplate(
         'testbot1',
         testBots.bots[0].config.botCommand,
         errorContext
@@ -148,7 +145,7 @@ describe.only('/bot', function () {
     let messageOptions;
 
     beforeEach(function () {
-      testBots = new SlackBot(config.singleBot, {
+      testBots = new SlackBot(fixtures.singleBot, {
         isMock: true,
       });
       jest.spyOn(apiRequest, 'fetch').mockResolvedValue({
@@ -159,7 +156,7 @@ describe.only('/bot', function () {
         error: true,
       };
       slackMessage = {
-        id: uuid.v4(),
+        id: v4(),
         type: 'message',
         channel: 'C0GL06JD8',
         user: 'U0GG92T45',
@@ -171,11 +168,11 @@ describe.only('/bot', function () {
         id: 'U1234567',
         isDirectMessage: true,
       };
-      messageParser = message.parse(
-        _.map(_.get(config, 'singleBot.bots.0.botCommand'), (command, key) => {
+      messageParser = parse(
+        map(get(fixtures, 'singleBot.bots.0.botCommand'), (command, key) => {
           return {
-            command: _.toUpper(key),
-            alias: command.alias ? (command.alias || []).map(_.toUpper) : [],
+            command: toUpper(key),
+            alias: command.alias ? (command.alias || []).map(toUpper) : [],
           };
         }),
         messageOptions
@@ -254,7 +251,7 @@ describe.only('/bot', function () {
         slackMessage.text = 'testbot1 wrong command';
         errorContext.parsedMessage = messageParser(slackMessage);
 
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext

@@ -1,18 +1,18 @@
 'use strict';
 
-const _ = require('lodash');
-const config = require('../mock');
-const SlackBot = require('./../../lib/index');
-const apiRequest = require('./../../lib/slack-api/api-request');
-const FakeTimers = require('@sinonjs/fake-timers');
-const { Connector } = require('./../../lib/bot/connector');
+import { cloneDeep, set } from 'lodash-es';
+import fixtures from '../mock/index.js';
+import SlackBot from './../../lib/index.js';
+import apiRequest from './../../lib/slack-api/api-request.js';
+import { install } from '@sinonjs/fake-timers';
+import { Connector } from './../../lib/bot/connector.js';
 
 describe('/connector', function () {
   let slackBot;
   let botConfig;
 
   beforeEach(() => {
-    botConfig = _.cloneDeep(config.singleBot);
+    botConfig = cloneDeep(fixtures.singleBot);
     jest.spyOn(Connector.prototype, 'connect');
     jest.spyOn(apiRequest, 'fetch').mockReturnValue({
       members: [],
@@ -41,9 +41,9 @@ describe('/connector', function () {
   });
 
   it('Should connect to socker server after 3rd attempt and respond', async () => {
-    _.set(botConfig, 'bots[0].mock.retryAttempt', 2);
+    set(botConfig, 'bots[0].mock.retryAttempt', 2);
 
-    const clock = FakeTimers.install();
+    const clock = install();
     slackBot = new SlackBot(botConfig, {
       isMock: true,
     });
@@ -68,8 +68,8 @@ describe('/connector', function () {
   });
 
   it('Should fail on auth error and should not retry', async () => {
-    _.set(botConfig, 'bots[0].mock.retryAttempt', 2);
-    _.set(botConfig, 'bots[0].mock', {
+    set(botConfig, 'bots[0].mock.retryAttempt', 2);
+    set(botConfig, 'bots[0].mock', {
       error: 'invalid_auth',
     });
 
@@ -87,7 +87,7 @@ describe('/connector', function () {
       isMock: true,
     });
 
-    const clock = FakeTimers.install();
+    const clock = install();
     const testbot = await slackBot.start();
     clock.tick(2001);
 
@@ -97,6 +97,7 @@ describe('/connector', function () {
 
     return await new Promise(function (resolve) {
       testbot[0].on('shutdown', resolve);
+      clock.uninstall();
     });
   });
 
@@ -104,7 +105,7 @@ describe('/connector', function () {
     slackBot = new SlackBot(botConfig, {
       isMock: true,
     });
-    const clock = FakeTimers.install();
+    const clock = install();
     let count = 2;
 
     const testbot = await slackBot.start();

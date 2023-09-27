@@ -1,16 +1,43 @@
 'use strict';
 
-const fs = require('fs');
-const sampleTemplate = fs.readFileSync(
+import { readFileSync } from 'fs';
+const sampleTemplate = readFileSync(
   './test/mock/template/' + 'sample-template.hbs',
   'utf8'
 );
-const flowTemplate = fs.readFileSync(
+const flowTemplate = readFileSync(
   './test/mock/template/' + 'flow-template.hbs',
   'utf8'
 );
 
-exports = module.exports = {
+const fun = async (...args) => {
+  const [input, options] = args;
+  if (options?.response[0].answered === false) {
+    return {
+      param: input.params,
+      orderedResponse: ['result1', 'result2'],
+    };
+  }
+  if (options.response[1].answered === false) {
+    return {
+      param: input.params,
+      response: {
+        selection: input.params[0],
+      },
+    };
+  }
+  if (options.response[2].answered === false) {
+    return {
+      param: input.params,
+      finished: true,
+      response: {
+        [input.params[0]]: true,
+      },
+    };
+  }
+};
+
+const botFixtures = {
   singleBot: {
     bots: [
       {
@@ -762,31 +789,7 @@ exports = module.exports = {
                 ],
               },
             ],
-            data: function (input, options, callback) {
-              if (options.response[0].answered === false) {
-                return callback(null, {
-                  param: input.params,
-                  orderedResponse: ['result1', 'result2'],
-                });
-              }
-              if (options.response[1].answered === false) {
-                return callback(null, {
-                  param: input.params,
-                  response: {
-                    selection: input.params[0],
-                  },
-                });
-              }
-              if (options.response[2].answered === false) {
-                return callback(null, {
-                  param: input.params,
-                  finished: true,
-                  response: {
-                    [input.params[0]]: true,
-                  },
-                });
-              }
-            },
+            data: fun,
           },
         },
         mock: {
@@ -2089,3 +2092,5 @@ exports = module.exports = {
     },
   },
 };
+
+export default botFixtures;

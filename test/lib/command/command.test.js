@@ -1,18 +1,18 @@
 'use strict';
 
-const _ = require('lodash');
-const botLogger = require('../../../lib/utils/logger');
-const uuid = require('uuid');
+import { merge, map, get, toUpper } from 'lodash-es';
+import { v4 } from 'uuid';
 
-const SlackBot = require('../../../lib/index');
-const config = require('../../../test/mock');
-const responseHandler = require('../../../lib/bot/response-handler');
-const message = require('../../../lib/command/message');
-const storage = require('../../../lib/storage/storage');
-const apiRequest = require('../../../lib/slack-api/api-request');
-const FakeTimers = require('@sinonjs/fake-timers');
-
-botLogger.setLogger();
+import SlackBot from '../../../lib/index.js';
+import fixtures from '../../../test/mock/index.js';
+import {
+  generateErrorTemplate,
+  generateBotResponseTemplate,
+} from '../../../lib/bot/response-handler.js';
+import { parse } from '../../../lib/command/message.js';
+import { Storage } from '../../../lib/storage/storage.js';
+import apiRequest from '../../../lib/slack-api/api-request.js';
+import { install } from '@sinonjs/fake-timers';
 
 describe('/command', function () {
   let testBots;
@@ -23,12 +23,12 @@ describe('/command', function () {
   let clock;
 
   const initTestSetup = function (options) {
-    jest.spyOn(storage, 'createEventDirectory').mockReturnValue({});
+    jest.spyOn(Storage, 'createEventDirectory').mockReturnValue({});
     testBots = new SlackBot(options.config, {
       isMock: true,
     });
 
-    errorContext = _.merge(
+    errorContext = merge(
       {},
       {
         error: true,
@@ -36,10 +36,10 @@ describe('/command', function () {
       options.errorContext
     );
 
-    slackMessage = _.merge(
+    slackMessage = merge(
       {},
       {
-        id: uuid.v4(),
+        id: v4(),
         type: 'message',
         channel: 'D0GL06JD7',
         user: 'U0GG92T45',
@@ -50,7 +50,7 @@ describe('/command', function () {
       options.slackMessage
     );
 
-    messageOptions = _.merge(
+    messageOptions = merge(
       {},
       {
         name: 'testbot1',
@@ -60,11 +60,11 @@ describe('/command', function () {
       options.messageOptions
     );
 
-    messageParser = message.parse(
-      _.map(_.get(testBots, 'bots.0.config.botCommand'), (command, key) => {
+    messageParser = parse(
+      map(get(testBots, 'bots.0.config.botCommand'), (command, key) => {
         return {
-          command: _.toUpper(key),
-          alias: command.alias ? (command.alias || []).map(_.toUpper) : [],
+          command: toUpper(key),
+          alias: command.alias ? (command.alias || []).map(toUpper) : [],
         };
       }),
       messageOptions
@@ -72,7 +72,7 @@ describe('/command', function () {
   };
 
   beforeEach(function () {
-    jest.spyOn(storage, 'updateEvents').mockResolvedValue({});
+    jest.spyOn(Storage, 'updateEvents').mockResolvedValue({});
     jest.spyOn(apiRequest, 'fetch').mockResolvedValue({
       members: [],
       channels: [],
@@ -83,7 +83,7 @@ describe('/command', function () {
     describe('isAllowedParamValid', function () {
       beforeEach(function () {
         initTestSetup({
-          config: config.singleBotForAllowedParam,
+          config: fixtures.singleBotForAllowedParam,
         });
       });
 
@@ -140,7 +140,7 @@ describe('/command', function () {
         errorContext.noOfErrors = 1;
         errorContext.failedParams = [{ error: '3 is incorrect' }];
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext
@@ -166,7 +166,7 @@ describe('/command', function () {
         errorContext.noOfErrors = 1;
         errorContext.failedParams = [{ error: '3 is incorrect' }];
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext
@@ -242,7 +242,7 @@ describe('/command', function () {
         slackMessage.text = 'help';
         delete errorContext.error;
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext
@@ -266,7 +266,7 @@ describe('/command', function () {
         slackMessage.text = 'pingregexchk help';
         delete errorContext.error;
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext
@@ -300,7 +300,7 @@ describe('/command', function () {
         };
         errorContext.parsedMessage = messageParser(slackMessage);
 
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext
@@ -351,7 +351,7 @@ describe('/command', function () {
           errorContext.sampleParams = [1, 3];
           errorContext.noOfErrors = 1;
           errorContext.parsedMessage = messageParser(slackMessage);
-          const errorMessage = responseHandler.generateErrorTemplate(
+          const errorMessage = generateErrorTemplate(
             'testbot1',
             testBots.bots[0].config.botCommand,
             errorContext
@@ -386,7 +386,7 @@ describe('/command', function () {
         errorContext.sampleParams = [1, 3];
         errorContext.noOfErrors = 2;
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext
@@ -421,7 +421,7 @@ describe('/command', function () {
         errorContext.sampleParams = [1, 3];
         errorContext.noOfErrors = 2;
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext
@@ -445,7 +445,7 @@ describe('/command', function () {
     describe('isAllowedParamValid - data func returns Promise', function () {
       beforeEach(function () {
         initTestSetup({
-          config: config.dataPromise.singleBotForAllowedParam,
+          config: fixtures.singleBotForAllowedParam,
         });
       });
 
@@ -502,7 +502,7 @@ describe('/command', function () {
         errorContext.noOfErrors = 1;
         errorContext.failedParams = [{ error: '3 is incorrect' }];
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext
@@ -528,7 +528,7 @@ describe('/command', function () {
         errorContext.noOfErrors = 1;
         errorContext.failedParams = [{ error: '3 is incorrect' }];
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext
@@ -604,7 +604,7 @@ describe('/command', function () {
         slackMessage.text = 'help';
         delete errorContext.error;
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext
@@ -628,7 +628,7 @@ describe('/command', function () {
         slackMessage.text = 'pingregexchk help';
         delete errorContext.error;
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext
@@ -662,7 +662,7 @@ describe('/command', function () {
         };
         errorContext.parsedMessage = messageParser(slackMessage);
 
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext
@@ -713,7 +713,7 @@ describe('/command', function () {
           errorContext.sampleParams = [1, 3];
           errorContext.noOfErrors = 1;
           errorContext.parsedMessage = messageParser(slackMessage);
-          const errorMessage = responseHandler.generateErrorTemplate(
+          const errorMessage = generateErrorTemplate(
             'testbot1',
             testBots.bots[0].config.botCommand,
             errorContext
@@ -748,7 +748,7 @@ describe('/command', function () {
         errorContext.sampleParams = [1, 3];
         errorContext.noOfErrors = 2;
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext
@@ -783,7 +783,7 @@ describe('/command', function () {
         errorContext.sampleParams = [1, 3];
         errorContext.noOfErrors = 2;
         errorContext.parsedMessage = messageParser(slackMessage);
-        const errorMessage = responseHandler.generateErrorTemplate(
+        const errorMessage = generateErrorTemplate(
           'testbot1',
           testBots.bots[0].config.botCommand,
           errorContext
@@ -808,7 +808,7 @@ describe('/command', function () {
   describe('isCommandAllowed', function () {
     beforeEach(function () {
       initTestSetup({
-        config: config.isCommandAllowed,
+        config: fixtures.isCommandAllowed,
         slackMessage: {
           text: 'ping 1',
           channel: 'D0GL06JD7',
@@ -822,7 +822,7 @@ describe('/command', function () {
       errorContext.restrictedUser = true;
       errorContext.parsedMessage = messageParser(slackMessage);
       errorContext.users = testBots.bots[0].config.allowedUsers;
-      const errorMessage = responseHandler.generateErrorTemplate(
+      const errorMessage = generateErrorTemplate(
         'testbot1',
         testBots.bots[0].config.botCommand,
         errorContext
@@ -865,7 +865,7 @@ describe('/command', function () {
       errorContext.restrictedUser = true;
       errorContext.parsedMessage = messageParser(slackMessage);
       errorContext.users = testBots.bots[0].config.allowedUsers;
-      const errorMessage = responseHandler.generateErrorTemplate(
+      const errorMessage = generateErrorTemplate(
         'testbot1',
         testBots.bots[0].config.botCommand,
         errorContext
@@ -889,7 +889,7 @@ describe('/command', function () {
   describe('isCommandAllowed - data function returns Promise', function () {
     beforeEach(function () {
       initTestSetup({
-        config: config.dataPromise.isCommandAllowed,
+        config: fixtures.isCommandAllowed,
         slackMessage: {
           text: 'ping 1',
           channel: 'D0GL06JD7',
@@ -903,7 +903,7 @@ describe('/command', function () {
       errorContext.restrictedUser = true;
       errorContext.parsedMessage = messageParser(slackMessage);
       errorContext.users = testBots.bots[0].config.allowedUsers;
-      const errorMessage = responseHandler.generateErrorTemplate(
+      const errorMessage = generateErrorTemplate(
         'testbot1',
         testBots.bots[0].config.botCommand,
         errorContext
@@ -946,7 +946,7 @@ describe('/command', function () {
       errorContext.restrictedUser = true;
       errorContext.parsedMessage = messageParser(slackMessage);
       errorContext.users = testBots.bots[0].config.allowedUsers;
-      const errorMessage = responseHandler.generateErrorTemplate(
+      const errorMessage = generateErrorTemplate(
         'testbot1',
         testBots.bots[0].config.botCommand,
         errorContext
@@ -970,7 +970,7 @@ describe('/command', function () {
   describe('isAllowedChannel', function () {
     beforeEach(function () {
       initTestSetup({
-        config: config.isAllowedChannel,
+        config: fixtures.isAllowedChannel,
         slackMessage: {
           text: 'ping 1',
           channel: 'D0GL06JD7',
@@ -984,7 +984,7 @@ describe('/command', function () {
       errorContext.restrictedChannel = true;
       errorContext.parsedMessage = messageParser(slackMessage);
       errorContext.users = testBots.bots[0].config.allowedUsers;
-      const errorMessage = responseHandler.generateErrorTemplate(
+      const errorMessage = generateErrorTemplate(
         'testbot1',
         testBots.bots[0].config.botCommand,
         errorContext
@@ -1026,7 +1026,7 @@ describe('/command', function () {
   describe('isAllowedChannel - data function returns Promise', function () {
     beforeEach(function () {
       initTestSetup({
-        config: config.isAllowedChannel,
+        config: fixtures.isAllowedChannel,
         slackMessage: {
           text: 'ping 1',
           channel: 'D0GL06JD7',
@@ -1040,7 +1040,7 @@ describe('/command', function () {
       errorContext.restrictedChannel = true;
       errorContext.parsedMessage = messageParser(slackMessage);
       errorContext.users = testBots.bots[0].config.allowedUsers;
-      const errorMessage = responseHandler.generateErrorTemplate(
+      const errorMessage = generateErrorTemplate(
         'testbot1',
         testBots.bots[0].config.botCommand,
         errorContext
@@ -1082,7 +1082,7 @@ describe('/command', function () {
   describe('blockDirectMessage', function () {
     beforeEach(function () {
       initTestSetup({
-        config: config.blockDirectMessage,
+        config: fixtures.blockDirectMessage,
         slackMessage: {
           channel: 'D0GL06JD7',
           user: 'U0GG92T46',
@@ -1095,9 +1095,7 @@ describe('/command', function () {
       delete errorContext.error;
       errorContext.botDirectMessageError = true;
 
-      const errorMessage = responseHandler.generateBotResponseTemplate(
-        errorContext
-      );
+      const errorMessage = generateBotResponseTemplate(errorContext);
 
       const onMessageSpy = jest.fn((response) => {
         expect(response.message).toEqual(errorMessage);
@@ -1118,9 +1116,7 @@ describe('/command', function () {
       slackMessage.text = 'testbot1 ping 1';
       delete errorContext.error;
       errorContext.botDirectMessageError = true;
-      const errorMessage = responseHandler.generateBotResponseTemplate(
-        errorContext
-      );
+      const errorMessage = generateBotResponseTemplate(errorContext);
 
       const onMessageSpy = jest.fn((response) => {
         expect(response.message).toEqual(errorMessage);
@@ -1144,9 +1140,7 @@ describe('/command', function () {
         slackMessage.text = 'testbot1 ping 1';
         delete errorContext.error;
         errorContext.botDirectMessageError = true;
-        const errorMessage = responseHandler.generateBotResponseTemplate(
-          errorContext
-        );
+        const errorMessage = generateBotResponseTemplate(errorContext);
 
         const onMessageSpy = jest.fn((response) => {
           expect(response.message).toEqual(errorMessage);
@@ -1207,7 +1201,7 @@ describe('/command', function () {
   describe('blockDirectMessage - data function returns Promise', function () {
     beforeEach(function () {
       initTestSetup({
-        config: config.dataPromise.blockDirectMessage,
+        config: fixtures.blockDirectMessage,
         slackMessage: {
           channel: 'D0GL06JD7',
           user: 'U0GG92T46',
@@ -1220,9 +1214,7 @@ describe('/command', function () {
       delete errorContext.error;
       errorContext.botDirectMessageError = true;
 
-      const errorMessage = responseHandler.generateBotResponseTemplate(
-        errorContext
-      );
+      const errorMessage = generateBotResponseTemplate(errorContext);
 
       const onMessageSpy = jest.fn((response) => {
         expect(response.message).toEqual(errorMessage);
@@ -1243,9 +1235,7 @@ describe('/command', function () {
       slackMessage.text = 'testbot1 ping 1';
       delete errorContext.error;
       errorContext.botDirectMessageError = true;
-      const errorMessage = responseHandler.generateBotResponseTemplate(
-        errorContext
-      );
+      const errorMessage = generateBotResponseTemplate(errorContext);
 
       const onMessageSpy = jest.fn((response) => {
         expect(response.message).toEqual(errorMessage);
@@ -1269,9 +1259,7 @@ describe('/command', function () {
         slackMessage.text = 'testbot1 ping 1';
         delete errorContext.error;
         errorContext.botDirectMessageError = true;
-        const errorMessage = responseHandler.generateBotResponseTemplate(
-          errorContext
-        );
+        const errorMessage = generateBotResponseTemplate(errorContext);
 
         const onMessageSpy = jest.fn((response) => {
           expect(response.message).toEqual(errorMessage);
@@ -1335,14 +1323,14 @@ describe('/command', function () {
     let slackMessage;
 
     beforeEach(function () {
-      testBots = new SlackBot(config.blockDirectCustomMessage, {
+      testBots = new SlackBot(fixtures.blockDirectCustomMessage, {
         isMock: true,
       });
       errorContext = {
         error: true,
       };
       slackMessage = {
-        id: uuid.v4(),
+        id: v4(),
         type: 'message',
         channel: 'D0GL06JD7',
         user: 'U0GG92T46',
@@ -1361,9 +1349,7 @@ describe('/command', function () {
         delete errorContext.error;
         errorContext.botDirectMessageError = true;
         errorContext.message = 'Hi <@U0GG92T46> custom message';
-        const errorMessage = responseHandler.generateBotResponseTemplate(
-          errorContext
-        );
+        const errorMessage = generateBotResponseTemplate(errorContext);
 
         const onMessageSpy = jest.fn((response) => {
           expect(response.message).toEqual(errorMessage);
@@ -1387,15 +1373,15 @@ describe('/command', function () {
     let slackMessage;
 
     beforeEach(function () {
-      jest.spyOn(storage, 'createEventDirectory').mockReturnValue({});
-      testBots = new SlackBot(config.dataPromise.blockDirectCustomMessage, {
+      jest.spyOn(Storage, 'createEventDirectory').mockReturnValue({});
+      testBots = new SlackBot(fixtures.blockDirectCustomMessage, {
         isMock: true,
       });
       errorContext = {
         error: true,
       };
       slackMessage = {
-        id: uuid.v4(),
+        id: v4(),
         type: 'message',
         channel: 'D0GL06JD7',
         user: 'U0GG92T46',
@@ -1414,9 +1400,7 @@ describe('/command', function () {
         delete errorContext.error;
         errorContext.botDirectMessageError = true;
         errorContext.message = 'Hi <@U0GG92T46> custom message';
-        const errorMessage = responseHandler.generateBotResponseTemplate(
-          errorContext
-        );
+        const errorMessage = generateBotResponseTemplate(errorContext);
 
         const onMessageSpy = jest.fn((response) => {
           expect(response.message).toEqual(errorMessage);
@@ -1437,14 +1421,14 @@ describe('/command', function () {
   describe('Test command types', function () {
     beforeEach(function () {
       initTestSetup({
-        config: config.commandTypeBots,
+        config: fixtures.commandTypeBots,
         slackMessage: {
           channel: 'D0GL06JD7',
           user: 'U0GG92T45',
           text: 'ping 1',
         },
       });
-      clock = FakeTimers.install();
+      clock = install();
     });
 
     afterEach(function () {
@@ -1468,47 +1452,49 @@ describe('/command', function () {
       });
     });
 
-    it('Should respond with redo response', async (done) => {
-      slackMessage.text = 'flowit redo';
-      delete errorContext.error;
-      errorContext.noflow = true;
-      const errorMessage = responseHandler.generateBotResponseTemplate(
-        errorContext
-      );
+    it('Should respond with redo response', function (done) {
+      testBots.start().then((botEvt) => {
+        slackMessage.text = 'flowit redo';
+        delete errorContext.error;
+        errorContext.noflow = true;
+        const errorMessage = generateBotResponseTemplate(errorContext);
+        const onMessageSpy = jest.fn((response) => {
+          expect(response.message).toEqual(errorMessage);
+          done();
+        });
+        botEvt[0].on('message', onMessageSpy);
 
-      const onMessageSpy = jest.fn((response) => {
-        expect(response.message).toEqual(errorMessage);
-        done();
+        botEvt[0].on('connect', () => {
+          botEvt[0].injectMessage(slackMessage);
+        });
       });
-
-      const testbot = await testBots.start();
-      testbot[0].on('connect', () => {
-        testbot[0].injectMessage(slackMessage);
-      });
-      testbot[0].on('message', onMessageSpy);
     });
 
-    it('Should run all flow command steps', async (done) => {
-      slackMessage.text = 'flowit user 123';
+    it('Should run all flow command steps', function (done) {
+      testBots.start().then((botEvt) => {
+        const onMessageSpy = jest.fn((response) => {
+          if (onMessageSpy.mock.calls.length === 1) {
+            expect(response.message).toContain('*1*');
+            slackMessage.text = 'flowit 1';
+            botEvt[0].injectMessage(slackMessage);
+          }
+          if (onMessageSpy.mock.calls.length === 2) {
+            expect(response.message).toContain('selected 1');
+            slackMessage.text = 'flowit yes';
+            botEvt[0].injectMessage(slackMessage);
+          }
+          if (onMessageSpy.mock.calls.length === 3) {
+            expect(response.message).toContain('Page out sent');
+            done();
+          }
+        });
+        botEvt[0].on('message', onMessageSpy);
 
-      const onMessageSpy = jest.fn((response) => {
-        if (onMessageSpy.mock.calls.length === 1) {
-          expect(response.message).toContain('*1*');
-          slackMessage.text = 'flowit 1';
-          testbot[0].injectMessage(slackMessage);
-        }
-        if (onMessageSpy.mock.calls.length === 2) {
-          slackMessage.text = 'flowit yes';
-          expect(response.message).toContain('selected 1');
-          done();
-        }
+        botEvt[0].on('connect', () => {
+          slackMessage.text = 'flowit user 123';
+          botEvt[0].injectMessage(slackMessage);
+        });
       });
-
-      const testbot = await testBots.start();
-      testbot[0].on('connect', () => {
-        testbot[0].injectMessage(slackMessage);
-      });
-      testbot[0].on('message', onMessageSpy);
     });
 
     it('Should call setUpRecursiveTask for recursive command', function (done) {
@@ -1538,7 +1524,7 @@ describe('/command', function () {
       ];
       errorContext.parsedMessage = messageParser(slackMessage);
 
-      const errorMessage = responseHandler.generateErrorTemplate(
+      const errorMessage = generateErrorTemplate(
         'testbot1',
         testBots.bots[0].config.botCommand,
         errorContext
@@ -1566,7 +1552,7 @@ describe('/command', function () {
         { error: 'err!! you are missing ' + 'another argument' },
       ];
       errorContext.parsedMessage = messageParser(slackMessage);
-      const errorMessage = responseHandler.generateErrorTemplate(
+      const errorMessage = generateErrorTemplate(
         'testbot1',
         testBots.bots[0].config.botCommand,
         errorContext
@@ -1590,7 +1576,7 @@ describe('/command', function () {
   describe('Test command types - data function returns Promise', function () {
     beforeEach(function () {
       initTestSetup({
-        config: config.dataPromise.commandTypeBots,
+        config: fixtures.commandTypeBots,
         slackMessage: {
           channel: 'D0GL06JD7',
           user: 'U0GG92T45',
@@ -1643,7 +1629,7 @@ describe('/command', function () {
       ];
       errorContext.parsedMessage = messageParser(slackMessage);
 
-      const errorMessage = responseHandler.generateErrorTemplate(
+      const errorMessage = generateErrorTemplate(
         'testbot1',
         testBots.bots[0].config.botCommand,
         errorContext
@@ -1671,7 +1657,7 @@ describe('/command', function () {
         { error: 'err!! you are missing ' + 'another argument' },
       ];
       errorContext.parsedMessage = messageParser(slackMessage);
-      const errorMessage = responseHandler.generateErrorTemplate(
+      const errorMessage = generateErrorTemplate(
         'testbot1',
         testBots.bots[0].config.botCommand,
         errorContext
@@ -1694,15 +1680,15 @@ describe('/command', function () {
 
   describe('Schedule - command tools', function () {
     beforeEach(function () {
-      jest.spyOn(storage, 'getEvents').mockResolvedValue({
+      jest.spyOn(Storage, 'getEvents').mockResolvedValue({
         events: {},
-        schedule: config.schedule,
+        schedule: fixtures.schedule,
       });
 
       initTestSetup({
-        config: config.dataPromise.commandTypeBots,
+        config: fixtures.commandTypeBots,
       });
-      clock = FakeTimers.install();
+      clock = install();
     });
 
     afterEach(function () {

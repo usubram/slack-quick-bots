@@ -1,7 +1,7 @@
 {
   "name": "slack-quick-bots",
   "description": "A slack bot solution for enterprise.",
-  "version": "7.1.32",
+  "version": "8.0.0",
   "homepage": "https://github.com/usubram/slack-quick-bots",
   "author": {
     "name": "Umashankar Subramanian",
@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "node ./lib/index.js",
-    "test": "NODE_ENV=test jest --detectOpenHandles ./test/lib/*",
+    "test": "NODE_ENV=test NODE_OPTIONS=\"--experimental-vm-modules \" npx jest --runInBand --detectOpenHandles ./test/lib/*",
+    "test-debug": "NODE_ENV=dev NODE_OPTIONS=\"--experimental-vm-modules --inspect-brk\" npx jest --runInBand --detectOpenHandles ./test/lib/*",
     "lint": "eslint .",
     "pretty": "prettier --write ."
   },
@@ -25,6 +26,7 @@
   "engines": {
     "node": ">=10.0.0"
   },
+  "type": "module",
   "keywords": [
     "slack",
     "bot",
@@ -36,24 +38,24 @@
     "chatbots"
   ],
   "dependencies": {
-    "@umashankar/plotter": "0.5.8",
-    "bufferutil": "4.0.1",
-    "cron": "1.8.2",
-    "form-data": "3.0.0",
-    "handlebars": "4.7.6",
-    "https-proxy-agent": "5.0.0",
-    "lodash": "4.17.19",
-    "mime": "2.4.6",
-    "moment": "2.27.0",
-    "shortid": "2.2.15",
-    "utf-8-validate": "5.0.2",
-    "uuid": "8.3.0",
-    "ws": "7.3.1"
+    "@usubram/plotter": "0.6.0",
+    "bufferutil": "4.0.7",
+    "cron": "2.4.3",
+    "form-data": "4.0.0",
+    "handlebars": "4.7.8",
+    "https-proxy-agent": "7.0.2",
+    "lodash-es": "^4.17.21",
+    "mime": "3.0.0",
+    "moment": "2.29.4",
+    "nanoid": "^5.0.1",
+    "utf-8-validate": "6.0.3",
+    "uuid": "9.0.1",
+    "ws": "8.14.2"
   },
   "devDependencies": {
-    "@sinonjs/fake-timers": "^6.0.1",
-    "eslint": "7.5.0",
-    "jest": "^26.1.0",
-    "prettier": "2.0.5"
+    "@sinonjs/fake-timers": "^11.1.0",
+    "eslint": "8.44.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.0.0"
   }
 }

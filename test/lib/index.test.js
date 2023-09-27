@@ -1,18 +1,15 @@
 'use strict';
 
-const botLogger = require('../../lib/utils/logger');
-const SlackBot = require('../../lib/index');
-const config = require('../../test/mock');
-const apiRequest = require('../../lib/slack-api/api-request');
+import SlackBot from '../../lib/index.js';
+import fixtures from '../../test/mock/index.js';
+import apiRequest from '../../lib/slack-api/api-request.js';
 
-botLogger.setLogger();
-
-describe.only('SlackBot test', function () {
+describe('SlackBot test', function () {
   describe('single bot', function () {
     let testBots;
 
     beforeEach(function () {
-      testBots = new SlackBot(config.singleBot, {
+      testBots = new SlackBot(fixtures.singleBot, {
         isMock: true,
       });
       jest.spyOn(apiRequest, 'fetch').mockReturnValue({
@@ -51,7 +48,7 @@ describe.only('SlackBot test', function () {
     let testBots;
 
     beforeEach(function () {
-      testBots = new SlackBot(config.multipleBot, {
+      testBots = new SlackBot(fixtures.multipleBot, {
         isMock: true,
       });
       jest.spyOn(apiRequest, 'fetch').mockReturnValue({

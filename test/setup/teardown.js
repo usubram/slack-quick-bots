@@ -1,4 +1,4 @@
-const socketServer = require('../../lib/bot/socket-server');
+import { closeClient } from '../../lib/bot/socket-server.js';
 
 // module.exports = async function () {
 //   console.log('teared down')
@@ -6,5 +6,5 @@ const socketServer = require('../../lib/bot/socket-server');
 // };
 
 afterEach(async () => {
-  return await socketServer.closeClient();
+  return await closeClient();
 });
